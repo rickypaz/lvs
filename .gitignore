@@ -1,0 +1,22 @@
+# Ignore all
+/*
+
+!.gitignore
+
+# Add LV blocks
+!blocks/
+blocks/*
+!blocks/lvs/
+!blocks/lvs/*
+
+# Add LV mods
+!mod/
+mod/*
+!mod/chatlv/
+!mod/chatlv/*
+!mod/forumlv/
+!mod/forumlv/*
+!mod/tarefalv/
+!mod/tarefalv/*
+!mod/wikilv/
+!mod/wikilv/*
