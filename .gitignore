@@ -1,8 +1,6 @@
 # Ignore all
 /*
 
-!.gitignore
-
 # Add LV blocks
 !blocks/
 blocks/*
