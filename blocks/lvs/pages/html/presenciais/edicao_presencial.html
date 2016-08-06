@@ -1,0 +1,13 @@
+<form id='lvs_presencial_edit' name='form1' target='_self' method='POST' action='#'>
+	<input type='hidden' name='atividade[id]' value={ID_ATIVIDADE} />
+
+	<fieldset>
+		<legend>Atividade Presencial</legend>
+		<label for='tituloAtividadePresencial'>Título:</label> 
+		<input type="text" name="atividade[nome]" id="tituloAtividadePresencial" value='{NOME_ATIVIDADE}' /> <br /> 
+		<label for='descricaoAtividadePresencial'>Descrição:</label> <br />
+		<textarea cols='80' rows='5' name='atividade[descricao]' id='descricaoAtividadePresencial'>{DESCRICAO_ATIVIDADE}</textarea>
+	</fieldset>
+
+	<input type='submit' value='enviar' class='botao' />
+</form>

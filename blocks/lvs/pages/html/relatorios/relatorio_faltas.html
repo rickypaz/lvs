@@ -1,0 +1,40 @@
+<table class="boxaligncenter generaltable width80" style="width: 100%">
+	<thead>
+		<tr>
+			<th scope="col" style="text-align: center;" class="header c0">Atividades a Distância</th>
+			<th scope="col" style="text-align: center;" class="header c1">Ausências</th>
+		</tr>
+	</thead>
+	<tbody>
+		<!-- BEGIN ATIVIDADE_DISTANCIA -->
+		<tr>
+			<td style="text-align: center;" class="cell">{DISTANCIA_NOME}</td>
+			<td style="text-align: center;" class="cell">{DISTANCIA_AUSENCIAS}</td>
+		</tr>
+		<!-- END ATIVIDADE_DISTANCIA -->
+		<tr>
+	</tbody>
+</table>
+<table class="boxaligncenter generaltable width80" style="width: 100%">
+	<thead>
+		<tr>
+			<th scope="col" style="text-align: center;" class="header c0">Atividades Presenciais</th>
+			<th scope="col" style="text-align: center;" class="header c1">Ausências</th>
+		</tr>
+	</thead>
+	<tbody>
+		<!-- BEGIN ATIVIDADE_PRESENCIAL -->
+		<tr>
+			<td style="text-align: center;" class="cell">{PRESENCIAL_NOME}</td>
+			<!--<td style="text-align: center;" class="cell">{PRESENCIAL_AUSENCIAS} de {PRESENCIAL_FALTAS}</td>-->
+			<td style="text-align: center;" class="cell">{PRESENCIAL_FALTAS} de {FALTAS_DA_ATIVIDADE}</td>
+		</tr>
+		<!-- END ATIVIDADE_PRESENCIAL -->
+		<!-- BEGIN NENHUMA_PRESENCIAL -->
+		<tr>
+			<td colspan="3" style="text-align: center;">Nenhuma atividade presencial</td>
+		</tr>
+		<!-- END NENHUMA_PRESENCIAL -->
+		<tr>
+	</tbody>
+</table>

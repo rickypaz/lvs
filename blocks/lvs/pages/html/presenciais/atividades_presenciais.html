@@ -1,0 +1,23 @@
+<table class="generaltable boxaligncenter width80">
+	<thead>
+		<tr>
+			<th colspan="2" scope="col" style="text-align:center;" class="header c0">Atividades Presenciais</th>
+		</tr>
+	</thead>
+	<tbody>
+		<!-- BEGIN PRESENCIAL -->
+		<tr class="r0">
+			<td style="text-align:center;" class="cell c0">{PRESENCIAL_NOME}</td>
+			<td style="text-align:center;" class="cell c1 lastcol"><a href="{BASEURL}/pages/notas_presenciais.php?curso={CURSO_ID}&amp;id={PRESENCIAL_ID}">Lançar Notas / Frequência</a></td>
+		</tr>
+		<!-- END PRESENCIAL -->
+		<tr class="r0 lastrow">
+			<td style="text-align:center;" class="cell c0"></td>
+			<td style="text-align:center;" class="cell c1 lastcol">
+				<form method="post" action="{BASEURL}/pages/configuracao_presenciais.php?curso={CURSO_ID}">
+					<input type="submit" value="Configuração">
+				</form>
+			</td>
+		</tr>
+	</tbody>
+</table>

@@ -1,0 +1,47 @@
+/** General Styles **/
+.path-mod-tarefalv .userpicture,
+.path-mod-tarefalv .picture.user,
+.path-mod-tarefalv .picture.teacher {width:35px;height: 35px;vertical-align:top;}
+.path-mod-tarefalv .feedback .files,
+.path-mod-tarefalv .feedback .grade,
+.path-mod-tarefalv .feedback .outcome,
+.path-mod-tarefalv .feedback .finalgrade {float: right;}
+.path-mod-tarefalv .feedback .disabledfeedback {width: 500px;height: 250px;}
+.path-mod-tarefalv .feedback .from {float: left;}
+.path-mod-tarefalv .files img {margin-right: 4px;}
+.path-mod-tarefalv .files a {white-space:nowrap;}
+.path-mod-tarefalv .late {color: red;}
+
+/** Styles for submissions.php **/
+#page-mod-tarefalv-submissions fieldset.felement {margin-left: 16%;}
+#page-mod-tarefalv-submissions form#options div {text-align:right;margin-left:auto;margin-right:20px;}
+#page-mod-tarefalv-submissions .header .commands {display: inline;}
+#page-mod-tarefalv-submissions .picture {width: 35px;}
+#page-mod-tarefalv-submissions .fullname,
+#page-mod-tarefalv-submissions .timemodified,
+#page-mod-tarefalv-submissions .timemarked {text-align: left;}
+#page-mod-tarefalv-submissions .submissions .grade,
+#page-mod-tarefalv-submissions .submissions .outcome,
+#page-mod-tarefalv-submissions .submissions .finalgrade {text-align: right;}
+#page-mod-tarefalv-submissions .submissions .header.noheader {display:none;}
+#page-mod-tarefalv-submissions .qgprefs #optiontable {text-align:right;margin-left:auto;}
+
+/** Styles for view.php **/
+#page-mod-tarefalv-view .feedback {margin:10px auto;}
+#page-mod-tarefalv-view .feedback .grade {text-align: right;}
+#page-mod-tarefalv-view #online .singlebutton {text-align: center;}
+#page-mod-tarefalv-view #dates .c0 {text-align:right;font-weight:bold;}
+
+#page-mod-tarefalv-submissions .mform.optionspref .fitem .fitemtitle {width:50%;}
+#page-mod-tarefalv-submissions .mform.optionspref .fitem .felement {width: 30%; margin-left: 51%;}
+
+#page-mod-tarefalv-submissions .optionspref {width: 50%;}
+#page-mod-tarefalv-submissions .fastgbutton {text-align: center;}
+
+#page-mod-tarefalv-submissions.dir-rtl .fullname,
+#page-mod-tarefalv-submissions.dir-rtl .timemodified,
+#page-mod-tarefalv-submissions.dir-rtl .timemarked {text-align:right;}
+#page-mod-tarefalv-submissions.dir-rtl .mform.optionspref .fitem .fitemtitle {text-align:left;}
+#page-mod-tarefalv-type-uploadsingle-upload.dir-rtl .mdl-left {text-align:right;}
+
+.mod-tarefalv-download-link {text-align:right;}

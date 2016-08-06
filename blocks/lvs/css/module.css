@@ -1,0 +1,32 @@
+@CHARSET "UTF-8";
+/* tooltip styling. by default the element to be styled is .tooltip  */
+.tooltip {
+	display: none;
+	background: transparent
+		url(http://static.flowplayer.org/tools/img/tooltip/black_arrow.png);
+	font-size: 12px;
+	height: 70px;
+	width: 160px;
+	padding: 25px;
+	color: #fff;
+}
+
+/* style the trigger elements */
+#dyna img {
+	border: 0;
+	cursor: pointer;
+	margin: 0 8px;
+}
+
+/* override the arrow image of the tooltip */
+.tooltip.bottom {
+	background:
+		url(http://static.flowplayer.org/tools/img/tooltip/black_arrow_bottom.png);
+	padding-top: 40px;
+	height: 55px;
+}
+
+.tooltip.bottom {
+	background:
+		url(http://static.flowplayer.org/tools/img/tooltip/black_arrow_bottom.png);
+}

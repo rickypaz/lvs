@@ -1,0 +1,197 @@
+<br />
+<center>
+	<a href='{LINK_EXPORTAR}'>Exportar Para PDF</a><br /> <br />
+
+	<table style="width: 100%" class="header">
+		<tr>
+			<td style="width: 50%; vertical-align: middle;">
+				<h1 style="text-align: left">Informa&ccedil;&otilde;es Do Curso</h1>
+			</td>
+		</tr>
+	</table>
+
+	<table class="detail" style="margin: 0px; border-top: none;">
+		<tr>
+			<td class="label">Nome:</td>
+			<td class="field">{COURSE_FULLNAME} ({COURSE_SHORTNAME})</td>
+		</tr>
+		<tr>
+			<td class="label">Descri&ccedil;&atilde;o:</td>
+			<td class="field">{COURSE_SUMMARY}</td>
+		</tr>
+	</table>
+
+	<table class="detail" style="margin: 0px; border-top: none;">
+		<tr>
+			<td class="label">&beta; Médio:</td>
+			<td class="field">{BETA_MEDIO}</td>
+		</tr>
+	</table>
+
+	<!-- BEGIN INIT_FORM_AF -->
+	<form name="formaf" action='{FORM_ACTION}' method="post">
+		<!-- END INIT_FORM_AF -->
+
+		<table class="list" border="1"
+			style="width: 99%; margin-top: 1em; margin-bottom: 1em;">
+			<tr class="head">
+				<td class="center">Nome/Sobrenome</td>
+				<td class="center" style="width: 4%;" title="Número de Fóruns">NF</td>
+				<td class="center" style="width: 4%;"
+					title="Ausência Atividade Fórum">AAF</td>
+				<td class="center" style="width: 4%;" title="Número de Tarefas">NT</td>
+				<td class="center" style="width: 4%;"
+					title="Ausência Atividade Tarefa">AAT</td>
+				<!-- <td class="center" style="width: 4%;">NC</td>
+			<td class="center" style="width: 4%;">AAC</td>
+			<td class="center" style="width: 4%;">NW</td>
+			<td class="center" style="width: 4%;">AAW</td> -->
+				<td class="center" style="width: 4%;" title="Nota Distância">ND</td>
+				<td class="center" style="width: 4%;" title="Nota Presencial">NP</td>
+				<td class="center" style="width: 4%;"
+					title="Ausência Atividade Presencial">AAP</td>
+				<td class="center" style="width: 4%;" title="Média = ND + NP">M&eacute;dia</td>
+				<td class="center" style="width: 4%;" title="Número Total de Faltas">NTF
+					(hA / %)</td>
+				<td class="center" style="width: 4%;">Fator &beta;</td>
+				<td class="center" style="width: 4%;">LV &Iacute;cone</td>
+				<td class="center" style="width: 4%;" title="Prova Final">PF</td>
+				<td class="center" style="width: 4%;" title="Média Final">MF</td>
+				<td class="center" style="width: 8%;">Situa&ccedil;&atilde;o</td>
+			</tr>
+
+			<!-- BEGIN ALUNO -->
+			<tr class='{CLASS_ALUNO}'>
+
+				<td class="center" style="border: 1px solid">{USER_FIRSTNAME}
+					{USER_LASTNAME}</td>
+
+				<!-- BEGIN ATIVIDADE_DISTANCIA -->
+				<td class="center" style="border: 1px solid">{NOTA_ATIVIDADE} <a
+					target='{TARGET_ATIVIDADE}'
+					href='{LINK_AVALIACOES_USUARIO_ATIVIDADE}'> <img
+						src='{IMAGE_ATIVIDADE}'>
+				</a>
+				</td>
+				<td class="center" style="border: 1px solid">{AUSENCIAS_ATIVIDADE}</td>
+				<!-- END ATIVIDADE_DISTANCIA -->
+
+				<td class="center" style="border: 1px solid">{NOTA_DISTANCIA}</td>
+
+				<!-- BEGIN ATIVIDADE_PRESENCIAL -->
+				<td class="center" style="border: 1px solid">{NOTA_ATIVIDADE} <a
+					target='{TARGET_ATIVIDADE}'
+					href='{LINK_AVALIACOES_USUARIO_ATIVIDADE}'> <img
+						src='{IMAGE_ATIVIDADE}'>
+				</a>
+				</td>
+				<td class="center" style="border: 1px solid">{AUSENCIAS_ATIVIDADE}</td>
+				<!-- END ATIVIDADE_PRESENCIAL -->
+
+				<td class="center" style="border: 1px solid">{MEDIA}</td>
+				<td class="center" style="border: 1px solid">{TOTAL_FALTAS}%</td>
+				<td class="center" style="border: 1px solid">{FATOR_BETA}</td>
+				<td class="center" style="border: 1px solid">{IMAGEM_LV_ICONE}</td>
+
+				<td class="center" style="border: 1px solid">
+					<!-- BEGIN AF --> <span style='display: none;'>{NOTA_AF}</span> <input
+					onfocus="this.style.cursor='pointer'; this.style.background='#FF9';"
+					onkeyup="return limiteMaximo(this, 10);" style='width: 60%;'
+					type="text" value='{NOTA_AF}' name="nota[usuario][{USER_ID}]" /> <!-- END AF -->
+
+					<!-- BEGIN AM --> - <!-- END AM -->
+
+				</td>
+				<td class="center" style="border: 1px solid">{MEDIA_FINAL}</td>
+				<td class="center" style="border: 1px solid">{SITUACAO}</td>
+			</tr>
+			<!-- END ALUNO -->
+
+			<!-- BEGIN SALVAR_NOTAS_AF -->
+			<tr>
+				<td class="center"></td>
+				<td class="center"></td>
+				<td class="center"></td>
+				<td class="center"></td>
+				<!-- <td class="center"></td>
+            <td class="center"></td>
+            <td class="center"></td>
+            <td class="center"></td> -->
+				<td class="center"></td>
+				<td class="center"></td>
+				<td class="center"></td>
+				<td class="center"></td>
+				<td class="center"></td>
+				<td class="center"></td>
+				<td class="center"></td>
+				<td class="center"></td>
+				<td class="center"><a href="#"
+					onclick="document.formaf.submit();">Salvar</a></td>
+				<td class="center"></td>
+				<td class="center"></td>
+			</tr>
+			<!-- END SALVAR_NOTAS_AF -->
+
+		</table>
+
+		<!-- BEGIN END_FORM_AF -->
+	</form>
+	<!-- END END_FORM_AF -->
+
+	<!-- BEGIN SPACE -->
+	<br /> <br /> <br /> <br />
+	<!-- END SPACE -->
+
+	<hr>
+
+	<b style='font-size: 0.8em; font-style: italic;'>Legendas</b>
+
+	<!-- BEGIN LEGENDA_CARINHAS -->
+	<br> <br> <img src='{IMAGE_PDF}' class='icon' />
+	<!-- END LEGENDA_CARINHAS -->
+
+	<br /> <br />
+
+	<table border='1' style="width: 100%">
+		<tr>
+			<!-- <td class='left' style='white-space: nowrap; font-size: 0.8em;'>
+				<b>- Notas</b> <br />&nbsp;&nbsp;&nbsp;&nbsp;NF - Nota F&oacute;rum
+				<br />&nbsp;&nbsp;&nbsp;&nbsp;NT - Nota Tarefa <br />&nbsp;&nbsp;&nbsp;&nbsp;NC - Nota Chat
+			<br />&nbsp;&nbsp;&nbsp;&nbsp;NW - Nota Wiki <br />&nbsp;&nbsp;&nbsp;&nbsp;ND
+				- Nota Dist&acirc;ncia <br />&nbsp;&nbsp;&nbsp;&nbsp;NP - Nota
+				Presencial <br /> <b>- M&eacute;dia - ND + NP</b><br /> <b>-
+					PF - Prova Final</b><br /> <b>- MF - M&eacute;dia Final</b><br />
+				<b>- CH - Carga Hor&aacute;ria do Curso</b> <br /> <b>- NTF -
+					N&uacute;mero Total de Faltas</b> <br /> <b>- Aus&ecirc;ncias</b> <br />&nbsp;&nbsp;&nbsp;&nbsp;AAP
+				- Aus&ecirc;ncia Atividade Presencial <br />&nbsp;&nbsp;&nbsp;&nbsp;AAF
+				- Aus&ecirc;ncia Atividade F&oacute;rum <br />&nbsp;&nbsp;&nbsp;&nbsp;AAC - Aus&ecirc;ncia Atividade Chat
+				<br />&nbsp;&nbsp;&nbsp;&nbsp;AAT - Aus&ecirc;ncia Atividade Tarefa
+				<br />&nbsp;&nbsp;&nbsp;&nbsp;AAW - Aus&ecirc;ncia Atividade Wiki
+				<br />
+			</td> -->
+			<td class='left' style='white-space: nowrap; font-size: 0.8em;'>
+				<b>- Situa&ccedil;&atilde;o</b> <br />&nbsp;&nbsp;&nbsp;&nbsp;C -
+				Cursando <br />&nbsp;&nbsp;&nbsp;&nbsp;AM - Aprovado por
+				M&eacute;dia (M&eacute;dia &gt;= {MEDIA_CURSO}) <br />&nbsp;&nbsp;&nbsp;&nbsp;AMF
+				- Aprovado por M&eacute;dia Final (M&eacute;dia Final &gt;=
+				{MEDIA_APROVACAO_AF_CURSO}) <br />&nbsp;&nbsp;&nbsp;&nbsp;AF -
+				Aluno na Final ( {MEDIA_AF_CURSO} &lt;= M&eacute;dia &lt;
+				{MEDIA_CURSO}) <br />&nbsp;&nbsp;&nbsp;&nbsp;R - Reprovado por
+				M&eacute;dia (M&eacute;dia &lt; {MEDIA_AF_CURSO}) <br />&nbsp;&nbsp;&nbsp;&nbsp;RMF
+				- Reprovado por M&eacute;dia Final (M&eacute;dia Final &lt;
+				{MEDIA_APROVACAO_AF_CURSO}) <br />&nbsp;&nbsp;&nbsp;&nbsp;RF -
+				Reprovado por faltas (NTF &gt; {PERCENTUAL_FALTAS_CURSO} % CH) <br />&nbsp;&nbsp;&nbsp;&nbsp;SC
+				- Segunda Chamada (Falta em Atividade Presencial) <br />
+			</td>
+			<td class='left'><img style='height: 188; width: 328;'
+				src='{IMAGE_TABELA_BETA}' alt='' /></td>
+		</tr>
+	</table>
+
+	<!-- BEGIN PREPARAR_EXPORTACAO -->
+	<br /> <a href='#' style='float: right;'
+		onclick="if(confirm('Antes de prosseguir com essa ação, certifique-se que todas as notas das atividades a distância e presenciais, incluindo segundas chamadas, bem como frequ&ecirc;ncias, foram devidamente lan&ccedil;adas .')) alert('Notas prontas para exportação !')">Preparar
+		exportação para o bloco de notas Moodle.</a><br />
+	<!-- END PREPARAR_EXPORTACAO -->
+
+</center>

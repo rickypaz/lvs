@@ -1,0 +1,26 @@
+<br/>
+{MENSAGEM_INICIAL}
+<br/>
+
+<!-- BEGIN BEGIN_FORM -->
+<form name='form1' target='_self' method='POST' action='{ACTION_FORM}'>
+	<input name='id_atividade' type='hidden' value={ID_ATIVIDADE} />
+	<input id='lvs_numero_usuarios' type='hidden' value={NUMERO_USUARIOS} />
+	<input id='lvs_max_faltas' type='hidden' value={MAX_FALTAS} />
+<!-- END BEGIN_FORM -->
+
+	<!-- BEGIN USER -->
+	{TABLE_USER}
+	<!-- END USER -->
+	
+	<!-- BEGIN GRAVAR -->
+	<br/>
+	<br/>
+	<input name='gravar' type='submit' value='Gravar'>
+	<!-- END GRAVAR -->
+
+	<input name='voltar' type='button' value='Voltar' onclick='history.back();' />
+
+<!-- BEGIN END_FORM -->
+</form>
+<!-- END END_FORM -->

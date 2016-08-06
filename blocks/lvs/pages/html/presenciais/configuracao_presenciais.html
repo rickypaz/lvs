@@ -1,0 +1,101 @@
+<div>
+	<form id='lvs_config_presencial' name='form1' target='_self' method='POST' action='#'>
+		<fieldset>
+			<input type='hidden' id='lvs_curso_id' value={COURSE_ID}> 
+			<input type='hidden' id='lvs_numero_atividades' name='numero_atividades' value={NUMERO_ATIVIDADES}>
+		
+			<!-- BEGIN PRESENCIAL_INPUT_HIDDEN -->
+			<input id='presencial{CONTADOR}' name='presencial[{CONTADOR}][id]' type='hidden' value={PRESENCIAL_ID}>
+			<!-- END PRESENCIAL_INPUT_HIDDEN -->
+		
+			<table id='lvs_lista_presenciais' class="boxaligncenter generaltable width80">
+				<thead>
+					<tr>
+						<th scope="col" style="text-align: center;" class="header c0">Nome</th>
+						<th scope="col" style="text-align: center;" class="header c1">Descrição</th>
+						<th scope="col" style="text-align: center;" class="header c2">%</th>
+						<th scope="col" style="text-align: center;" class="header c3">Nº de Turnos</th>
+		
+						<!-- BEGIN COLUNA_ACOES -->
+						<th scope="col" style="text-align: center;"
+							class="header c4 lastcol">Ações</th>
+						<!-- END COLUNA_ACOES --> 
+					</tr>
+				</thead>
+				<tbody>
+					<!-- BEGIN NENHUMA_ATIVIDADE -->
+					<tr class="r0">
+						<td colspan="5" style="text-align: center;" class="cell c0">Nenhuma atividade presencial para esse curso</td>
+					</tr>
+					<!-- END NENHUMA_ATIVIDADE -->
+					
+					<!-- BEGIN PRESENCIAL -->
+					<tr>
+						<td style="text-align: center;" class="cell">{PRESENCIAL_NOME}</td>
+						<td style="text-align: center;" class="cell">{PRESENCIAL_DESCRICAO}</td>
+						<td style="text-align: center;" class="cell">
+							<input type="text" id="lvs_porcentagem_presencial_{CONTADOR}" value="{PRESENCIAL_PORCENTAGEM}" name="presencial[{CONTADOR}][porcentagem]" class='lvs_porcentagem' style="width: 30px" {READONLY}>%<br>
+						</td>
+						<td style="text-align: center;" class="cell">
+							<input type="text" id="lvs_max_faltas_presencial_{CONTADOR}" value="{PRESENCIAL_MAX_FALTAS}" name="presencial[{CONTADOR}][max_faltas]" class='lvs_maxfaltas' style="width: 25px;" {READONLY}><br>
+						</td>
+		
+						<!-- BEGIN ACOES -->
+						<td style="text-align: center;" class="cell c4 lastcol">
+							<span class="commands"> 
+								<a href="edicao_presencial.php?curso={COURSE_ID}&amp;acao=e&amp;id={PRESENCIAL_ID}" title="Atualizar" class="editing_update">
+									<img alt="Atualizar" class="iconsmall" src="{WWWROOT}/theme/image.php?theme=standard&amp;image=%2Ft%2Fedit&amp;rev=309">
+								</a>
+								<a href="edicao_presencial.php?curso={COURSE_ID}&amp;acao=d&amp;id={PRESENCIAL_ID}&amp;porc={PRESENCIAL_PORCENTAGEM}" class='editing_delete'>
+									<img alt="Excluir" class="iconsmall" src="{WWWROOT}/theme/image.php?theme=standard&amp;image=%2Ft%2Fdelete&amp;rev=309" />
+								</a>
+							</span>
+						</td>
+						<!-- END ACOES -->						
+					</tr>
+					<!-- END PRESENCIAL -->
+			
+					<!-- BEGIN GRAVAR -->
+					<tr>
+						<td class="header" colspan="3">
+							<span style='float: left'>Soma das Porcentagens: </span><span id="lvs_soma_porcentagens">{SOMA_PORCENTAGENS}</span>
+						</td>
+						<td  class="header" style="text-align:center;">
+							<a id='lvs_add_atividade'>+ atividade!</a>
+							<span style='float: right; color: red; font-weight: bold;' id="lvs_msg"></span>
+						</td>
+						<td  class="header" style="text-align:center;">
+							<input type='submit' id='lvs_config_presencial_submit' value='Salvar' name='Salvar' style='float: right' />
+						</td>
+					</tr>
+					<!-- END GRAVAR -->
+					
+					<tr id='lvs_nova_atividade_model' style='display: none'>
+						<td style="display: none;">
+							<input type="hidden" id="lvs_curso_presencial" value='{COURSE_ID}' />
+						</td>
+						<td style="text-align: center;" class="cell">
+							<input type="text" id="lvs_titulo_presencial" style="width:95%"  />
+						</td>
+						<td style="text-align: center;" class="cell">
+							<textarea id="lvs_descricao_presencial" rows="3" style="width:95%" ></textarea>
+						</td>
+						<td style="text-align: center;" class="cell">
+							<input type="text" id="lvs_porcentagem_presencial" style="width:30px" >%
+						</td>
+						<td style="text-align: center;" class="cell">
+							<input type="text" id="lvs_max_faltas_presencial" style="width:25px"/>
+						</td>
+						<td style="text-align: center;" class="cell">
+							<span class="commands"> 
+								<a id="lvs_remover_presencial">
+									<img alt="Excluir" class="iconsmall" src="{WWWROOT}/theme/image.php?theme=standard&amp;image=%2Ft%2Fdelete&amp;rev=309" />
+								</a>
+							</span>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</fieldset>
+	</form>
+</div>

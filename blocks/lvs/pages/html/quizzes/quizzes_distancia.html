@@ -1,0 +1,43 @@
+<fieldset>
+	<h1 style="text-align: center; font-size: 16px;">Quizzes a Distância</h1>
+
+	<div id="controleDistancia">
+		<input id="quantidadeDistancia" type="hidden" value="{CONTADOR_DISTANCIA}" />
+	</div>
+	
+	<table style="width: 100%" class="generaltable boxaligncenter">
+		<thead>
+			<tr>
+				<th scope="col" style="width: 85%; text-align:center;" class="header">Quiz</th>
+				<th scope="col" style="width: 15% text-align:center;" class="header">Ações</th>
+			</tr>
+		</thead>
+		<tbody>
+
+			<!-- BEGIN QUIZ_DISTANCIA -->
+			<tr style="text-align:center;">
+				<td style='display: none'><!--- NÃO ALTERAR ORDEM DOS INPUTS POR CAUSA DO JAVASCRIPT-->
+					<input type="hidden" name="quiz[{CONTADOR}][contador]" value="{CONTADOR}" />
+					<input type="hidden" name="quiz[{CONTADOR}][id]" value="{ID}" />
+					<input type="hidden" name="quiz[{CONTADOR}][id_quiz]" value="{QUIZ_ID}" />
+					<input type="hidden" name="quiz[{CONTADOR}][id_curso]" value='{CURSO}' />
+					<input type="hidden" name="quiz[{CONTADOR}][distancia]" value='1' />
+					<input type="hidden" name="quiz[{CONTADOR}][nome]" value="{QUIZ_NOME}" />
+					<input type="hidden" name="quiz[{CONTADOR}][intro]" value="{QUIZ_INTRO}" />
+					<input type="hidden" name="quiz[{CONTADOR}][id_atividade]" />
+					<input type="hidden" name="quiz[{CONTADOR}][acao]" value='IMPORTAR' />
+				</td>
+				<td>{QUIZ_NOME}</td>
+				<td><a class='lvs_quizlv_remover' style="cursor: pointer;">(remover)</a></td>
+			</tr>
+			<!-- END QUIZ_DISTANCIA -->
+			
+			<tr>
+				<td id="MSG_ZERO_QUIZ_DISTANCIA" style="text-align:center; {MSG_ZERO_QUIZ_DISTANCIA_DISPLAY}" colspan="2">
+					<strong>Nenhum quiz importado como atividade</strong>
+				</td>
+			</tr>
+			
+		</tbody>
+	</table>
+</fieldset>

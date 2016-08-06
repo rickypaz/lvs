@@ -1,0 +1,31 @@
+<form method="post" action="{ACTION}" name="formquiz">
+	<input type="hidden" value={CURSO} name="curso" />
+
+	<!-- BEGIN QUIZ_INPUT_HIDDEN -->	
+	<input type="hidden" name="quiz[{QUIZ_ID}][id]" value="{QUIZ_ID}" />
+	<!-- END QUIZ_INPUT_HIDDEN -->
+	
+	<table class="generaltable">
+		<thead>
+			<tr>
+				<th scope="col" style="text-align:center;" class="header c0">Quiz</th>
+				<th scope="col" style="text-align:center;" class="header c1">Tipo</th>
+			</tr>
+		</thead>
+		<tbody>
+			<!-- BEGIN QUIZ -->
+			<tr class="r0 lastrow">
+				<td style="text-align:center;" class="cell c0">{QUIZ_NOME}</td>
+				<td style="text-align:center;" class="cell c1">
+					<select name="quiz[{QUIZ_ID}][tipo]">
+						<option value="0" selected="selected">Selecionar...</option>
+						<!-- <option value="1">Distância</option> -->
+						<option value="2">Presencial</option>
+					</select>
+				</td>
+			</tr>
+			<!-- END QUIZ -->
+		</tbody>
+	</table>
+	<input type="submit" value="Gravar" />
+</form>

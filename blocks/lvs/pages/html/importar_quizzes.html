@@ -1,0 +1,65 @@
+<form method="post" action="#" name="formquiz">
+	<div id='lvs_quizzes'>
+		<fieldset>
+			<h1 style="text-align: center; font-size: 16px;">Quizzes</h1>
+			
+			<div id="controleQuizzes">
+				<input id="quantidadeQuizzes" type="hidden" value="{CONTADOR_QUIZZES}" />
+			</div>
+			
+			<table style="width: 100%" class="generaltable boxaligncenter">
+				<thead>
+					<tr>
+						<th scope="col" style="width: 70%; text-align:center;" class="header">Quiz</th>
+						<th scope="col" style="width: 15%; text-align:center;" class="header">Importar como...</th>
+						<th scope="col" style="width: 15%; text-align:center;" class="header">Ações</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- BEGIN QUIZ_NAO_IMPORTADO -->
+					<tr style="text-align:center;">
+						<td style='display: none'>
+						
+							<!--- NÃO ALTERAR ORDEM DOS INPUTS POR CAUSA DO JAVASCRIPT-->
+							
+							<input type="hidden" name="quiz[{CONTADOR}][contador]" value="{CONTADOR}" />
+							<input type="hidden" name="quiz[{CONTADOR}][id]" value="{ID}" />
+							<input type="hidden" name="quiz[{CONTADOR}][id_quiz]" value="{QUIZ_ID}" />
+							<input type="hidden" name="quiz[{CONTADOR}][id_curso]" value='{CURSO}' />
+							<input type="hidden" name="quiz[{CONTADOR}][distancia]" />
+							<input type="hidden" name="quiz[{CONTADOR}][nome]" value="{QUIZ_NOME}" />
+							<input type="hidden" name="quiz[{CONTADOR}][intro]" value="{QUIZ_INTRO}" />
+							<input type="hidden" name="quiz[{CONTADOR}][id_atividade]" />
+						</td>
+						<td>{QUIZ_NOME}</td>
+						<td>
+							<select>
+								<option value='0'>Selecionar...</option>
+								<option value='1'>Distância</option>
+								<option value='2'>Presencial</option>
+							</select>
+						</td>
+						<td><a class='lvs_quizlv_adicionar' style="cursor: pointer;">(importar)</a></td>
+					</tr>
+					<!-- END QUIZ_NAO_IMPORTADO -->
+					
+					<tr>
+						<td id="MSG_ZERO_QUIZ_DISPONIVEIS" style="text-align:center; {MSG_ZERO_QUIZ_DISPLAY}" colspan="3">
+							<strong>Nenhum quiz a importar</strong>
+						</td>
+					</tr>
+					
+				</tbody>
+			</table>
+		</fieldset>
+	</div>
+	<div id='lvs_quizzes_distancia'>
+		{ATIVIDADES_DISTANCIA}
+	</div>
+	<div id='lvs_quizzes_presencial'>
+		{ATIVIDADES_PRESENCIAIS}
+	</div>
+	<input name='voltar' type='button' value='Cancelar' onclick="location.href='{BASEURL}/course/view.php?id={CURSO}'" />
+	<input id='lvs_quizzes_submit' type='submit' value='Salvar' />
+</form>
+<hr>

@@ -1,0 +1,101 @@
+﻿<form id='lvs_config_curso' name='form1' target='_self' method='POST'
+	action='#'>
+	<input name='configcurso' type='hidden' value='configcurso'>
+
+	<table class="generaltable boxaligncenter">
+		<thead>
+			<tr>
+				<th scope="col" style="text-align: center;" class="header c0"></th>
+				<th scope="col" style="text-align: center;"
+					class="header c1 lastcol"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr class="r0">
+				<td style="text-align: center;" class="cell c0">Carga Horária
+					do Curso</td>
+				<td style="text-align: center;" class="cell c1 lastcol"><input
+					type="text" required="1" style="width: 50px;" value="{TOTAL_HORAS}"
+					name="cursolv[total_horas_curso]" id="lvs_horas_curso"{READONLY}></td>
+			</tr>
+			<tr class="r1">
+				<td style="text-align: center;" class="cell c0">Carga Horária
+					Mínima das Atividades Presenciais</td>
+				<td style="text-align: center;" class="cell c1 lastcol"><input
+					type="text" required="1" style="width: 50px;"
+					value="{TOTAL_HORAS_PRESENCIAIS}"
+					name="cursolv[total_horas_presenciais]" id="lvs_horas_presenciais"{READONLY}></td>
+			</tr>
+			<tr class="r0">
+				<td style="text-align: center;" class="cell c0">Média para
+					Aprovação no Curso ( ≥ )</td>
+				<td style="text-align: center;" class="cell c1 lastcol"><input
+					type="text" required="1" style="width: 40px;" value="{MEDIA}"
+					maxlength="3" name="cursolv[media_curso]" id="lvs_media_curso"{READONLY}></td>
+			</tr>
+			<tr class="r1">
+				<td style="text-align: center;" class="cell c0">Média Mínima
+					para Habilitar ao Exame Final</td>
+				<td style="text-align: center;" class="cell c1 lastcol"><input
+					type="text" required="1" style="width: 40px;" value="{MEDIA_AF}"
+					maxlength="3" name="cursolv[media_af]" id="lvs_media_af"{READONLY}></td>
+			</tr>
+			<tr class="r0">
+				<td style="text-align: center;" class="cell c0">Média Mínima
+					para Aprovação após Exame Final</td>
+				<td style="text-align: center;" class="cell c1 lastcol"><input
+					type="text" required="1" style="width: 40px;"
+					value="{MEDIA_APROV_AF}" maxlength="3"
+					name="cursolv[media_aprov_af]" id="lvs_media_aprov_af"{READONLY}></td>
+			</tr>
+			<tr class="r1">
+				<td style="text-align: center;" class="cell c0">Limite de
+					Faltas (%)</td>
+				<td style="text-align: center;" class="cell c1 lastcol"><input
+					type="text" required="1" style="width: 40px;"
+					value="{PERCENTUAL_FALTAS}" maxlength="3"
+					name="cursolv[percentual_faltas]" id="lvs_percentual_faltas"{READONLY}>%</td>
+			</tr>
+			<tr class="r0">
+				<td style="text-align: center;" class="cell c0">Data limite
+					para se digitar as notas</td>
+				<td style="text-align: center;" class="cell c1 lastcol"><input
+					type="text" required="1" value="{DATA_LIMITE}" maxlength="10"
+					name="cursolv[data_limite]" id="lvs_data_limite"{READONLY}></td>
+			</tr>
+			<tr class="r1">
+				<td style="text-align: center;" class="cell c0">Peso das
+					Atividades Presenciais</td>
+				<td style="text-align: center;" class="cell c1 lastcol"><input
+					type="text" required="1" style="width: 40px;"
+					value="{PORCENTAGEM_PRESENCIAL}"
+					name="cursolv[porcentagem_presencial]"
+					id="lvs_porcentagem_presencial"{READONLY}>%</td>
+			</tr>
+			<tr class="r0">
+				<td style="text-align: center;" class="cell c0">Peso das
+					Atividades a Distância</td>
+				<td style="text-align: center;" class="cell c1 lastcol"><input
+					type="text" required="1" readonly="readonly" style="width: 40px;"
+					value="{PORCENTAGEM_DISTANCIA}" maxlength="3"
+					name="cursolv[porcentagem_distancia]"
+					id="lvs_porcentagem_distancia"{READONLY}>%</td>
+			</tr>
+			<tr class="r1 lastrow">
+				<td style="text-align: center;" class="cell c0">Exibir
+					Resultado Final do Curso</td>
+				<td style="text-align: center;" class="cell c1 lastcol"><input
+					type="checkbox" name="cursolv[exibelv]" value="1"{EXIBIR_CHECKED} {DISABLED}></td>
+			</tr>
+		</tbody>
+	</table>
+
+	<br />
+
+	<!-- BEGIN GRAVAR -->
+	<input name='gravar' type='submit' value='Gravar'>
+	<!-- END GRAVAR -->
+
+	<input name='voltar' type='button' value='Voltar'
+		onclick='history.back();'>
+</form>

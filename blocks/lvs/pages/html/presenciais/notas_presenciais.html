@@ -1,0 +1,55 @@
+<br />
+{MENSAGEM_INICIAL}
+<br />
+
+<!-- BEGIN BEGIN_FORM -->
+<form name='form1' target='_self' method='POST' action='#'>
+	<input type="hidden" id='lvs_max_faltas' value="{MAX_FALTAS}" name="presencial[max_faltas]" />
+	<!-- END BEGIN_FORM -->
+
+	<table class="generaltable boxaligncenter width80">
+		<thead>
+			<tr>
+			<th scope="col" style="text-align:center;" class="header c0">  </th>
+			<th scope="col" style="text-align:center;" class="header c1">Nome</th>
+			<th scope="col" style="text-align:center;" class="header c2">Nota Presencial</th>
+			<th scope="col" style="text-align:center;" class="header c3">Nº de Ausências (Turnos)</th>
+			<th scope="col" style="text-align:center;" class="header c4 lastcol">2ª Chamada</th>
+			</tr>
+		</thead>
+		<tbody>
+			<!-- BEGIN ESTUDANTE -->
+			<tr class="r0">
+				<td style='display: none;' >
+					<input type="hidden" value="{AVALIACAO_ID}" name="atividade[{CONTADOR}][id]" />
+					<input type="hidden" value="{PRESENCIAL_ID}" name="atividade[{CONTADOR}][id_atividade]" />
+					<input type="hidden" value="{ESTUDANTE_ID}" name="atividade[{CONTADOR}][id_avaliado]" />
+				</td>
+				<td style="text-align:center;" class="cell c0">
+					{ESTUDANTE_FOTO}
+				</td>
+				<td style="text-align:center;" class="cell c1">{ESTUDANTE_NOME}</td>
+				<td style="text-align:center;" class="cell c2">Nota: 
+					<input type="text" style="width:50px" value="{ESTUDANTE_NOTA}" name="atividade[{CONTADOR}][nota]" class='nota' {READONLY} />
+				</td>
+				<td style="text-align:center;" class="cell c3">Turnos: 
+					<input type="text" style="width:50px" value="{ESTUDANTE_NUMERO_FALTAS}" name="atividade[{CONTADOR}][nr_faltas]" class='nrfaltas' {READONLY} />
+				</td>
+				<td style="text-align:center;" class="cell c4 lastcol">
+					<input type="checkbox" name="atividade[{CONTADOR}][faltou_prova]" value="1" disabled='disabled' style="width:50px" {CHECKED} />
+				</td>
+			</tr>
+			<!-- END ESTUDANTE -->
+		</tbody>
+	</table>
+
+	<!-- BEGIN GRAVAR -->
+	<br /> <br /> <input name='gravar' type='submit' value='Gravar'>
+	<!-- END GRAVAR -->
+
+	<input name='voltar' type='button' value='Voltar'
+		onclick='history.back();' />
+
+	<!-- BEGIN END_FORM -->
+</form>
+<!-- END END_FORM -->

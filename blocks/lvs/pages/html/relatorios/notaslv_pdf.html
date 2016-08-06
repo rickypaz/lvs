@@ -1,0 +1,137 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<link rel="stylesheet" href="{BASE_URL}/biblioteca/dompdf/css/table_pdf.css" type="text/css" />
+	</head>
+	<body class="page">
+		<table style="width: 100%" class="header">
+			<tr>
+				<td style="width: 50%; vertical-align: middle;">
+					<h1 style="text-align: left">Informa&ccedil;&otilde;es Do Curso</h1>
+				</td>
+			</tr>
+		</table>
+	
+		<table class="detail" style="margin: 0px; border-top: none;">
+			<tr>
+				<td class="label">Nome:</td>
+				<td class="field">{CURSO_NOME} ({CURSO_LEGENDA})</td>
+			</tr>
+			<tr>
+				<td class="label">Descri&ccedil;&atilde;o:</td>
+				<td class="field">{CURSO_DESCRICAO}</td>
+			</tr>
+		</table>
+		
+		 <table class="detail" style="margin: 0px; border-top: none;">
+			<tr>
+				<td class="label">Beta Médio:</td>
+				<td class="field">{BETA_MEDIO}</td>
+			</tr>
+		</table>
+
+		<table class="list" border="1"
+			style="width: 99%; margin-top: 1em; margin-bottom: 1em;">
+			<tr class="head">
+				<td class="center">Nome</td>
+				<td class="center" style="width: 4%;">NF</td>
+				<td class="center" style="width: 4%;">AAF</td>
+				<td class="center" style="width: 4%;">NT</td>
+				<td class="center" style="width: 4%;">AAT</td>
+				<td class="center" style="width: 4%;">NC</td>
+				<td class="center" style="width: 4%;">AAC</td>
+				<td class="center" style="width: 4%;">NW</td>
+				<td class="center" style="width: 4%;">AAW</td> 
+				<td class="center" style="width: 4%;">NQ</td>
+				<td class="center" style="width: 4%;">AAQ</td>
+				<td class="center" style="width: 4%;">ND</td>
+				<td class="center" style="width: 4%;">NP</td>
+				<td class="center" style="width: 4%;">AAP</td>
+				<td class="center" style="width: 4%;">M&eacute;dia</td>
+				<td class="center" style="width: 4%;">NTF (hA / %)</td>
+				<td class="center" style="width: 4%;">Beta</td>
+				<td class="center" style="width: 4%;">LV &Iacute;cone</td>
+				<td class="center" style="width: 4%;">PF</td>
+				<td class="center" style="width: 4%;">MF</td>
+				<td class="center" style="width: 8%;">Situa&ccedil;&atilde;o</td>
+			</tr>
+
+			<!-- BEGIN ALUNO -->
+			<tr class='{CLASS_ALUNO}'>
+				<td class="center" style="border: 1px solid">{ESTUDANTE_NOME}</td>
+
+				<!-- BEGIN ATIVIDADE_DISTANCIA -->
+				<td class="center" style="border: 1px solid">{NOTA_ATIVIDADE}</td>
+				<td class="center" style="border: 1px solid">{AUSENCIAS_ATIVIDADE}</td>
+				<!-- END ATIVIDADE_DISTANCIA -->
+
+				<td class="center" style="border: 1px solid">{NOTA_DISTANCIA}</td>
+
+				<!-- BEGIN ATIVIDADE_PRESENCIAL -->
+				<td class="center" style="border: 1px solid">{NOTA_ATIVIDADE}</td>
+				<td class="center" style="border: 1px solid">{AUSENCIAS_ATIVIDADE}</td>
+				<!-- END ATIVIDADE_PRESENCIAL -->
+
+				<td class="center" style="border: 1px solid">{MEDIA}</td>
+				<td class="center" style="border: 1px solid">{TOTAL_FALTAS}%</td>
+				<td class="center" style="border: 1px solid">{FATOR_BETA}</td>
+				<td class="center" style="border: 1px solid"><img style='height: 100%; width: 100%;'  src="{BASE_URL}/imgs/carinhas/{IMAGEM_LV_ICONE}" /></td>
+
+				<td class="center" style="border: 1px solid">
+					<!-- BEGIN AF --> 
+					<span>{NOTA_AF}</span> 
+					<!-- END AF -->
+
+					<!-- BEGIN AM --> - <!-- END AM -->
+				</td>
+				<td class="center" style="border: 1px solid">{MEDIA_FINAL}</td>
+				<td class="center" style="border: 1px solid">{SITUACAO}</td>
+			</tr>
+			<!-- END ALUNO -->
+		</table>
+
+		<hr>
+<div align="center">
+		<b style='font-size: 0.8em; font-style: italic;'>Legendas</b>
+
+	<br />
+
+	<table class="center">
+		<tr >
+			<td class='left' style='white-space: nowrap; font-size: 0.7em;'>
+				<b>- Notas</b> <br />
+					&nbsp;&nbsp;&nbsp;&nbsp; NF - Nota F&oacute;rumLV <br /> 
+					&nbsp;&nbsp;&nbsp;&nbsp; NT - Nota TarefaLV <br />
+					&nbsp;&nbsp;&nbsp;&nbsp; NC - Nota ChatLV <br />
+					&nbsp;&nbsp;&nbsp;&nbsp; NQ - Nota QuizLV <br />
+				    &nbsp;&nbsp;&nbsp;&nbsp; NW - Nota WikiLV <br />
+				    &nbsp;&nbsp;&nbsp;&nbsp; ND - Nota Dist&acirc;ncia <br />
+				    &nbsp;&nbsp;&nbsp;&nbsp; NP - Nota Presencial <br /><br /> 
+			    <b>- M&eacute;dia - ND + NP</b><br /> 
+			    <b>- PF - Prova Final</b><br /> 
+			    <b>- MF - M&eacute;dia Final</b><br />
+				<b>- CH - Carga Hor&aacute;ria do Curso</b> <br /> 
+				<b>- NTF - N&uacute;mero Total de Faltas</b> <br /> 
+			</td>
+			<td class='left' style='white-space: nowrap; font-size: 0.7em;'>
+				<b>- Aus&ecirc;ncias</b> <br />
+					&nbsp;&nbsp;&nbsp;&nbsp; AAP - Aus&ecirc;ncia Atividade Presencial <br />
+					&nbsp;&nbsp;&nbsp;&nbsp; AAF - Aus&ecirc;ncia Atividade F&oacute;rum <br />
+					&nbsp;&nbsp;&nbsp;&nbsp; AAC - Aus&ecirc;ncia Atividade Quiz <br />
+					&nbsp;&nbsp;&nbsp;&nbsp; AAT - Aus&ecirc;ncia Atividade Tarefa <br />
+					&nbsp;&nbsp;&nbsp;&nbsp; AAW - Aus&ecirc;ncia Atividade Wiki <br /><br />
+				<b>- Situa&ccedil;&atilde;o</b> <br />
+						&nbsp;&nbsp;&nbsp;&nbsp; C - Cursando <br />
+						&nbsp;&nbsp;&nbsp;&nbsp; AM - Aprovado por M&eacute;dia (M&eacute;dia &gt;= {MEDIA_CURSO}) <br />
+						&nbsp;&nbsp;&nbsp;&nbsp; AMF - Aprovado por M&eacute;dia Final (M&eacute;dia Final &gt;= {MEDIA_APROVACAO_AF_CURSO}) <br />
+						&nbsp;&nbsp;&nbsp;&nbsp; AF - Aluno na Final ( {MEDIA_AF_CURSO} &lt;= M&eacute;dia &lt; {MEDIA_CURSO}) <br />
+						&nbsp;&nbsp;&nbsp;&nbsp; R - Reprovado por M&eacute;dia (M&eacute;dia &lt; {MEDIA_AF_CURSO}) <br />
+						&nbsp;&nbsp;&nbsp;&nbsp; RMF - Reprovado por M&eacute;dia Final (M&eacute;dia Final &lt; {MEDIA_APROVACAO_AF_CURSO}) <br />
+						&nbsp;&nbsp;&nbsp;&nbsp; RF - Reprovado por faltas (NTF &gt; {PERCENTUAL_FALTAS_CURSO} % CH) <br />
+						&nbsp;&nbsp;&nbsp;&nbsp; SC - Segunda Chamada (Falta em Atividade Presencial) <br />
+			</td>
+			<td class='center' ><img style='height: 30%; width: 30%;' src='{BASE_URL}/imgs/tabelabeta.png' alt='' /></td>
+	</table>
+	</div>
+	</body>
+</html>

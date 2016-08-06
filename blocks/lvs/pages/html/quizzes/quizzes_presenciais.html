@@ -1,0 +1,66 @@
+<fieldset>
+	<h1 style="text-align: center; font-size: 16px;">Quizzes Presenciais</h1>
+	
+	<div id="controlePresencial">
+		<input id="quantidadePresencial" type="hidden" value="{CONTADOR_PRESENCIAL}" />
+	</div>
+
+	<table id="lvs_quizzes_presenciais" style="width: 100%" class="generaltable boxaligncenter">
+		<tr id='lvs_metadata_importados'>
+			<th scope="col" style="text-align:center;" class="header">Quizzes/Atividades Presenciais</th>
+			<th scope="col" style="text-align:center;" class="header">Porcentagem (%)</th>
+			<th scope="col" style="text-align:center;" class="header">Nº de Turnos</th>
+			<th scope="col" style="text-align:center;" class="header">Ações</th>
+		</tr>
+
+		<!-- BEGIN PRESENCIAL -->
+		<tr style="text-align:center;">
+			<td style='display: none;'>
+				<input type='hidden' name='presencial[{CONTADOR}][id]' value='{PRESENCIAL_ID}' />
+			</td>
+			<td>{PRESENCIAL_NOME}</td>
+			<td>
+				<input type='text' name='presencial[{CONTADOR}][porcentagem]' value='{PRESENCIAL_PORCENTAGEM}' class='lvs_porcentagem'/>
+			</td>
+			<td>
+				<input type='text' value='{PRESENCIAL_MAX_FALTAS}' readonly="readonly" />
+			</td>
+			<td></td>
+		</tr>
+		<!-- END PRESENCIAL -->
+
+		<!-- BEGIN QUIZ_PRESENCIAL -->
+		<tr style="text-align:center;">
+			<td style='display: none;'><!--- NÃO ALTERAR ORDEM DOS INPUTS POR CAUSA DO JAVASCRIPT-->
+			<input type="hidden" name="quiz[{CONTADOR}][contador]" value="{CONTADOR}" />
+			<input type="hidden" name="quiz[{CONTADOR}][id]" value="{QUIZLV_ID}" />
+			<input type="hidden" name="quiz[{CONTADOR}][id_quiz]" value="{QUIZ_ID}" />
+			<input type="hidden" name="quiz[{CONTADOR}][id_curso]" value='{CURSO}' />
+			<input type="hidden" name="quiz[{CONTADOR}][distancia]" value='0' />
+			<input type="hidden" name="quiz[{CONTADOR}][presencial][nome]" value="{QUIZ_NOME}" />
+			<input type="hidden" name="quiz[{CONTADOR}][presencial][descricao]" value="{QUIZ_DESCRICAO}" />
+			<input type="hidden" name="quiz[{CONTADOR}][id_atividade]" value="{QUIZ_ATIVIDADE}" />
+			<input type="hidden" name="quiz[{CONTADOR}][acao]" value="IMPORTAR" />
+			</td>
+			<td>{QUIZ_NOME}</td>
+			<td>
+			<input type='text' name='quiz[{CONTADOR}][presencial][porcentagem]' value='{QUIZ_PORCENTAGEM}' class='lvs_porcentagem' />
+			</td>
+			<td>
+			<input type='text' name='quiz[{CONTADOR}][presencial][max_faltas]' value='{QUIZ_MAX_FALTAS}' class='lvs_max_faltas' />
+			</td>
+			<td><a class='lvs_quizlv_remover' style="cursor: pointer;">(remover)</a></td>
+		</tr>
+		<!-- END QUIZ_PRESENCIAL -->
+		
+		<tr>
+			<td id="MSG_ZERO_QUIZ_PRESENCIAIS" style="text-align:center; {MSG_ZERO_QUIZ_PRESENCIAL_DISPLAY}" colspan="4">
+				<strong>Nenhum quiz presencial importado</strong>
+			</td>
+		</tr>
+
+		<tr>
+			<td class="header" colspan="6"><span style='float: left'>Soma das Porcentagens: </span><span id="lvs_soma_porcentagens"> {SOMA_PORCENTAGENS}</span></td>
+		</tr>
+	</table>
+</fieldset>

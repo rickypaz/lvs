@@ -1,0 +1,59 @@
+<form id='lvs_config_presencial' name='form1' target='_self' method='POST' action='#'>
+	<input id='lvs_curso_id' type='hidden' value={COURSE_ID}> 
+	<input id='lvs_numero_atividades' name='numero_atividades' type='hidden' value={NUMERO_ATIVIDADES}>
+
+	<!-- BEGIN ATIVIDADES -->
+
+		<!-- BEGIN ATIVIDADE_ID -->
+		<input id='{ID_ATIVIDADE}' name='{NAME_ATIVIDADE}' type='hidden' value={VALUE_ATIVIDADE}>
+		<!-- END ATIVIDADE_ID -->
+	
+		<table class="boxaligncenter generaltable width80">
+			<thead>
+				<tr>
+					<th scope="col" style="text-align:center;" class="header c0">Nome</th>
+					<th scope="col" style="text-align:center;" class="header c1">Descrição</th>
+					<th scope="col" style="text-align:center;" class="header c2">%</th>
+					<th scope="col" style="text-align:center;" class="header c3">Nº de Turnos</th>
+		
+					<!-- BEGIN COLUNA_ACOES -->			
+					<th scope="col" style="text-align:center;" class="header c4 lastcol">Ações</th>
+					<!-- END COLUNA_ACOES -->
+				</tr>
+			</thead>
+			<tbody>
+				<!-- BEGIN ATIVIDADE -->
+				<tr class="r0">
+					<td style="text-align:center;" class="cell c0">{ATIVIDADE_NOME}</td>
+					<td style="text-align:center;" class="cell c1">{ATIVIDADE_DESCRICAO}</td>
+					<td style="text-align:center;" class="cell c2"><input type="text" style="width:40px" value="{ATIVIDADE_PORCENTAGEM}" name="{ATIVIDADE_PORCENTAGEM_NAME}" id="{ATIVIDADE_PORCENTAGEM_ID}" {READONLY}>%<br></td>
+					<td style="text-align:center;" class="cell c3"><input type="text" style="width:40px" value="{ATIVIDADE_MAX_FALTAS}" name="{ATIVIDADE_MAX_FALTAS_NAME}" id="{ATIVIDADE_MAX_FALTAS_ID}" {READONLY}><br></td>
+					
+					<!-- BEGIN ACOES -->
+					<td style="text-align:center;" class="cell c4 lastcol">
+						<span class="commands">
+							<a href="config_atividade.php?curso={COURSE_ID}&amp;acao=e&amp;id={VALUE_ATIVIDADE}" title="Atualizar" class="editing_update"><img alt="Atualizar" class="iconsmall" src="{WWWROOT}/theme/image.php?theme=standard&amp;image=%2Ft%2Fedit&amp;rev=309"></a>
+							<a onclick="return confirm('Deseja realmente excluir essa atividade ?');" href="config_atividade.php?curso={COURSE_ID}&amp;acao=d&amp;id={VALUE_ATIVIDADE}&amp;porc={ATIVIDADE_PORCENTAGEM}"> <img alt="Excluir" class="iconsmall" src="{WWWROOT}/theme/image.php?theme=standard&amp;image=%2Ft%2Fdelete&amp;rev=309"></a>
+						</span>
+					</td>
+					<!-- END ACOES -->
+				</tr>
+				<!-- END ATIVIDADE -->
+			</tbody>
+		</table> 
+		
+		<!-- BEGIN GRAVAR -->
+		<input type='submit' name='Salvar' style='float: right; margin-right: 500px;' value='Salvar' /> <br /> <br />
+		<input name='novaatividade' id='addativ' type='button' value='Adicionar Novas Atividades' />
+		<!-- END GRAVAR -->
+		
+	<!-- END ATIVIDADES -->
+
+	<!-- BEGIN NENHUMA_ATIVIDADE -->
+		Nenhuma atividade presencial para esse curso. <br /> <br /> 
+		<input id='addativ' name='novaatividade' type='button' value='Adicionar Atividades' />
+	<!-- END NENHUMA_ATIVIDADE -->
+
+	&nbsp; <input id='lvs_voltar' name='voltar' type='button'
+		value='Voltar' />
+</form>

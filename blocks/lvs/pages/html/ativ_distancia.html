@@ -1,0 +1,25 @@
+<!-- BEGIN NENHUMA_ATIVIDADE -->
+<p>Nenhuma atividade a dist&acirc;ncia para este curso.</p>
+<!-- END NENHUMA_ATIVIDADE -->
+
+<form id='lvs_config_distancia' name='form1' target='_self'
+	method='POST' action='#'>
+	<input id='lvs_curso_id' type='hidden' value={COURSE_ID} /> 
+	<input id='lvs_numero_foruns' name='numero_foruns' type='hidden' value={NUMERO_FORUNS} /> 
+	<input id='lvs_numero_chats' name='numero_chats' type='hidden' value={NUMERO_CHATS} /> 
+	<input id='lvs_numero_tarefas' name='numero_tarefas' type='hidden' value={NUMERO_TAREFAS} /> 
+	<input id='lvs_numero_wikis' name='numero_wikis' type='hidden' value={NUMERO_WIKIS} />
+
+	<!-- BEGIN ATIVIDADE -->
+	<input type='hidden' id='{ID_ATIVIDADE}' name='{NAME_ATIVIDADE}' value={VALUE_ATIVIDADE} />
+	<!-- END ATIVIDADE -->
+
+	{TABLE_ATIVIDADES}
+
+	<!-- BEGIN MODO_EDICAO -->
+	<input name='Salvar' style="float: right; margin-right: 500px"
+		type='submit' value='Salvar' />
+	<!-- END MODO_EDICAO -->
+
+	&nbsp <input id='lvs_voltar' name='voltar' type='button' value='Voltar' />
+</form>
