@@ -30,7 +30,6 @@ class block_lvs extends block_list {
 		$template = $this->init_template();
 
 		$this->page->requires->js('/blocks/lvs/js/module.js');
-		$this->content->items[]= $template;
 
 		return $this->content;
 	}
