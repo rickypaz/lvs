@@ -18,7 +18,7 @@
 /**
  * Edit and save a new post to a discussion
  *
- * @package mod-forumlv
+ * @package   mod_forumlv
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -53,7 +53,7 @@ $sitecontext = context_system::instance();
 
 if (!isloggedin() or isguestuser()) {
 
-    if (!isloggedin() and !get_referer()) {
+    if (!isloggedin() and !get_local_referer()) {
         // No referer+not logged in - probably coming in via email  See MDL-9052
         require_login();
     }
@@ -87,9 +87,10 @@ if (!isloggedin() or isguestuser()) {
     $PAGE->set_context($modcontext);
     $PAGE->set_title($course->shortname);
     $PAGE->set_heading($course->fullname);
+    $referer = get_local_referer(false);
 
     echo $OUTPUT->header();
-    echo $OUTPUT->confirm(get_string('noguestpost', 'forumlv').'<br /><br />'.get_string('liketologin'), get_login_url(), get_referer(false));
+    echo $OUTPUT->confirm(get_string('noguestpost', 'forumlv').'<br /><br />'.get_string('liketologin'), get_login_url(), $referer);
     echo $OUTPUT->footer();
     exit;
 }
@@ -107,6 +108,8 @@ if (!empty($forumlv)) {      // User is starting a new discussion in a forumlv
         print_error("invalidcoursemodule");
     }
 
+    // Retrieve the contexts.
+    $modcontext    = context_module::instance($cm->id);
     $coursecontext = context_course::instance($course->id);
 
     if (! forumlv_user_can_post_discussion($forumlv, $groupid, -1, $cm)) {
@@ -114,24 +117,21 @@ if (!empty($forumlv)) {      // User is starting a new discussion in a forumlv
             if (!is_enrolled($coursecontext)) {
                 if (enrol_selfenrol_available($course->id)) {
                     $SESSION->wantsurl = qualified_me();
-                    $SESSION->enrolcancel = $_SERVER['HTTP_REFERER'];
-                    redirect($CFG->wwwroot.'/enrol/index.php?id='.$course->id, get_string('youneedtoenrol'));
+                    $SESSION->enrolcancel = get_local_referer(false);
+                    redirect(new moodle_url('/enrol/index.php', array('id' => $course->id,
+                        'returnurl' => '/mod/forumlv/view.php?f=' . $forumlv->id)),
+                        get_string('youneedtoenrol'));
                 }
             }
         }
         print_error('nopostforumlv', 'forumlv');
     }
 
-    if (!$cm->visible and !has_capability('moodle/course:viewhiddenactivities', $coursecontext)) {
+    if (!$cm->visible and !has_capability('moodle/course:viewhiddenactivities', $modcontext)) {
         print_error("activityiscurrentlyhidden");
     }
 
-    if (isset($_SERVER["HTTP_REFERER"])) {
-        $SESSION->fromurl = $_SERVER["HTTP_REFERER"];
-    } else {
-        $SESSION->fromurl = '';
-    }
-
+    $SESSION->fromurl = get_local_referer(false);
 
     // Load up the $post variable.
 
@@ -152,7 +152,8 @@ if (!empty($forumlv)) {      // User is starting a new discussion in a forumlv
         $post->groupid = groups_get_activity_group($cm);
     }
 
-    forumlv_set_return();
+    // Unsetting this will allow the correct return URL to be calculated later.
+    unset($SESSION->fromdiscussion);
 
 } else if (!empty($reply)) {      // User is writing a new reply
 
@@ -175,15 +176,18 @@ if (!empty($forumlv)) {      // User is starting a new discussion in a forumlv
     // Ensure lang, theme, etc. is set up properly. MDL-6926
     $PAGE->set_cm($cm, $course, $forumlv);
 
-    $coursecontext = context_course::instance($course->id);
+    // Retrieve the contexts.
     $modcontext    = context_module::instance($cm->id);
+    $coursecontext = context_course::instance($course->id);
 
     if (! forumlv_user_can_post($forumlv, $discussion, $USER, $cm, $course, $modcontext)) {
         if (!isguestuser()) {
             if (!is_enrolled($coursecontext)) {  // User is a guest here!
                 $SESSION->wantsurl = qualified_me();
-                $SESSION->enrolcancel = $_SERVER['HTTP_REFERER'];
-                redirect($CFG->wwwroot.'/enrol/index.php?id='.$course->id, get_string('youneedtoenrol'));
+                $SESSION->enrolcancel = get_local_referer(false);
+                redirect(new moodle_url('/enrol/index.php', array('id' => $course->id,
+                    'returnurl' => '/mod/forumlv/view.php?f=' . $forumlv->id)),
+                    get_string('youneedtoenrol'));
             }
         }
         print_error('nopostforumlv', 'forumlv');
@@ -205,7 +209,7 @@ if (!empty($forumlv)) {      // User is starting a new discussion in a forumlv
         }
     }
 
-    if (!$cm->visible and !has_capability('moodle/course:viewhiddenactivities', $coursecontext)) {
+    if (!$cm->visible and !has_capability('moodle/course:viewhiddenactivities', $modcontext)) {
         print_error("activityiscurrentlyhidden");
     }
 
@@ -227,6 +231,7 @@ if (!empty($forumlv)) {      // User is starting a new discussion in a forumlv
         $post->subject = $strre.' '.$post->subject;
     }
 
+    // Unsetting this will allow the correct return URL to be calculated later.
     unset($SESSION->fromdiscussion);
 
 } else if (!empty($edit)) {  // User is editing their own post
@@ -277,8 +282,8 @@ if (!empty($forumlv)) {      // User is starting a new discussion in a forumlv
 
     $post = trusttext_pre_edit($post, 'message', $modcontext);
 
+    // Unsetting this will allow the correct return URL to be calculated later.
     unset($SESSION->fromdiscussion);
-
 
 }else if (!empty($delete)) {  // User is deleting a post
 
@@ -314,27 +319,36 @@ if (!empty($forumlv)) {      // User is starting a new discussion in a forumlv
         $timepassed = time() - $post->created;
         if (($timepassed > $CFG->maxeditingtime) && !has_capability('mod/forumlv:deleteanypost', $modcontext)) {
             print_error("cannotdeletepost", "forumlv",
-                      forumlv_go_back_to("discuss.php?d=$post->discussion"));
+                        forumlv_go_back_to(new moodle_url("/mod/forumlv/discuss.php", array('d' => $post->discussion))));
         }
 
         if ($post->totalscore) {
             notice(get_string('couldnotdeleteratings', 'rating'),
-                    forumlv_go_back_to("discuss.php?d=$post->discussion"));
+                   forumlv_go_back_to(new moodle_url("/mod/forumlv/discuss.php", array('d' => $post->discussion))));
 
         } else if ($replycount && !has_capability('mod/forumlv:deleteanypost', $modcontext)) {
             print_error("couldnotdeletereplies", "forumlv",
-                    forumlv_go_back_to("discuss.php?d=$post->discussion"));
+                        forumlv_go_back_to(new moodle_url("/mod/forumlv/discuss.php", array('d' => $post->discussion))));
 
         } else {
             if (! $post->parent) {  // post is a discussion topic as well, so delete discussion
                 if ($forumlv->type == 'single') {
                     notice("Sorry, but you are not allowed to delete that discussion!",
-                            forumlv_go_back_to("discuss.php?d=$post->discussion"));
+                           forumlv_go_back_to(new moodle_url("/mod/forumlv/discuss.php", array('d' => $post->discussion))));
                 }
                 forumlv_delete_discussion($discussion, false, $course, $cm, $forumlv);
 
-                add_to_log($discussion->course, "forumlv", "delete discussion",
-                           "view.php?id=$cm->id", "$forumlv->id", $cm->id);
+                $params = array(
+                    'objectid' => $discussion->id,
+                    'context' => $modcontext,
+                    'other' => array(
+                        'forumlvid' => $forumlv->id,
+                    )
+                );
+
+                $event = \mod_forumlv\event\discussion_deleted::create($params);
+                $event->add_record_snapshot('forumlv_discussions', $discussion);
+                $event->trigger();
 
                 redirect("view.php?f=$discussion->forumlv");
 
@@ -345,12 +359,10 @@ if (!empty($forumlv)) {      // User is starting a new discussion in a forumlv
                     // Single discussion forumlvs are an exception. We show
                     // the forumlv itself since it only has one discussion
                     // thread.
-                    $discussionurl = "view.php?f=$forumlv->id";
+                    $discussionurl = new moodle_url("/mod/forumlv/view.php", array('f' => $forumlv->id));
                 } else {
-                    $discussionurl = "discuss.php?d=$post->discussion";
+                    $discussionurl = new moodle_url("/mod/forumlv/discuss.php", array('d' => $discussion->id));
                 }
-
-                add_to_log($discussion->course, "forumlv", "delete post", $discussionurl, "$post->id", $cm->id);
 
                 redirect(forumlv_go_back_to($discussionurl));
             } else {
@@ -369,9 +381,10 @@ if (!empty($forumlv)) {      // User is starting a new discussion in a forumlv
         if ($replycount) {
             if (!has_capability('mod/forumlv:deleteanypost', $modcontext)) {
                 print_error("couldnotdeletereplies", "forumlv",
-                      forumlv_go_back_to("discuss.php?d=$post->discussion"));
+                      forumlv_go_back_to(new moodle_url('/mod/forumlv/discuss.php', array('d' => $post->discussion), 'p'.$post->id)));
             }
             echo $OUTPUT->header();
+            echo $OUTPUT->heading(format_string($forumlv->name), 2);
             echo $OUTPUT->confirm(get_string("deletesureplural", "forumlv", $replycount+1),
                          "post.php?delete=$delete&confirm=$delete",
                          $CFG->wwwroot.'/mod/forumlv/discuss.php?d='.$post->discussion.'#p'.$post->id);
@@ -385,6 +398,7 @@ if (!empty($forumlv)) {      // User is starting a new discussion in a forumlv
             }
         } else {
             echo $OUTPUT->header();
+            echo $OUTPUT->heading(format_string($forumlv->name), 2);
             echo $OUTPUT->confirm(get_string("deletesure", "forumlv", $replycount),
                          "post.php?delete=$delete&confirm=$delete",
                          $CFG->wwwroot.'/mod/forumlv/discuss.php?d='.$post->discussion.'#p'.$post->id);
@@ -422,8 +436,16 @@ if (!empty($forumlv)) {      // User is starting a new discussion in a forumlv
         print_error('cannotsplit', 'forumlv');
     }
 
-    if (!empty($name) && confirm_sesskey()) {    // User has confirmed the prune
+    $PAGE->set_cm($cm);
+    $PAGE->set_context($modcontext);
 
+    $prunemform = new mod_forumlv_prune_form(null, array('prune' => $prune, 'confirm' => $prune));
+
+
+    if ($prunemform->is_cancelled()) {
+        redirect(forumlv_go_back_to(new moodle_url("/mod/forumlv/discuss.php", array('d' => $post->discussion))));
+    } else if ($fromform = $prunemform->get_data()) {
+        // User submits the data.
         $newdiscussion = new stdClass();
         $newdiscussion->course       = $discussion->course;
         $newdiscussion->forumlv        = $discussion->forumlv;
@@ -447,34 +469,62 @@ if (!empty($forumlv)) {      // User is starting a new discussion in a forumlv
 
         forumlv_change_discussionid($post->id, $newid);
 
-        // update last post in each discussion
+        // Update last post in each discussion.
         forumlv_discussion_update_last_post($discussion->id);
         forumlv_discussion_update_last_post($newid);
 
-        add_to_log($discussion->course, "forumlv", "prune post",
-                       "discuss.php?d=$newid", "$post->id", $cm->id);
+        // Fire events to reflect the split..
+        $params = array(
+            'context' => $modcontext,
+            'objectid' => $discussion->id,
+            'other' => array(
+                'forumlvid' => $forumlv->id,
+            )
+        );
+        $event = \mod_forumlv\event\discussion_updated::create($params);
+        $event->trigger();
 
-        redirect(forumlv_go_back_to("discuss.php?d=$newid"));
+        $params = array(
+            'context' => $modcontext,
+            'objectid' => $newid,
+            'other' => array(
+                'forumlvid' => $forumlv->id,
+            )
+        );
+        $event = \mod_forumlv\event\discussion_created::create($params);
+        $event->trigger();
 
-    } else { // User just asked to prune something
+        $params = array(
+            'context' => $modcontext,
+            'objectid' => $post->id,
+            'other' => array(
+                'discussionid' => $newid,
+                'forumlvid' => $forumlv->id,
+                'forumlvtype' => $forumlv->type,
+            )
+        );
+        $event = \mod_forumlv\event\post_updated::create($params);
+        $event->add_record_snapshot('forumlv_discussions', $discussion);
+        $event->trigger();
 
+        redirect(forumlv_go_back_to(new moodle_url("/mod/forumlv/discuss.php", array('d' => $newid))));
+
+    } else {
+        // Display the prune form.
         $course = $DB->get_record('course', array('id' => $forumlv->course));
-
-        $PAGE->set_cm($cm);
-        $PAGE->set_context($modcontext);
         $PAGE->navbar->add(format_string($post->subject, true), new moodle_url('/mod/forumlv/discuss.php', array('d'=>$discussion->id)));
         $PAGE->navbar->add(get_string("prune", "forumlv"));
         $PAGE->set_title(format_string($discussion->name).": ".format_string($post->subject));
         $PAGE->set_heading($course->fullname);
         echo $OUTPUT->header();
-        echo $OUTPUT->heading(get_string('pruneheading', 'forumlv'));
-        echo '<center>';
+        echo $OUTPUT->heading(format_string($forumlv->name), 2);
+        echo $OUTPUT->heading(get_string('pruneheading', 'forumlv'), 3);
 
-        include('prune.html');
+        $prunemform->display();
 
         forumlv_print_post($post, $discussion, $forumlv, $cm, $course, false, false, false);
-        echo '</center>';
     }
+
     echo $OUTPUT->footer();
     die;
 } else {
@@ -505,8 +555,6 @@ if (!isset($forumlv->maxattachments)) {  // TODO - delete this once we add a fie
     $forumlv->maxattachments = 3;
 }
 
-require_once('post_form.php');
-
 $thresholdwarning = forumlv_check_throttling($forumlv, $cm);
 $mform_post = new mod_forumlv_post_form('post.php', array('course' => $course,
                                                         'cm' => $cm,
@@ -514,6 +562,8 @@ $mform_post = new mod_forumlv_post_form('post.php', array('course' => $course,
                                                         'modcontext' => $modcontext,
                                                         'forumlv' => $forumlv,
                                                         'post' => $post,
+                                                        'subscribe' => \mod_forumlv\subscriptions::is_subscribed($USER->id, $forumlv,
+                                                                null, $cm),
                                                         'thresholdwarning' => $thresholdwarning,
                                                         'edit' => $edit), 'post', '', array('id' => 'mformforumlv'));
 
@@ -548,19 +598,30 @@ if (!empty($parent)) {
     }
 }
 
-if (forumlv_is_subscribed($USER->id, $forumlv->id)) {
-    $subscribe = true;
+$postid = empty($post->id) ? null : $post->id;
+$draftid_editor = file_get_submitted_draft_itemid('message');
+$currenttext = file_prepare_draft_area($draftid_editor, $modcontext->id, 'mod_forumlv', 'post', $postid, mod_forumlv_post_form::editor_options($modcontext, $postid), $post->message);
 
-} else if (forumlv_user_has_posted($forumlv->id, 0, $USER->id)) {
-    $subscribe = false;
-
+$manageactivities = has_capability('moodle/course:manageactivities', $coursecontext);
+if (\mod_forumlv\subscriptions::subscription_disabled($forumlv) && !$manageactivities) {
+    // User does not have permission to subscribe to this discussion at all.
+    $discussionsubscribe = false;
+} else if (\mod_forumlv\subscriptions::is_forcesubscribed($forumlv)) {
+    // User does not have permission to unsubscribe from this discussion at all.
+    $discussionsubscribe = true;
 } else {
-    // user not posted yet - use subscription default specified in profile
-    $subscribe = !empty($USER->autosubscribe);
+    if (isset($discussion) && \mod_forumlv\subscriptions::is_subscribed($USER->id, $forumlv, $discussion->id, $cm)) {
+        // User is subscribed to the discussion - continue the subscription.
+        $discussionsubscribe = true;
+    } else if (!isset($discussion) && \mod_forumlv\subscriptions::is_subscribed($USER->id, $forumlv, null, $cm)) {
+        // Starting a new discussion, and the user is subscribed to the forumlv - subscribe to the discussion.
+        $discussionsubscribe = true;
+    } else {
+        // User is not subscribed to either forumlv or discussion. Follow user preference.
+        $discussionsubscribe = $USER->autosubscribe;
+    }
 }
 
-$draftid_editor = file_get_submitted_draft_itemid('message');
-$currenttext = file_prepare_draft_area($draftid_editor, $modcontext->id, 'mod_forumlv', 'post', empty($post->id) ? null : $post->id, mod_forumlv_post_form::editor_options(), $post->message);
 $mform_post->set_data(array(        'attachments'=>$draftitemid,
                                     'general'=>$heading,
                                     'subject'=>$post->subject,
@@ -569,7 +630,7 @@ $mform_post->set_data(array(        'attachments'=>$draftitemid,
                                         'format'=>empty($post->messageformat) ? editors_get_preferred_format() : $post->messageformat,
                                         'itemid'=>$draftid_editor
                                     ),
-                                    'subscribe'=>$subscribe?1:0,
+                                    'discussionsubscribe' => $discussionsubscribe,
                                     'mailnow'=>!empty($post->mailnow),
                                     'userid'=>$post->userid,
                                     'parent'=>$post->parent,
@@ -589,6 +650,10 @@ $mform_post->set_data(array(        'attachments'=>$draftitemid,
                                     'timeend'=>$discussion->timeend):
                                 array())+
 
+                            (isset($discussion->pinned) ? array(
+                                     'pinned' => $discussion->pinned) :
+                                array()) +
+
                             (isset($post->groupid)?array(
                                     'groupid'=>$post->groupid):
                                 array())+
@@ -597,7 +662,14 @@ $mform_post->set_data(array(        'attachments'=>$draftitemid,
                                     array('discussion'=>$discussion->id):
                                     array()));
 
-if ($fromform = $mform_post->get_data()) {
+if ($mform_post->is_cancelled()) {
+    if (!isset($discussion->id) || $forumlv->type === 'qanda') {
+        // Q and A forumlvs don't have a discussion page, so treat them like a new thread..
+        redirect(new moodle_url('/mod/forumlv/view.php', array('f' => $forumlv->id)));
+    } else {
+        redirect(new moodle_url('/mod/forumlv/discuss.php', array('d' => $discussion->id)));
+    }
+} else if ($fromform = $mform_post->get_data()) {
 
     if (empty($SESSION->fromurl)) {
         $errordestination = "$CFG->wwwroot/mod/forumlv/view.php?f=$forumlv->id";
@@ -610,8 +682,6 @@ if ($fromform = $mform_post->get_data()) {
     $fromform->message       = $fromform->message['text'];
     // WARNING: the $fromform->message array has been overwritten, do not use it anymore!
     $fromform->messagetrust  = trusttext_trusted($modcontext);
-
-    $contextcheck = isset($fromform->groupinfo) && has_capability('mod/forumlv:movediscussions', $modcontext);
 
     if ($fromform->edit) {           // Updating a post
         unset($fromform->groupid);
@@ -636,13 +706,27 @@ if ($fromform = $mform_post->get_data()) {
         }
 
         // If the user has access to all groups and they are changing the group, then update the post.
-        if ($contextcheck) {
+        if (isset($fromform->groupinfo) && has_capability('mod/forumlv:movediscussions', $modcontext)) {
             if (empty($fromform->groupinfo)) {
                 $fromform->groupinfo = -1;
             }
+
+            if (!forumlv_user_can_post_discussion($forumlv, $fromform->groupinfo, null, $cm, $modcontext)) {
+                print_error('cannotupdatepost', 'forumlv');
+            }
+
             $DB->set_field('forumlv_discussions' ,'groupid' , $fromform->groupinfo, array('firstpost' => $fromform->id));
         }
-
+        // When editing first post/discussion.
+        if (!$fromform->parent) {
+            if (has_capability('mod/forumlv:pindiscussions', $modcontext)) {
+                // Can change pinned if we have capability.
+                $fromform->pinned = !empty($fromform->pinned) ? FORUMLV_DISCUSSION_PINNED : FORUMLV_DISCUSSION_UNPINNED;
+            } else {
+                // We don't have the capability to change so keep to previous value.
+                unset($fromform->pinned);
+            }
+        }
         $updatepost = $fromform; //realpost
         $updatepost->forumlv = $forumlv->id;
         if (!forumlv_update_post($updatepost, $mform_post, $message)) {
@@ -656,11 +740,6 @@ if ($fromform = $mform_post->get_data()) {
             $DB->update_record("forumlv", $forumlv);
         }
 
-        $timemessage = 2;
-        if (!empty($message)) { // if we're printing stuff about the file upload
-            $timemessage = 4;
-        }
-
         if ($realpost->userid == $USER->id) {
             $message .= '<br />'.get_string("postupdated", "forumlv");
         } else {
@@ -668,24 +747,40 @@ if ($fromform = $mform_post->get_data()) {
             $message .= '<br />'.get_string("editedpostupdated", "forumlv", fullname($realuser));
         }
 
-        if ($subscribemessage = forumlv_post_subscription($fromform, $forumlv)) {
-            $timemessage = 4;
-        }
+        $subscribemessage = forumlv_post_subscription($fromform, $forumlv, $discussion);
         if ($forumlv->type == 'single') {
             // Single discussion forumlvs are an exception. We show
             // the forumlv itself since it only has one discussion
             // thread.
-            $discussionurl = "view.php?f=$forumlv->id";
+            $discussionurl = new moodle_url("/mod/forumlv/view.php", array('f' => $forumlv->id));
         } else {
-            $discussionurl = "discuss.php?d=$discussion->id#p$fromform->id";
+            $discussionurl = new moodle_url("/mod/forumlv/discuss.php", array('d' => $discussion->id), 'p' . $fromform->id);
         }
-        add_to_log($course->id, "forumlv", "update post",
-                "$discussionurl&amp;parent=$fromform->id", "$fromform->id", $cm->id);
 
-        redirect(forumlv_go_back_to("$discussionurl"), $message.$subscribemessage, $timemessage);
+        $params = array(
+            'context' => $modcontext,
+            'objectid' => $fromform->id,
+            'other' => array(
+                'discussionid' => $discussion->id,
+                'forumlvid' => $forumlv->id,
+                'forumlvtype' => $forumlv->type,
+            )
+        );
 
-        exit;
+        if ($realpost->userid !== $USER->id) {
+            $params['relateduserid'] = $realpost->userid;
+        }
 
+        $event = \mod_forumlv\event\post_updated::create($params);
+        $event->add_record_snapshot('forumlv_discussions', $discussion);
+        $event->trigger();
+
+        redirect(
+                forumlv_go_back_to($discussionurl),
+                $message . $subscribemessage,
+                null,
+                \core\output\notification::NOTIFY_SUCCESS
+            );
 
     } else if ($fromform->discussion) { // Adding a new post to an existing discussion
         // Before we add this we must check that the user will not exceed the blocking threshold.
@@ -696,19 +791,10 @@ if ($fromform = $mform_post->get_data()) {
         $addpost = $fromform;
         $addpost->forumlv=$forumlv->id;
         if ($fromform->id = forumlv_add_new_post($addpost, $mform_post, $message)) {
-
-            $timemessage = 2;
-            if (!empty($message)) { // if we're printing stuff about the file upload
-                $timemessage = 4;
-            }
-
-            if ($subscribemessage = forumlv_post_subscription($fromform, $forumlv)) {
-                $timemessage = 4;
-            }
+            $subscribemessage = forumlv_post_subscription($fromform, $forumlv, $discussion);
 
             if (!empty($fromform->mailnow)) {
                 $message .= get_string("postmailnow", "forumlv");
-                $timemessage = 4;
             } else {
                 $message .= '<p>'.get_string("postaddedsuccess", "forumlv") . '</p>';
                 $message .= '<p>'.get_string("postaddedtimeleft", "forumlv", format_time($CFG->maxeditingtime)) . '</p>';
@@ -718,12 +804,24 @@ if ($fromform = $mform_post->get_data()) {
                 // Single discussion forumlvs are an exception. We show
                 // the forumlv itself since it only has one discussion
                 // thread.
-                $discussionurl = "view.php?f=$forumlv->id";
+                $discussionurl = new moodle_url("/mod/forumlv/view.php", array('f' => $forumlv->id), 'p'.$fromform->id);
             } else {
-                $discussionurl = "discuss.php?d=$discussion->id";
+                $discussionurl = new moodle_url("/mod/forumlv/discuss.php", array('d' => $discussion->id), 'p'.$fromform->id);
             }
-            add_to_log($course->id, "forumlv", "add post",
-                      "$discussionurl&amp;parent=$fromform->id", "$fromform->id", $cm->id);
+
+            $params = array(
+                'context' => $modcontext,
+                'objectid' => $fromform->id,
+                'other' => array(
+                    'discussionid' => $discussion->id,
+                    'forumlvid' => $forumlv->id,
+                    'forumlvtype' => $forumlv->type,
+                )
+            );
+            $event = \mod_forumlv\event\post_created::create($params);
+            $event->add_record_snapshot('forumlv_posts', $fromform);
+            $event->add_record_snapshot('forumlv_discussions', $discussion);
+            $event->trigger();
 
             // Update completion state
             $completion=new completion_info($course);
@@ -732,7 +830,12 @@ if ($fromform = $mform_post->get_data()) {
                 $completion->update_state($cm,COMPLETION_COMPLETE);
             }
 
-            redirect(forumlv_go_back_to("$discussionurl#p$fromform->id"), $message.$subscribemessage, $timemessage);
+            redirect(
+                    forumlv_go_back_to($discussionurl),
+                    $message . $subscribemessage,
+                    null,
+                    \core\output\notification::NOTIFY_SUCCESS
+                );
 
         } else {
             print_error("couldnotadd", "forumlv", $errordestination);
@@ -740,24 +843,13 @@ if ($fromform = $mform_post->get_data()) {
         exit;
 
     } else { // Adding a new discussion.
-        // Before we add this we must check that the user will not exceed the blocking threshold.
-        forumlv_check_blocking_threshold($thresholdwarning);
-
-        if (!forumlv_user_can_post_discussion($forumlv, $fromform->groupid, -1, $cm, $modcontext)) {
-            print_error('cannotcreatediscussion', 'forumlv');
-        }
-        // If the user has access all groups capability let them choose the group.
-        if ($contextcheck) {
-            $fromform->groupid = $fromform->groupinfo;
-        }
-        if (empty($fromform->groupid)) {
-            $fromform->groupid = -1;
-        }
+        // The location to redirect to after successfully posting.
+        $redirectto = new moodle_url('view.php', array('f' => $fromform->forumlv));
 
         $fromform->mailnow = empty($fromform->mailnow) ? 0 : 1;
 
         $discussion = $fromform;
-        $discussion->name    = $fromform->subject;
+        $discussion->name = $fromform->subject;
 
         $newstopic = false;
         if ($forumlv->type == 'news' && !$fromform->parent) {
@@ -766,43 +858,91 @@ if ($fromform = $mform_post->get_data()) {
         $discussion->timestart = $fromform->timestart;
         $discussion->timeend = $fromform->timeend;
 
-        $message = '';
-        if ($discussion->id = forumlv_add_discussion($discussion, $mform_post, $message)) {
-
-            add_to_log($course->id, "forumlv", "add discussion",
-                    "discuss.php?d=$discussion->id", "$discussion->id", $cm->id);
-
-            $timemessage = 2;
-            if (!empty($message)) { // if we're printing stuff about the file upload
-                $timemessage = 4;
-            }
-
-            if ($fromform->mailnow) {
-                $message .= get_string("postmailnow", "forumlv");
-                $timemessage = 4;
-            } else {
-                $message .= '<p>'.get_string("postaddedsuccess", "forumlv") . '</p>';
-                $message .= '<p>'.get_string("postaddedtimeleft", "forumlv", format_time($CFG->maxeditingtime)) . '</p>';
-            }
-
-            if ($subscribemessage = forumlv_post_subscription($discussion, $forumlv)) {
-                $timemessage = 4;
-            }
-
-            // Update completion status
-            $completion=new completion_info($course);
-            if($completion->is_enabled($cm) &&
-                ($forumlv->completiondiscussions || $forumlv->completionposts)) {
-                $completion->update_state($cm,COMPLETION_COMPLETE);
-            }
-
-            redirect(forumlv_go_back_to("view.php?f=$fromform->forumlv"), $message.$subscribemessage, $timemessage);
-
+        if (has_capability('mod/forumlv:pindiscussions', $modcontext) && !empty($fromform->pinned)) {
+            $discussion->pinned = FORUMLV_DISCUSSION_PINNED;
         } else {
-            print_error("couldnotadd", "forumlv", $errordestination);
+            $discussion->pinned = FORUMLV_DISCUSSION_UNPINNED;
         }
 
-        exit;
+        $allowedgroups = array();
+        $groupstopostto = array();
+
+        // If we are posting a copy to all groups the user has access to.
+        if (isset($fromform->posttomygroups)) {
+            // Post to each of my groups.
+            require_capability('mod/forumlv:canposttomygroups', $modcontext);
+
+            // Fetch all of this user's groups.
+            // Note: all groups are returned when in visible groups mode so we must manually filter.
+            $allowedgroups = groups_get_activity_allowed_groups($cm);
+            foreach ($allowedgroups as $groupid => $group) {
+                if (forumlv_user_can_post_discussion($forumlv, $groupid, -1, $cm, $modcontext)) {
+                    $groupstopostto[] = $groupid;
+                }
+            }
+        } else if (isset($fromform->groupinfo)) {
+            // Use the value provided in the dropdown group selection.
+            $groupstopostto[] = $fromform->groupinfo;
+            $redirectto->param('group', $fromform->groupinfo);
+        } else if (isset($fromform->groupid) && !empty($fromform->groupid)) {
+            // Use the value provided in the hidden form element instead.
+            $groupstopostto[] = $fromform->groupid;
+            $redirectto->param('group', $fromform->groupid);
+        } else {
+            // Use the value for all participants instead.
+            $groupstopostto[] = -1;
+        }
+
+        // Before we post this we must check that the user will not exceed the blocking threshold.
+        forumlv_check_blocking_threshold($thresholdwarning);
+
+        foreach ($groupstopostto as $group) {
+            if (!forumlv_user_can_post_discussion($forumlv, $group, -1, $cm, $modcontext)) {
+                print_error('cannotcreatediscussion', 'forumlv');
+            }
+
+            $discussion->groupid = $group;
+            $message = '';
+            if ($discussion->id = forumlv_add_discussion($discussion, $mform_post, $message)) {
+
+                $params = array(
+                    'context' => $modcontext,
+                    'objectid' => $discussion->id,
+                    'other' => array(
+                        'forumlvid' => $forumlv->id,
+                    )
+                );
+                $event = \mod_forumlv\event\discussion_created::create($params);
+                $event->add_record_snapshot('forumlv_discussions', $discussion);
+                $event->trigger();
+
+                if ($fromform->mailnow) {
+                    $message .= get_string("postmailnow", "forumlv");
+                } else {
+                    $message .= '<p>'.get_string("postaddedsuccess", "forumlv") . '</p>';
+                    $message .= '<p>'.get_string("postaddedtimeleft", "forumlv", format_time($CFG->maxeditingtime)) . '</p>';
+                }
+
+                $subscribemessage = forumlv_post_subscription($fromform, $forumlv, $discussion);
+            } else {
+                print_error("couldnotadd", "forumlv", $errordestination);
+            }
+        }
+
+        // Update completion status.
+        $completion = new completion_info($course);
+        if ($completion->is_enabled($cm) &&
+                ($forumlv->completiondiscussions || $forumlv->completionposts)) {
+            $completion->update_state($cm, COMPLETION_COMPLETE);
+        }
+
+        // Redirect back to the discussion.
+        redirect(
+                forumlv_go_back_to($redirectto->out()),
+                $message . $subscribemessage,
+                null,
+                \core\output\notification::NOTIFY_SUCCESS
+            );
     }
 }
 
@@ -862,6 +1002,7 @@ $PAGE->set_title("$course->shortname: $strdiscussionname ".format_string($toppos
 $PAGE->set_heading($course->fullname);
 
 echo $OUTPUT->header();
+echo $OUTPUT->heading(format_string($forumlv->name), 2);
 
 // checkup
 if (!empty($parent) && !forumlv_user_can_see_post($forumlv, $discussion, $post, null, $cm)) {
@@ -914,4 +1055,3 @@ if (!empty($formheading)) {
 $mform_post->display();
 
 echo $OUTPUT->footer();
-

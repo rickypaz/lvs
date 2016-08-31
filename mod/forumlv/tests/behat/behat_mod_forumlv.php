@@ -27,10 +27,9 @@
 
 require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
 
-use Behat\Behat\Context\Step\Given as Given,
-    Behat\Gherkin\Node\TableNode as TableNode;
+use Behat\Gherkin\Node\TableNode as TableNode;
 /**
- * Forum-related steps definitions.
+ * Forumlv-related steps definitions.
  *
  * @package    mod_forumlv
  * @category   test
@@ -40,6 +39,17 @@ use Behat\Behat\Context\Step\Given as Given,
 class behat_mod_forumlv extends behat_base {
 
     /**
+     * Adds a topic to the forumlv specified by it's name. Useful for the Announcements and blog-style forumlvs.
+     *
+     * @Given /^I add a new topic to "(?P<forumlv_name_string>(?:[^"]|\\")*)" forumlv with:$/
+     * @param string $forumlvname
+     * @param TableNode $table
+     */
+    public function i_add_a_new_topic_to_forumlv_with($forumlvname, TableNode $table) {
+        $this->add_new_discussion($forumlvname, $table, get_string('addanewtopic', 'forumlv'));
+    }
+
+    /**
      * Adds a discussion to the forumlv specified by it's name with the provided table data (usually Subject and Message). The step begins from the forumlv's course page.
      *
      * @Given /^I add a new discussion to "(?P<forumlv_name_string>(?:[^"]|\\")*)" forumlv with:$/
@@ -47,34 +57,51 @@ class behat_mod_forumlv extends behat_base {
      * @param TableNode $table
      */
     public function i_add_a_forumlv_discussion_to_forumlv_with($forumlvname, TableNode $table) {
-
-        // Escaping $forumlvname as it has been stripped automatically by the transformer.
-        return array(
-            new Given('I follow "' . $this->escape($forumlvname) . '"'),
-            new Given('I press "Add a new discussion topic"'),
-            new Given('I fill the moodle form with:', $table),
-            new Given('I press "Post to forumlv"'),
-            new Given('I wait "5" seconds')
-        );
+        $this->add_new_discussion($forumlvname, $table, get_string('addanewdiscussion', 'forumlv'));
     }
 
     /**
      * Adds a reply to the specified post of the specified forumlv. The step begins from the forumlv's page or from the forumlv's course page.
      *
      * @Given /^I reply "(?P<post_subject_string>(?:[^"]|\\")*)" post from "(?P<forumlv_name_string>(?:[^"]|\\")*)" forumlv with:$/
-     * @param mixed $postname The subject of the post
-     * @param mixed $forumlvname The forumlv name
+     * @param string $postname The subject of the post
+     * @param string $forumlvname The forumlv name
      * @param TableNode $table
      */
     public function i_reply_post_from_forumlv_with($postsubject, $forumlvname, TableNode $table) {
 
-        return array(
-            new Given('I follow "' . $this->escape($forumlvname) . '"'),
-            new Given('I follow "' . $this->escape($postsubject) . '"'),
-            new Given('I follow "Reply"'),
-            new Given('I fill the moodle form with:', $table),
-            new Given('I press "Post to forumlv"'),
-            new Given('I wait "5" seconds')
-        );
+        // Navigate to forumlv.
+        $this->execute('behat_general::click_link', $this->escape($forumlvname));
+        $this->execute('behat_general::click_link', $this->escape($postsubject));
+        $this->execute('behat_general::click_link', get_string('reply', 'forumlv'));
+
+        // Fill form and post.
+        $this->execute('behat_forms::i_set_the_following_fields_to_these_values', $table);
+
+        $this->execute('behat_forms::press_button', get_string('posttoforumlv', 'forumlv'));
+        $this->execute('behat_general::i_wait_to_be_redirected');
     }
+
+    /**
+     * Returns the steps list to add a new discussion to a forumlv.
+     *
+     * Abstracts add a new topic and add a new discussion, as depending
+     * on the forumlv type the button string changes.
+     *
+     * @param string $forumlvname
+     * @param TableNode $table
+     * @param string $buttonstr
+     */
+    protected function add_new_discussion($forumlvname, TableNode $table, $buttonstr) {
+
+        // Navigate to forumlv.
+        $this->execute('behat_general::click_link', $this->escape($forumlvname));
+        $this->execute('behat_forms::press_button', $buttonstr);
+
+        // Fill form and post.
+        $this->execute('behat_forms::i_set_the_following_fields_to_these_values', $table);
+        $this->execute('behat_forms::press_button', get_string('posttoforumlv', 'forumlv'));
+        $this->execute('behat_general::i_wait_to_be_redirected');
+    }
+
 }

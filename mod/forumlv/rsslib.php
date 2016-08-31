@@ -18,11 +18,14 @@
 /**
  * This file adds support to rss feeds generation
  *
- * @package mod_forumlv
+ * @package   mod_forumlv
  * @category rss
  * @copyright 2001 Eloy Lafuente (stronk7) http://contiento.com
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+/* Include the core RSS lib */
+require_once($CFG->libdir.'/rsslib.php');
 
 /**
  * Returns the path to the cached rss feed contents. Creates/updates the cache if necessary.
@@ -68,9 +71,10 @@ function forumlv_rss_get_feed($context, $args) {
         $cachedfilelastmodified = filemtime($cachedfilepath);
     }
     // Used to determine if we need to generate a new RSS feed.
-    $dontrecheckcutoff = time()-60;
-    // If it hasn't been generated we will need to create it, otherwise only update
-    // if there is new stuff to show and it is older than the cut off date set above.
+    $dontrecheckcutoff = time() - 60; // Sixty seconds ago.
+
+    // If it hasn't been generated we need to create it.
+    // Otherwise, if it has been > 60 seconds since we last updated, check for new items.
     if (($cachedfilelastmodified == 0) || (($dontrecheckcutoff > $cachedfilelastmodified) &&
         forumlv_rss_newstuff($forumlv, $cm, $cachedfilelastmodified))) {
         // Need to regenerate the cached version.
@@ -178,9 +182,10 @@ function forumlv_rss_feed_discussions_sql($forumlv, $cm, $newsince=0) {
 
     $forumlvsort = "d.timemodified DESC";
     $postdata = "p.id AS postid, p.subject, p.created as postcreated, p.modified, p.discussion, p.userid, p.message as postmessage, p.messageformat AS postformat, p.messagetrust AS posttrust";
+    $userpicturefields = user_picture::fields('u', null, 'userid');
 
-    $sql = "SELECT $postdata, d.id as discussionid, d.name as discussionname, d.timemodified, d.usermodified, d.groupid, d.timestart, d.timeend,
-                   u.firstname as userfirstname, u.lastname as userlastname, u.email, u.picture, u.imagealt
+    $sql = "SELECT $postdata, d.id as discussionid, d.name as discussionname, d.timemodified, d.usermodified, d.groupid,
+                   d.timestart, d.timeend, $userpicturefields
               FROM {forumlv_discussions} d
                    JOIN {forumlv_posts} p ON p.discussion = d.id
                    JOIN {user} u ON p.userid = u.id
@@ -219,17 +224,21 @@ function forumlv_rss_feed_posts_sql($forumlv, $cm, $newsince=0) {
         $newsince = '';
     }
 
+    $usernamefields = get_all_user_name_fields(true, 'u');
     $sql = "SELECT p.id AS postid,
                  d.id AS discussionid,
                  d.name AS discussionname,
+                 d.groupid,
+                 d.timestart,
+                 d.timeend,
                  u.id AS userid,
-                 u.firstname AS userfirstname,
-                 u.lastname AS userlastname,
+                 $usernamefields,
                  p.subject AS postsubject,
                  p.message AS postmessage,
                  p.created AS postcreated,
                  p.messageformat AS postformat,
-                 p.messagetrust AS posttrust
+                 p.messagetrust AS posttrust,
+                 p.parent as postparent
             FROM {forumlv_discussions} d,
                {forumlv_posts} p,
                {user} u
@@ -309,14 +318,27 @@ function forumlv_rss_feed_contents($forumlv, $sql, $params, $context) {
     $items = array();
     foreach ($recs as $rec) {
             $item = new stdClass();
-            $user = new stdClass();
 
-            if ($isdiscussion && !forumlv_user_can_see_discussion($forumlv, $rec->discussionid, $context)) {
+            $discussion = new stdClass();
+            $discussion->id = $rec->discussionid;
+            $discussion->groupid = $rec->groupid;
+            $discussion->timestart = $rec->timestart;
+            $discussion->timeend = $rec->timeend;
+
+            $post = null;
+            if (!$isdiscussion) {
+                $post = new stdClass();
+                $post->id = $rec->postid;
+                $post->parent = $rec->postparent;
+                $post->userid = $rec->userid;
+            }
+
+            if ($isdiscussion && !forumlv_user_can_see_discussion($forumlv, $discussion, $context)) {
                 // This is a discussion which the user has no permission to view
                 $item->title = get_string('forumlvsubjecthidden', 'forumlv');
                 $message = get_string('forumlvbodyhidden', 'forumlv');
                 $item->author = get_string('forumlvauthorhidden', 'forumlv');
-            } else if (!$isdiscussion && !forumlv_user_can_see_post($forumlv, $rec->discussionid, $rec->postid, $USER, $cm)) {
+            } else if (!$isdiscussion && !forumlv_user_can_see_post($forumlv, $discussion, $post, $USER, $cm)) {
                 // This is a post which the user has no permission to view
                 $item->title = get_string('forumlvsubjecthidden', 'forumlv');
                 $message = get_string('forumlvbodyhidden', 'forumlv');
@@ -331,9 +353,7 @@ function forumlv_rss_feed_contents($forumlv, $sql, $params, $context) {
                     //we should have an item title by now but if we dont somehow then substitute something somewhat meaningful
                     $item->title = format_string($forumlv->name.' '.userdate($rec->postcreated,get_string('strftimedatetimeshort', 'langconfig')));
                 }
-                $user->firstname = $rec->userfirstname;
-                $user->lastname = $rec->userlastname;
-                $item->author = fullname($user);
+                $item->author = fullname($rec);
                 $message = file_rewrite_pluginfile_urls($rec->postmessage, 'pluginfile.php', $context->id,
                         'mod_forumlv', 'post', $rec->postid);
                 $formatoptions->trusted = $rec->posttrust;

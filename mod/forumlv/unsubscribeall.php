@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod-forumlv
+ * @package   mod_forumlv
  * @copyright  2008 Petr Skoda (http://skodak.org)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,10 +27,10 @@ require_once("lib.php");
 $confirm = optional_param('confirm', false, PARAM_BOOL);
 
 $PAGE->set_url('/mod/forumlv/unsubscribeall.php');
-$PAGE->set_context(context_user::instance($USER->id));
 
 // Do not autologin guest. Only proper users can have forumlv subscriptions.
 require_login(null, false);
+$PAGE->set_context(context_user::instance($USER->id));
 
 $return = $CFG->wwwroot.'/';
 
@@ -42,16 +42,17 @@ $strunsubscribeall = get_string('unsubscribeall', 'forumlv');
 $PAGE->navbar->add(get_string('modulename', 'forumlv'));
 $PAGE->navbar->add($strunsubscribeall);
 $PAGE->set_title($strunsubscribeall);
-$PAGE->set_heading(format_string($COURSE->fullname));
+$PAGE->set_heading($COURSE->fullname);
 echo $OUTPUT->header();
 echo $OUTPUT->heading($strunsubscribeall);
 
 if (data_submitted() and $confirm and confirm_sesskey()) {
-    $forumlvs = forumlv_get_optional_subscribed_forumlvs();
+    $forumlvs = \mod_forumlv\subscriptions::get_unsubscribable_forumlvs();
 
     foreach($forumlvs as $forumlv) {
-        forumlv_unsubscribe($USER->id, $forumlv->id);
+        \mod_forumlv\subscriptions::unsubscribe_user($USER->id, $forumlv, context_module::instance($forumlv->cm), true);
     }
+    $DB->delete_records('forumlv_discussion_subs', array('userid' => $USER->id));
     $DB->set_field('user', 'autosubscribe', 0, array('id'=>$USER->id));
 
     echo $OUTPUT->box(get_string('unsubscribealldone', 'forumlv'));
@@ -60,10 +61,18 @@ if (data_submitted() and $confirm and confirm_sesskey()) {
     die;
 
 } else {
-    $a = count(forumlv_get_optional_subscribed_forumlvs());
+    $count = new stdClass();
+    $count->forumlvs = count(\mod_forumlv\subscriptions::get_unsubscribable_forumlvs());
+    $count->discussions = $DB->count_records('forumlv_discussion_subs', array('userid' => $USER->id));
 
-    if ($a) {
-        $msg = get_string('unsubscribeallconfirm', 'forumlv', $a);
+    if ($count->forumlvs || $count->discussions) {
+        if ($count->forumlvs && $count->discussions) {
+            $msg = get_string('unsubscribeallconfirm', 'forumlv', $count);
+        } else if ($count->forumlvs) {
+            $msg = get_string('unsubscribeallconfirmforumlvs', 'forumlv', $count);
+        } else if ($count->discussions) {
+            $msg = get_string('unsubscribeallconfirmdiscussions', 'forumlv', $count);
+        }
         echo $OUTPUT->confirm($msg, new moodle_url('unsubscribeall.php', array('confirm'=>1)), $return);
         echo $OUTPUT->footer();
         die;

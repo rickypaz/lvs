@@ -224,6 +224,17 @@ $capabilities = array(
         )
     ),
 
+    'mod/forumlv:pindiscussions' => array(
+
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        )
+    ),
+
     'mod/forumlv:editanypost' => array(
 
         'riskbitmask' => RISK_SPAM,
@@ -343,6 +354,16 @@ $capabilities = array(
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
             'frontpage' => CAP_ALLOW
+        )
+    ),
+    'mod/forumlv:canposttomygroups' => array(
+
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
         )
     ),
 );

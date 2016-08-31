@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod-forumlv
+ * @package   mod_forumlv
  * @copyright Jamie Pratt <me@jamiep.org>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -47,10 +47,10 @@ class mod_forumlv_mod_form extends moodleform_mod {
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 
-        $this->add_intro_editor(true, get_string('forumlvintro', 'forumlv'));
+        $this->standard_intro_elements(get_string('forumlvintro', 'forumlv'));
 
         $forumlvtypes = forumlv_get_forumlv_types();
-        collatorlib::asort($forumlvtypes, collatorlib::SORT_STRING);
+        core_collator::asort($forumlvtypes, core_collator::SORT_STRING);
         $mform->addElement('select', 'type', get_string('forumlvtype', 'forumlv'), $forumlvtypes);
         $mform->addHelpButton('type', 'forumlvtype', 'forumlv');
         $mform->setDefault('type', 'general');
@@ -64,7 +64,22 @@ class mod_forumlv_mod_form extends moodleform_mod {
         $mform->addHelpButton('maxbytes', 'maxattachmentsize', 'forumlv');
         $mform->setDefault('maxbytes', $CFG->forumlv_maxbytes);
 
-        $choices = array(0,1,2,3,4,5,6,7,8,9,10,20,50,100);
+        $choices = array(
+            0 => 0,
+            1 => 1,
+            2 => 2,
+            3 => 3,
+            4 => 4,
+            5 => 5,
+            6 => 6,
+            7 => 7,
+            8 => 8,
+            9 => 9,
+            10 => 10,
+            20 => 20,
+            50 => 50,
+            100 => 100
+        );
         $mform->addElement('select', 'maxattachments', get_string('maxattachments', 'forumlv'), $choices);
         $mform->addHelpButton('maxattachments', 'maxattachments', 'forumlv');
         $mform->setDefault('maxattachments', $CFG->forumlv_maxattachments);
@@ -83,15 +98,20 @@ class mod_forumlv_mod_form extends moodleform_mod {
         $options[FORUMLV_DISALLOWSUBSCRIBE] = get_string('subscriptiondisabled','forumlv');
         $mform->addElement('select', 'forcesubscribe', get_string('subscriptionmode', 'forumlv'), $options);
         $mform->addHelpButton('forcesubscribe', 'subscriptionmode', 'forumlv');
-        
 
         $options = array();
         $options[FORUMLV_TRACKING_OPTIONAL] = get_string('trackingoptional', 'forumlv');
         $options[FORUMLV_TRACKING_OFF] = get_string('trackingoff', 'forumlv');
-        $options[FORUMLV_TRACKING_ON] = get_string('trackingon', 'forumlv');
+        if ($CFG->forumlv_allowforcedreadtracking) {
+            $options[FORUMLV_TRACKING_FORCED] = get_string('trackingon', 'forumlv');
+        }
         $mform->addElement('select', 'trackingtype', get_string('trackingtype', 'forumlv'), $options);
         $mform->addHelpButton('trackingtype', 'trackingtype', 'forumlv');
-
+        $default = $CFG->forumlv_trackingtype;
+        if ((!$CFG->forumlv_allowforcedreadtracking) && ($default == FORUMLV_TRACKING_FORCED)) {
+            $default = FORUMLV_TRACKING_OPTIONAL;
+        }
+        $mform->setDefault('trackingtype', $default);
 
         if ($CFG->enablerssfeeds && isset($CFG->forumlv_enablerssfeeds) && $CFG->forumlv_enablerssfeeds) {
 //-------------------------------------------------------------------------------
@@ -102,6 +122,9 @@ class mod_forumlv_mod_form extends moodleform_mod {
             $choices[2] = get_string('posts', 'forumlv');
             $mform->addElement('select', 'rsstype', get_string('rsstype'), $choices);
             $mform->addHelpButton('rsstype', 'rsstype', 'forumlv');
+            if (isset($CFG->forumlv_rsstype)) {
+                $mform->setDefault('rsstype', $CFG->forumlv_rsstype);
+            }
 
             $choices = array();
             $choices[0] = '0';
@@ -120,6 +143,9 @@ class mod_forumlv_mod_form extends moodleform_mod {
             $mform->addElement('select', 'rssarticles', get_string('rssarticles'), $choices);
             $mform->addHelpButton('rssarticles', 'rssarticles', 'forumlv');
             $mform->disabledIf('rssarticles', 'rsstype', 'eq', '0');
+            if (isset($CFG->forumlv_rssarticles)) {
+                $mform->setDefault('rssarticles', $CFG->forumlv_rssarticles);
+            }
         }
 
 //-------------------------------------------------------------------------------
@@ -150,18 +176,17 @@ class mod_forumlv_mod_form extends moodleform_mod {
         $mform->addHelpButton('warnafter', 'warnafter', 'forumlv');
         $mform->disabledIf('warnafter', 'blockperiod', 'eq', 0);
 
-        
         $coursecontext = context_course::instance($COURSE->id);
         plagiarism_get_form_elements_module($mform, $coursecontext, 'mod_forumlv');
 
 //-------------------------------------------------------------------------------
 
         $this->standard_grading_coursemodule_elements();
-		
+
         $this->standard_coursemodule_elements();
-		
-		$formlv = new FormModulosLV(); //@lvs adicionado campos essenciais para o fórum lv
-		$formlv->add_header_lv_forumlv($mform);
+        
+        $formlv = new FormModulosLV(); //@lvs adicionado campos essenciais para o fórum lv
+        $formlv->add_header_lv_forumlv($mform);
 //-------------------------------------------------------------------------------
 // buttons
         $this->add_action_buttons();
@@ -195,7 +220,7 @@ class mod_forumlv_mod_form extends moodleform_mod {
         
         //@lvs modificado o valor padrão do campo assessed para 2 - RATING_AGGREGATE_COUNT
         $default_values['assessed'] = 2;
-         
+
         // Set up the completion checkboxes which aren't part of standard data.
         // We also make the default value (if you turn on the checkbox) for those
         // numbers to be 1, this will not apply unless checkbox is ticked.

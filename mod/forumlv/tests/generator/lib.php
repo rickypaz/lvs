@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 
 /**
- * ForumLV module data generator class
+ * Forumlv module data generator class
  *
  * @package    mod_forumlv
  * @category   test
@@ -47,6 +47,11 @@ class mod_forumlv_generator extends testing_module_generator {
     protected $forumlvpostcount = 0;
 
     /**
+     * @var int keep track of how many forumlv subscriptions have been created.
+     */
+    protected $forumlvsubscriptionscount = 0;
+
+    /**
      * To be called from data reset code only,
      * do not use in tests.
      * @return void
@@ -54,38 +59,16 @@ class mod_forumlv_generator extends testing_module_generator {
     public function reset() {
         $this->forumlvdiscussioncount = 0;
         $this->forumlvpostcount = 0;
+        $this->forumlvsubscriptionscount = 0;
 
         parent::reset();
     }
 
-    /**
-     * Create new forumlv module instance
-     * @param array|stdClass $record
-     * @param array $options
-     * @return stdClass activity record with extra cmid field
-     */
     public function create_instance($record = null, array $options = null) {
         global $CFG;
-        require_once("$CFG->dirroot/mod/forumlv/locallib.php");
-
-        $this->instancecount++;
-        $i = $this->instancecount;
-
+        require_once($CFG->dirroot.'/mod/forumlv/lib.php');
         $record = (object)(array)$record;
-        $options = (array)$options;
 
-        if (empty($record->course)) {
-            throw new coding_exception('module generator requires $record->course');
-        }
-        if (!isset($record->name)) {
-            $record->name = get_string('pluginname', 'forumlv').' '.$i;
-        }
-        if (!isset($record->intro)) {
-            $record->intro = 'Test forumlv '.$i;
-        }
-        if (!isset($record->introformat)) {
-            $record->introformat = FORMAT_MOODLE;
-        }
         if (!isset($record->type)) {
             $record->type = 'general';
         }
@@ -98,15 +81,42 @@ class mod_forumlv_generator extends testing_module_generator {
         if (!isset($record->forcesubscribe)) {
             $record->forcesubscribe = FORUMLV_CHOOSESUBSCRIBE;
         }
-        if (isset($options['idnumber'])) {
-            $record->cmidnumber = $options['idnumber'];
-        } else {
-            $record->cmidnumber = '';
+
+        return parent::create_instance($record, (array)$options);
+    }
+
+    /**
+     * Function to create a dummy subscription.
+     *
+     * @param array|stdClass $record
+     * @return stdClass the subscription object
+     */
+    public function create_subscription($record = null) {
+        global $DB;
+
+        // Increment the forumlv subscription count.
+        $this->forumlvsubscriptionscount++;
+
+        $record = (array)$record;
+
+        if (!isset($record['course'])) {
+            throw new coding_exception('course must be present in phpunit_util::create_subscription() $record');
         }
 
-        $record->coursemodule = $this->precreate_course_module($record->course, $options);
-        $id = forumlv_add_instance($record, null);
-        return $this->post_add_instance($id, $record->coursemodule);
+        if (!isset($record['forumlv'])) {
+            throw new coding_exception('forumlv must be present in phpunit_util::create_subscription() $record');
+        }
+
+        if (!isset($record['userid'])) {
+            throw new coding_exception('userid must be present in phpunit_util::create_subscription() $record');
+        }
+
+        $record = (object)$record;
+
+        // Add the subscription.
+        $record->id = $DB->insert_record('forumlv_subscriptions', $record);
+
+        return $record;
     }
 
     /**
@@ -175,10 +185,40 @@ class mod_forumlv_generator extends testing_module_generator {
             $record['mailnow'] = "0";
         }
 
+        if (isset($record['timemodified'])) {
+            $timemodified = $record['timemodified'];
+        }
+
+        if (!isset($record['pinned'])) {
+            $record['pinned'] = FORUMLV_DISCUSSION_UNPINNED;
+        }
+
+        if (isset($record['mailed'])) {
+            $mailed = $record['mailed'];
+        }
+
         $record = (object) $record;
 
         // Add the discussion.
         $record->id = forumlv_add_discussion($record, null, null, $record->userid);
+
+        if (isset($timemodified) || isset($mailed)) {
+            $post = $DB->get_record('forumlv_posts', array('discussion' => $record->id));
+
+            if (isset($mailed)) {
+                $post->mailed = $mailed;
+            }
+
+            if (isset($timemodified)) {
+                // Enforce the time modified.
+                $record->timemodified = $timemodified;
+                $post->modified = $post->created = $timemodified;
+
+                $DB->update_record('forumlv_discussions', $record);
+            }
+
+            $DB->update_record('forumlv_posts', $post);
+        }
 
         return $record;
     }
@@ -213,11 +253,11 @@ class mod_forumlv_generator extends testing_module_generator {
         }
 
         if (!isset($record['subject'])) {
-            $record['subject'] = 'ForumLV post subject ' . $this->forumlvpostcount;
+            $record['subject'] = 'Forumlv post subject ' . $this->forumlvpostcount;
         }
 
         if (!isset($record['message'])) {
-            $record['message'] = html_writer::tag('p', 'ForumLV message post ' . $this->forumlvpostcount);
+            $record['message'] = html_writer::tag('p', 'Forumlv message post ' . $this->forumlvpostcount);
         }
 
         if (!isset($record['created'])) {
@@ -226,6 +266,30 @@ class mod_forumlv_generator extends testing_module_generator {
 
         if (!isset($record['modified'])) {
             $record['modified'] = $time;
+        }
+
+        if (!isset($record['mailed'])) {
+            $record['mailed'] = 0;
+        }
+
+        if (!isset($record['messageformat'])) {
+            $record['messageformat'] = 0;
+        }
+
+        if (!isset($record['messagetrust'])) {
+            $record['messagetrust'] = 0;
+        }
+
+        if (!isset($record['attachment'])) {
+            $record['attachment'] = "";
+        }
+
+        if (!isset($record['totalscore'])) {
+            $record['totalscore'] = 0;
+        }
+
+        if (!isset($record['mailnow'])) {
+            $record['mailnow'] = 0;
         }
 
         $record = (object) $record;
@@ -237,5 +301,28 @@ class mod_forumlv_generator extends testing_module_generator {
         forumlv_discussion_update_last_post($record->discussion);
 
         return $record;
+    }
+
+    public function create_content($instance, $record = array()) {
+        global $USER, $DB;
+        $record = (array)$record + array(
+            'forumlv' => $instance->id,
+            'userid' => $USER->id,
+            'course' => $instance->course
+        );
+        if (empty($record['discussion']) && empty($record['parent'])) {
+            // Create discussion.
+            $discussion = $this->create_discussion($record);
+            $post = $DB->get_record('forumlv_posts', array('id' => $discussion->firstpost));
+        } else {
+            // Create post.
+            if (empty($record['parent'])) {
+                $record['parent'] = $DB->get_field('forumlv_discussions', 'firstpost', array('id' => $record['discussion']), MUST_EXIST);
+            } else if (empty($record['discussion'])) {
+                $record['discussion'] = $DB->get_field('forumlv_posts', 'discussion', array('id' => $record['parent']), MUST_EXIST);
+            }
+            $post = $this->create_post($record);
+        }
+        return $post;
     }
 }

@@ -18,7 +18,7 @@
 /**
  * Set tracking option for the forumlv.
  *
- * @package mod-forumlv
+ * @package   mod_forumlv
  * @copyright 2005 mchurch
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -29,11 +29,7 @@ require_once("lib.php");
 $id         = required_param('id',PARAM_INT);                           // The forumlv to subscribe or unsubscribe to
 $returnpage = optional_param('returnpage', 'index.php', PARAM_FILE);    // Page to return to.
 
-$url = new moodle_url('/mod/forumlv/settracking.php', array('id'=>$id));
-if ($returnpage !== 'index.php') {
-    $url->param('returnpage', $returnpage);
-}
-$PAGE->set_url($url);
+require_sesskey();
 
 if (! $forumlv = $DB->get_record("forumlv", array("id" => $id))) {
     print_error('invalidforumlvid', 'forumlv');
@@ -46,10 +42,9 @@ if (! $course = $DB->get_record("course", array("id" => $forumlv->course))) {
 if (! $cm = get_coursemodule_from_instance("forumlv", $forumlv->id, $course->id)) {
     print_error('invalidcoursemodule');
 }
-
-require_course_login($course, false, $cm);
-
-$returnto = forumlv_go_back_to($returnpage.'?id='.$course->id.'&f='.$forumlv->id);
+require_login($course, false, $cm);
+$returnpageurl = new moodle_url('/mod/forumlv/' . $returnpage, array('id' => $course->id, 'f' => $forumlv->id));
+$returnto = forumlv_go_back_to($returnpageurl);
 
 if (!forumlv_tp_can_track_forumlvs($forumlv)) {
     redirect($returnto);
@@ -58,21 +53,28 @@ if (!forumlv_tp_can_track_forumlvs($forumlv)) {
 $info = new stdClass();
 $info->name  = fullname($USER);
 $info->forumlv = format_string($forumlv->name);
+
+$eventparams = array(
+    'context' => context_module::instance($cm->id),
+    'relateduserid' => $USER->id,
+    'other' => array('forumlvid' => $forumlv->id),
+);
+
 if (forumlv_tp_is_tracked($forumlv) ) {
     if (forumlv_tp_stop_tracking($forumlv->id)) {
-        add_to_log($course->id, "forumlv", "stop tracking", "view.php?f=$forumlv->id", $forumlv->id, $cm->id);
+        $event = \mod_forumlv\event\readtracking_disabled::create($eventparams);
+        $event->trigger();
         redirect($returnto, get_string("nownottracking", "forumlv", $info), 1);
     } else {
-        print_error('cannottrack', '', $_SERVER["HTTP_REFERER"]);
+        print_error('cannottrack', '', get_local_referer(false));
     }
 
 } else { // subscribe
     if (forumlv_tp_start_tracking($forumlv->id)) {
-        add_to_log($course->id, "forumlv", "start tracking", "view.php?f=$forumlv->id", $forumlv->id, $cm->id);
+        $event = \mod_forumlv\event\readtracking_enabled::create($eventparams);
+        $event->trigger();
         redirect($returnto, get_string("nowtracking", "forumlv", $info), 1);
     } else {
-        print_error('cannottrack', '', $_SERVER["HTTP_REFERER"]);
+        print_error('cannottrack', '', get_local_referer(false));
     }
 }
-
-

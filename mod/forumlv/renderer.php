@@ -18,7 +18,7 @@
 /**
  * This file contains a custom renderer class used by the forumlv module.
  *
- * @package mod-forumlv
+ * @package   mod_forumlv
  * @copyright 2009 Sam Hemelryk
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,11 +27,44 @@
  * A custom renderer class that extends the plugin_renderer_base and
  * is used by the forumlv module.
  *
- * @package mod-forumlv
+ * @package   mod_forumlv
  * @copyright 2009 Sam Hemelryk
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  **/
 class mod_forumlv_renderer extends plugin_renderer_base {
+
+    /**
+     * Returns the navigation to the previous and next discussion.
+     *
+     * @param mixed $prev Previous discussion record, or false.
+     * @param mixed $next Next discussion record, or false.
+     * @return string The output.
+     */
+    public function neighbouring_discussion_navigation($prev, $next) {
+        $html = '';
+        if ($prev || $next) {
+            $html .= html_writer::start_tag('div', array('class' => 'discussion-nav clearfix'));
+            $html .= html_writer::start_tag('ul');
+            if ($prev) {
+                $url = new moodle_url('/mod/forumlv/discuss.php', array('d' => $prev->id));
+                $html .= html_writer::start_tag('li', array('class' => 'prev-discussion'));
+                $html .= html_writer::link($url, format_string($prev->name),
+                    array('aria-label' => get_string('prevdiscussiona', 'mod_forumlv', format_string($prev->name))));
+                $html .= html_writer::end_tag('li');
+            }
+            if ($next) {
+                $url = new moodle_url('/mod/forumlv/discuss.php', array('d' => $next->id));
+                $html .= html_writer::start_tag('li', array('class' => 'next-discussion'));
+                $html .= html_writer::link($url, format_string($next->name),
+                    array('aria-label' => get_string('nextdiscussiona', 'mod_forumlv', format_string($next->name))));
+                $html .= html_writer::end_tag('li');
+            }
+            $html .= html_writer::end_tag('ul');
+            $html .= html_writer::end_tag('div');
+        }
+        return $html;
+    }
+
     /**
      * This method is used to generate HTML for a subscriber selection form that
      * uses two user_selector controls
@@ -83,17 +116,29 @@ class mod_forumlv_renderer extends plugin_renderer_base {
      */
     public function subscriber_overview($users, $forumlv , $course) {
         $output = '';
+        $modinfo = get_fast_modinfo($course);
         if (!$users || !is_array($users) || count($users)===0) {
             $output .= $this->output->heading(get_string("nosubscribers", "forumlv"));
+        } else if (!isset($modinfo->instances['forumlv'][$forumlv->id])) {
+            $output .= $this->output->heading(get_string("invalidmodule", "error"));
         } else {
-            $output .= $this->output->heading(get_string("subscribersto","forumlv", "'".format_string($forumlv->name)."'"));
+            $cm = $modinfo->instances['forumlv'][$forumlv->id];
+            $canviewemail = in_array('email', get_extra_user_fields(context_module::instance($cm->id)));
+            $strparams = new stdclass();
+            $strparams->name = format_string($forumlv->name);
+            $strparams->count = count($users);
+            $output .= $this->output->heading(get_string("subscriberstowithcount", "forumlv", $strparams));
             $table = new html_table();
             $table->cellpadding = 5;
             $table->cellspacing = 5;
             $table->tablealign = 'center';
             $table->data = array();
             foreach ($users as $user) {
-                $table->data[] = array($this->output->user_picture($user, array('courseid'=>$course->id)), fullname($user), $user->email);
+                $info = array($this->output->user_picture($user, array('courseid'=>$course->id)), fullname($user));
+                if ($canviewemail) {
+                    array_push($info, $user->email);
+                }
+                $table->data[] = $info;
             }
             $output .= html_writer::table($table);
         }
@@ -109,11 +154,53 @@ class mod_forumlv_renderer extends plugin_renderer_base {
      */
     public function subscribed_users(user_selector_base $existingusers) {
         $output  = $this->output->box_start('subscriberdiv boxaligncenter');
-        $output .= html_writer::tag('p', get_string('forcessubscribe', 'forumlv'));
+        $output .= html_writer::tag('p', get_string('forcesubscribed', 'forumlv'));
         $output .= $existingusers->display(true);
         $output .= $this->output->box_end();
         return $output;
     }
 
+    /**
+     * Generate the HTML for an icon to be displayed beside the subject of a timed discussion.
+     *
+     * @param object $discussion
+     * @param bool $visiblenow Indicicates that the discussion is currently
+     * visible to all users.
+     * @return string
+     */
+    public function timed_discussion_tooltip($discussion, $visiblenow) {
+        $dates = array();
+        if ($discussion->timestart) {
+            $dates[] = get_string('displaystart', 'mod_forumlv').': '.userdate($discussion->timestart);
+        }
+        if ($discussion->timeend) {
+            $dates[] = get_string('displayend', 'mod_forumlv').': '.userdate($discussion->timeend);
+        }
 
+        $str = $visiblenow ? 'timedvisible' : 'timedhidden';
+        $dates[] = get_string($str, 'mod_forumlv');
+
+        $tooltip = implode("\n", $dates);
+        return $this->pix_icon('i/calendar', $tooltip, 'moodle', array('class' => 'smallicon timedpost'));
+    }
+
+    /**
+     * Display a forumlv post in the relevant context.
+     *
+     * @param \mod_forumlv\output\forumlv_post $post The post to display.
+     * @return string
+     */
+    public function render_forumlv_post_email(\mod_forumlv\output\forumlv_post_email $post) {
+        $data = $post->export_for_template($this, $this->target === RENDERER_TARGET_TEXTEMAIL);
+        return $this->render_from_template('mod_forumlv/' . $this->forumlv_post_template(), $data);
+    }
+
+    /**
+     * The template name for this renderer.
+     *
+     * @return string
+     */
+    public function forumlv_post_template() {
+        return 'forumlv_post';
+    }
 }

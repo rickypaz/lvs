@@ -16,10 +16,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package moodlecore
+ * @package    mod_forumlv
  * @subpackage backup-moodle2
- * @copyright 2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
@@ -51,7 +51,7 @@ class backup_forumlv_activity_structure_step extends backup_activity_structure_s
         $discussion = new backup_nested_element('discussion', array('id'), array(
             'name', 'firstpost', 'userid', 'groupid',
             'assessed', 'timemodified', 'usermodified', 'timestart',
-            'timeend'));
+            'timeend', 'pinned'));
 
         $posts = new backup_nested_element('posts');
 
@@ -65,10 +65,22 @@ class backup_forumlv_activity_structure_step extends backup_activity_structure_s
         $rating = new backup_nested_element('rating', array('id'), array(
             'component', 'ratingarea', 'scaleid', 'value', 'userid', 'timecreated', 'timemodified'));
 
+        $discussionsubs = new backup_nested_element('discussion_subs');
+
+        $discussionsub = new backup_nested_element('discussion_sub', array('id'), array(
+            'userid',
+            'preference',
+        ));
+
         $subscriptions = new backup_nested_element('subscriptions');
 
         $subscription = new backup_nested_element('subscription', array('id'), array(
             'userid'));
+
+        $digests = new backup_nested_element('digests');
+
+        $digest = new backup_nested_element('digest', array('id'), array(
+            'userid', 'maildigest'));
 
         $readposts = new backup_nested_element('readposts');
 
@@ -89,6 +101,9 @@ class backup_forumlv_activity_structure_step extends backup_activity_structure_s
         $forumlv->add_child($subscriptions);
         $subscriptions->add_child($subscription);
 
+        $forumlv->add_child($digests);
+        $digests->add_child($digest);
+
         $forumlv->add_child($readposts);
         $readposts->add_child($read);
 
@@ -100,6 +115,9 @@ class backup_forumlv_activity_structure_step extends backup_activity_structure_s
 
         $post->add_child($ratings);
         $ratings->add_child($rating);
+
+        $discussion->add_child($discussionsubs);
+        $discussionsubs->add_child($discussionsub);
 
         // Define sources
 
@@ -115,8 +133,10 @@ class backup_forumlv_activity_structure_step extends backup_activity_structure_s
 
             // Need posts ordered by id so parents are always before childs on restore
             $post->set_source_table('forumlv_posts', array('discussion' => backup::VAR_PARENTID), 'id ASC');
+            $discussionsub->set_source_table('forumlv_discussion_subs', array('discussion' => backup::VAR_PARENTID));
 
             $subscription->set_source_table('forumlv_subscriptions', array('forumlv' => backup::VAR_PARENTID));
+            $digest->set_source_table('forumlv_digests', array('forumlv' => backup::VAR_PARENTID));
 
             $read->set_source_table('forumlv_read', array('forumlvid' => backup::VAR_PARENTID));
 
@@ -137,11 +157,15 @@ class backup_forumlv_activity_structure_step extends backup_activity_structure_s
 
         $post->annotate_ids('user', 'userid');
 
+        $discussionsub->annotate_ids('user', 'userid');
+
         $rating->annotate_ids('scale', 'scaleid');
 
         $rating->annotate_ids('user', 'userid');
 
         $subscription->annotate_ids('user', 'userid');
+
+        $digest->annotate_ids('user', 'userid');
 
         $read->annotate_ids('user', 'userid');
 

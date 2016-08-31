@@ -18,10 +18,10 @@
 /**
  * Defines backup_forumlv_activity_task class
  *
- * @package     mod_forumlv
- * @category    backup
- * @copyright   2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_forumlv
+ * @category  backup
+ * @copyright 2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -30,7 +30,7 @@ require_once($CFG->dirroot . '/mod/forumlv/backup/moodle2/backup_forumlv_stepsli
 require_once($CFG->dirroot . '/mod/forumlv/backup/moodle2/backup_forumlv_settingslib.php');
 
 /**
- * Provides the steps to perform one complete backup of the ForumLV instance
+ * Provides the steps to perform one complete backup of the Forumlv instance
  */
 class backup_forumlv_activity_task extends backup_activity_task {
 
@@ -71,7 +71,7 @@ class backup_forumlv_activity_task extends backup_activity_task {
         $content= preg_replace($search, '$@FORUMLVVIEWBYF*$2@$', $content);
 
         // Link to forumlv discussion with parent syntax
-        $search="/(".$base."\/mod\/forumlv\/discuss.php\?d\=)([0-9]+)\&parent\=([0-9]+)/";
+        $search = "/(".$base."\/mod\/forumlv\/discuss.php\?d\=)([0-9]+)(?:\&amp;|\&)parent\=([0-9]+)/";
         $content= preg_replace($search, '$@FORUMLVDISCUSSIONVIEWPARENT*$2*$3@$', $content);
 
         // Link to forumlv discussion with relative syntax

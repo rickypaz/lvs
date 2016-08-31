@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod-forumlv
+ * @package   mod_forumlv
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,7 +26,7 @@
     require_once($CFG->libdir.'/completionlib.php');
 
     $id          = optional_param('id', 0, PARAM_INT);       // Course Module ID
-    $f           = optional_param('f', 0, PARAM_INT);        // Forum ID
+    $f           = optional_param('f', 0, PARAM_INT);        // Forumlv ID
     $mode        = optional_param('mode', 0, PARAM_INT);     // Display mode (for single forumlv)
     $showall     = optional_param('showall', '', PARAM_INT); // show all discussions on one page
     $changegroup = optional_param('group', -1, PARAM_INT);   // choose the current group
@@ -100,17 +100,11 @@
         rss_add_http_header($context, 'mod_forumlv', $forumlv, $rsstitle);
     }
 
-    // Mark viewed if required
-    $completion = new completion_info($course);
-    $completion->set_module_viewed($cm);
-
 /// Print header.
 
-    $PAGE->set_title(format_string($forumlv->name));
-    $PAGE->add_body_class('forumlvtype-'.$forumlv->type);
-    $PAGE->set_heading(format_string($course->fullname));
-
-    echo $OUTPUT->header();
+    $PAGE->set_title($forumlv->name);
+    $PAGE->add_body_class('forumtype-'.$forumlv->type);
+    $PAGE->set_heading($course->fullname);
 
 /// Some capability checks.
     if (empty($cm->visible) and !has_capability('moodle/course:viewhiddenactivities', $context)) {
@@ -121,17 +115,18 @@
         notice(get_string('noviewdiscussionspermission', 'forumlv'));
     }
 
+    // Mark viewed and trigger the course_module_viewed event.
+    forumlv_view($forumlv, $course, $cm, $context);
+
+    echo $OUTPUT->header();
+
+    echo $OUTPUT->heading(format_string($forumlv->name), 2);
+    if (!empty($forumlv->intro) && $forumlv->type != 'single' && $forumlv->type != 'teacher') {
+        echo $OUTPUT->box(format_module_intro('forumlv', $forumlv, $cm->id), 'generalbox', 'intro');
+    }
+
 /// find out current groups mode
     groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/forumlv/view.php?id=' . $cm->id);
-    $currentgroup = groups_get_activity_group($cm);
-    $groupmode = groups_get_activity_groupmode($cm);
-
-/// Okay, we can show the discussions. Log the forumlv view.
-    if ($cm->id) {
-        add_to_log($course->id, "forumlv", "view forumlv", "view.php?id=$cm->id", "$forumlv->id", $cm->id);
-    } else {
-        add_to_log($course->id, "forumlv", "view forumlv", "view.php?f=$forumlv->id", "$forumlv->id");
-    }
 
     $SESSION->fromdiscussion = qualified_me();   // Return here if we post or set subscription etc
 
@@ -187,9 +182,6 @@
             break;
 
         case 'eachuser':
-            if (!empty($forumlv->intro)) {
-                echo $OUTPUT->box(format_module_intro('forumlv', $forumlv, $cm->id), 'generalbox', 'intro');
-            }
             echo '<p class="mdl-align">';
             if (forumlv_user_can_post_discussion($forumlv, null, -1, $cm)) {
                 print_string("allowsdiscussions", "forumlv");
@@ -213,21 +205,16 @@
             break;
 
         case 'blog':
-            if (!empty($forumlv->intro)) {
-                echo $OUTPUT->box(format_module_intro('forumlv', $forumlv, $cm->id), 'generalbox', 'intro');
-            }
             echo '<br />';
             if (!empty($showall)) {
-                forumlv_print_latest_discussions($course, $forumlv, 0, 'plain', '', -1, -1, -1, 0, $cm);
+                forumlv_print_latest_discussions($course, $forumlv, 0, 'plain', 'd.pinned DESC, p.created DESC', -1, -1, -1, 0, $cm);
             } else {
-                forumlv_print_latest_discussions($course, $forumlv, -1, 'plain', '', -1, -1, $page, $CFG->forumlv_manydiscussions, $cm);
+                forumlv_print_latest_discussions($course, $forumlv, -1, 'plain', 'd.pinned DESC, p.created DESC', -1, -1, $page,
+                    $CFG->forumlv_manydiscussions, $cm);
             }
             break;
 
         default:
-            if (!empty($forumlv->intro)) {
-                echo $OUTPUT->box(format_module_intro('forumlv', $forumlv, $cm->id), 'generalbox', 'intro');
-            }
             echo '<br />';
             if (!empty($showall)) {
                 forumlv_print_latest_discussions($course, $forumlv, 0, 'header', '', -1, -1, -1, 0, $cm);
@@ -239,6 +226,7 @@
             break;
     }
 
+    // Add the subscription toggle JS.
+    $PAGE->requires->yui_module('moodle-mod_forumlv-subscriptiontoggle', 'Y.M.mod_forumlv.subscriptiontoggle.init');
+
     echo $OUTPUT->footer($course);
-
-

@@ -16,10 +16,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package moodlecore
+ * @package    mod_forumlv
  * @subpackage backup-moodle2
- * @copyright 2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
@@ -40,8 +40,10 @@ class restore_forumlv_activity_structure_step extends restore_activity_structure
         if ($userinfo) {
             $paths[] = new restore_path_element('forumlv_discussion', '/activity/forumlv/discussions/discussion');
             $paths[] = new restore_path_element('forumlv_post', '/activity/forumlv/discussions/discussion/posts/post');
+            $paths[] = new restore_path_element('forumlv_discussion_sub', '/activity/forumlv/discussions/discussion/discussion_subs/discussion_sub');
             $paths[] = new restore_path_element('forumlv_rating', '/activity/forumlv/discussions/discussion/posts/post/ratings/rating');
             $paths[] = new restore_path_element('forumlv_subscription', '/activity/forumlv/subscriptions/subscription');
+            $paths[] = new restore_path_element('forumlv_digest', '/activity/forumlv/digests/digest');
             $paths[] = new restore_path_element('forumlv_read', '/activity/forumlv/readposts/read');
             $paths[] = new restore_path_element('forumlv_track', '/activity/forumlv/trackedprefs/track');
         }
@@ -147,6 +149,34 @@ class restore_forumlv_activity_structure_step extends restore_activity_structure
         $data->userid = $this->get_mappingid('user', $data->userid);
 
         $newitemid = $DB->insert_record('forumlv_subscriptions', $data);
+        $this->set_mapping('forumlv_subscription', $oldid, $newitemid, true);
+
+    }
+
+    protected function process_forumlv_discussion_sub($data) {
+        global $DB;
+
+        $data = (object)$data;
+        $oldid = $data->id;
+
+        $data->discussion = $this->get_new_parentid('forumlv_discussion');
+        $data->forumlv = $this->get_new_parentid('forumlv');
+        $data->userid = $this->get_mappingid('user', $data->userid);
+
+        $newitemid = $DB->insert_record('forumlv_discussion_subs', $data);
+        $this->set_mapping('forumlv_discussion_sub', $oldid, $newitemid, true);
+    }
+
+    protected function process_forumlv_digest($data) {
+        global $DB;
+
+        $data = (object)$data;
+        $oldid = $data->id;
+
+        $data->forumlv = $this->get_new_parentid('forumlv');
+        $data->userid = $this->get_mappingid('user', $data->userid);
+
+        $newitemid = $DB->insert_record('forumlv_digests', $data);
     }
 
     protected function process_forumlv_read($data) {
@@ -176,10 +206,16 @@ class restore_forumlv_activity_structure_step extends restore_activity_structure
     }
 
     protected function after_execute() {
-        global $DB;
-
         // Add forumlv related files, no need to match by itemname (just internally handled context)
         $this->add_related_files('mod_forumlv', 'intro', null);
+
+        // Add post related files, matching by itemname = 'forumlv_post'
+        $this->add_related_files('mod_forumlv', 'post', 'forumlv_post');
+        $this->add_related_files('mod_forumlv', 'attachment', 'forumlv_post');
+    }
+
+    protected function after_restore() {
+        global $DB;
 
         // If the forumlv is of type 'single' and no discussion has been ignited
         // (non-userinfo backup/restore) create the discussion here, using forumlv
@@ -188,7 +224,7 @@ class restore_forumlv_activity_structure_step extends restore_activity_structure
         $forumlvrec = $DB->get_record('forumlv', array('id' => $forumlvid));
         if ($forumlvrec->type == 'single' && !$DB->record_exists('forumlv_discussions', array('forumlv' => $forumlvid))) {
             // Create single discussion/lead post from forumlv data
-            $sd = new stdclass();
+            $sd = new stdClass();
             $sd->course   = $forumlvrec->course;
             $sd->forumlv    = $forumlvrec->id;
             $sd->name     = $forumlvrec->name;
@@ -197,22 +233,18 @@ class restore_forumlv_activity_structure_step extends restore_activity_structure
             $sd->messageformat = $forumlvrec->introformat;
             $sd->messagetrust  = true;
             $sd->mailnow  = false;
-            $sdid = forumlv_add_discussion($sd, null, $sillybyrefvar, $this->task->get_userid());
+            $sdid = forumlv_add_discussion($sd, null, null, $this->task->get_userid());
             // Mark the post as mailed
             $DB->set_field ('forumlv_posts','mailed', '1', array('discussion' => $sdid));
             // Copy all the files from mod_foum/intro to mod_forumlv/post
             $fs = get_file_storage();
             $files = $fs->get_area_files($this->task->get_contextid(), 'mod_forumlv', 'intro');
             foreach ($files as $file) {
-                $newfilerecord = new stdclass();
+                $newfilerecord = new stdClass();
                 $newfilerecord->filearea = 'post';
                 $newfilerecord->itemid   = $DB->get_field('forumlv_discussions', 'firstpost', array('id' => $sdid));
                 $fs->create_file_from_storedfile($newfilerecord, $file);
             }
         }
-
-        // Add post related files, matching by itemname = 'forumlv_post'
-        $this->add_related_files('mod_forumlv', 'post', 'forumlv_post');
-        $this->add_related_files('mod_forumlv', 'attachment', 'forumlv_post');
     }
 }

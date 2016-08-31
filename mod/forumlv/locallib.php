@@ -23,7 +23,7 @@ require_once($CFG->dirroot . '/mod/forumlv/lib.php');
 require_once($CFG->libdir . '/portfolio/caller.php');
 
 /**
- * @package   mod-forumlv
+ * @package   mod_forumlv
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -298,7 +298,7 @@ class forumlv_portfolio_caller extends portfolio_module_caller_base {
         $formattedtext = format_text($post->message, $post->messageformat, $options, $this->get('course')->id);
         $formattedtext = portfolio_rewrite_pluginfile_urls($formattedtext, $this->modcontext->id, 'mod_forumlv', 'post', $post->id, $format);
 
-        $output = '<table border="0" cellpadding="3" cellspacing="0" class="forumlvpost">';
+        $output = '<table border="0" cellpadding="3" cellspacing="0" class="forumpost">';
 
         $output .= '<tr class="header"><td>';// can't print picture.
         $output .= '</td>';
@@ -313,7 +313,7 @@ class forumlv_portfolio_caller extends portfolio_module_caller_base {
         $fullname = fullname($users[$post->userid], $viewfullnames);
         $by = new stdClass();
         $by->name = $fullname;
-        $by->date = userdate($post->modified, '', $this->user->timezone);
+        $by->date = userdate($post->modified, '', core_date::get_user_timezone($this->user));
         $output .= '<div class="author">'.get_string('bynameondate', 'forumlv', $by).'</div>';
 
         $output .= '</td></tr>';

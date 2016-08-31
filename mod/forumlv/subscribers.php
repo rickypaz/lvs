@@ -18,7 +18,7 @@
 /**
  * This file is used to display and organise forumlv subscribers
  *
- * @package mod-forumlv
+ * @package   mod_forumlv
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -54,13 +54,18 @@ if (!has_capability('mod/forumlv:viewsubscribers', $context)) {
 
 unset($SESSION->fromdiscussion);
 
-add_to_log($course->id, "forumlv", "view subscribers", "subscribers.php?id=$forumlv->id", $forumlv->id, $cm->id);
+$params = array(
+    'context' => $context,
+    'other' => array('forumlvid' => $forumlv->id),
+);
+$event = \mod_forumlv\event\subscribers_viewed::create($params);
+$event->trigger();
 
 $forumlvoutput = $PAGE->get_renderer('mod_forumlv');
 $currentgroup = groups_get_activity_group($cm);
 $options = array('forumlvid'=>$forumlv->id, 'currentgroup'=>$currentgroup, 'context'=>$context);
-$existingselector = new forumlv_existing_subscriber_selector('existingsubscribers', $options);
-$subscriberselector = new forumlv_potential_subscriber_selector('potentialsubscribers', $options);
+$existingselector = new mod_forumlv_existing_subscriber_selector('existingsubscribers', $options);
+$subscriberselector = new mod_forumlv_potential_subscriber_selector('potentialsubscribers', $options);
 $subscriberselector->set_existing_subscribers($existingselector->find_users(''));
 
 if (data_submitted()) {
@@ -74,14 +79,14 @@ if (data_submitted()) {
     if ($subscribe) {
         $users = $subscriberselector->get_selected_users();
         foreach ($users as $user) {
-            if (!forumlv_subscribe($user->id, $id)) {
+            if (!\mod_forumlv\subscriptions::subscribe_user($user->id, $forumlv)) {
                 print_error('cannotaddsubscriber', 'forumlv', '', $user->id);
             }
         }
     } else if ($unsubscribe) {
         $users = $existingselector->get_selected_users();
         foreach ($users as $user) {
-            if (!forumlv_unsubscribe($user->id, $id)) {
+            if (!\mod_forumlv\subscriptions::unsubscribe_user($user->id, $forumlv)) {
                 print_error('cannotremovesubscriber', 'forumlv', '', $user->id);
             }
         }
@@ -95,22 +100,51 @@ $strsubscribers = get_string("subscribers", "forumlv");
 $PAGE->navbar->add($strsubscribers);
 $PAGE->set_title($strsubscribers);
 $PAGE->set_heading($COURSE->fullname);
-if (has_capability('mod/forumlv:managesubscriptions', $context)) {
-    $PAGE->set_button(forumlv_update_subscriptions_button($course->id, $id));
+if (has_capability('mod/forumlv:managesubscriptions', $context) && \mod_forumlv\subscriptions::is_forcesubscribed($forumlv) === false) {
     if ($edit != -1) {
         $USER->subscriptionsediting = $edit;
     }
+    $PAGE->set_button(forumlv_update_subscriptions_button($course->id, $id));
 } else {
     unset($USER->subscriptionsediting);
 }
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('forumlv', 'forumlv').' '.$strsubscribers);
 if (empty($USER->subscriptionsediting)) {
-    echo $forumlvoutput->subscriber_overview(forumlv_subscribed_users($course, $forumlv, $currentgroup, $context), $forumlv, $course);
-} else if (forumlv_is_forcesubscribed($forumlv)) {
-    $subscriberselector->set_force_subscribed(true);
-    echo $forumlvoutput->subscribed_users($subscriberselector);
+    $subscribers = \mod_forumlv\subscriptions::fetch_subscribed_users($forumlv, $currentgroup, $context);
+    if (\mod_forumlv\subscriptions::is_forcesubscribed($forumlv)) {
+        $subscribers = mod_forumlv_filter_hidden_users($cm, $context, $subscribers);
+    }
+    echo $forumlvoutput->subscriber_overview($subscribers, $forumlv, $course);
 } else {
     echo $forumlvoutput->subscriber_selection_form($existingselector, $subscriberselector);
 }
 echo $OUTPUT->footer();
+
+/**
+ * Filters a list of users for whether they can see a given activity.
+ * If the course module is hidden (closed-eye icon), then only users who have
+ * the permission to view hidden activities will appear in the output list.
+ *
+ * @todo MDL-48625 This filtering should be handled in core libraries instead.
+ *
+ * @param stdClass $cm the course module record of the activity.
+ * @param context_module $context the activity context, to save re-fetching it.
+ * @param array $users the list of users to filter.
+ * @return array the filtered list of users.
+ */
+function mod_forumlv_filter_hidden_users(stdClass $cm, context_module $context, array $users) {
+    if ($cm->visible) {
+        return $users;
+    } else {
+        // Filter for users that can view hidden activities.
+        $filteredusers = array();
+        $hiddenviewers = get_users_by_capability($context, 'moodle/course:viewhiddenactivities');
+        foreach ($hiddenviewers as $hiddenviewer) {
+            if (array_key_exists($hiddenviewer->id, $users)) {
+                $filteredusers[$hiddenviewer->id] = $users[$hiddenviewer->id];
+            }
+        }
+        return $filteredusers;
+    }
+}

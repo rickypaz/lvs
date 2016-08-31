@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod-forumlv
+ * @package   mod_forumlv
  * @copyright  2009 Petr Skoda (http://skodak.org)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -57,9 +57,21 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtext('forumlv_maxattachments', get_string('maxattachments', 'forumlv'),
                        get_string('configmaxattachments', 'forumlv'), 9, PARAM_INT));
 
+    // Default Read Tracking setting.
+    $options = array();
+    $options[FORUMLV_TRACKING_OPTIONAL] = get_string('trackingoptional', 'forumlv');
+    $options[FORUMLV_TRACKING_OFF] = get_string('trackingoff', 'forumlv');
+    $options[FORUMLV_TRACKING_FORCED] = get_string('trackingon', 'forumlv');
+    $settings->add(new admin_setting_configselect('forumlv_trackingtype', get_string('trackingtype', 'forumlv'),
+                       get_string('configtrackingtype', 'forumlv'), FORUMLV_TRACKING_OPTIONAL, $options));
+
     // Default whether user needs to mark a post as read
     $settings->add(new admin_setting_configcheckbox('forumlv_trackreadposts', get_string('trackforumlv', 'forumlv'),
                        get_string('configtrackreadposts', 'forumlv'), 1));
+
+    // Default whether user needs to mark a post as read.
+    $settings->add(new admin_setting_configcheckbox('forumlv_allowforcedreadtracking', get_string('forcedreadtracking', 'forumlv'),
+                       get_string('forcedreadtracking_desc', 'forumlv'), 0));
 
     // Default number of days that a post is considered old
     $settings->add(new admin_setting_configtext('forumlv_oldpostdays', get_string('oldpostdays', 'forumlv'),
@@ -92,7 +104,35 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configselect('forumlv_enablerssfeeds', get_string('enablerssfeeds', 'admin'),
                        $str, 0, $options));
 
+    if (!empty($CFG->enablerssfeeds)) {
+        $options = array(
+            0 => get_string('none'),
+            1 => get_string('discussions', 'forumlv'),
+            2 => get_string('posts', 'forumlv')
+        );
+        $settings->add(new admin_setting_configselect('forumlv_rsstype', get_string('rsstypedefault', 'forumlv'),
+                get_string('configrsstypedefault', 'forumlv'), 0, $options));
+
+        $options = array(
+            0  => '0',
+            1  => '1',
+            2  => '2',
+            3  => '3',
+            4  => '4',
+            5  => '5',
+            10 => '10',
+            15 => '15',
+            20 => '20',
+            25 => '25',
+            30 => '30',
+            40 => '40',
+            50 => '50'
+        );
+        $settings->add(new admin_setting_configselect('forumlv_rssarticles', get_string('rssarticles', 'forumlv'),
+                get_string('configrssarticlesdefault', 'forumlv'), 0, $options));
+    }
+
     $settings->add(new admin_setting_configcheckbox('forumlv_enabletimedposts', get_string('timedposts', 'forumlv'),
-                       get_string('configenabletimedposts', 'forumlv'), 0));
+                       get_string('configenabletimedposts', 'forumlv'), 1));
 }
 

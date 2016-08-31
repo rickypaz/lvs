@@ -26,19 +26,22 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-global $DB; // TODO: this is a hack, we should really do something with the SQL in SQL tables
+global $DB; // TODO: this is a hack, we should really do something with the SQL in SQL tables.
 
 $logs = array(
-    array('module'=>'forumlv', 'action'=>'add', 'mtable'=>'forumlv', 'field'=>'name'),
-    array('module'=>'forumlv', 'action'=>'update', 'mtable'=>'forumlv', 'field'=>'name'),
-    array('module'=>'forumlv', 'action'=>'add discussion', 'mtable'=>'forumlv_discussions', 'field'=>'name'),
-    array('module'=>'forumlv', 'action'=>'add post', 'mtable'=>'forumlv_posts', 'field'=>'subject'),
-    array('module'=>'forumlv', 'action'=>'update post', 'mtable'=>'forumlv_posts', 'field'=>'subject'),
-    array('module'=>'forumlv', 'action'=>'user report', 'mtable'=>'user', 'field'=>$DB->sql_concat('firstname', "' '" , 'lastname')),
-    array('module'=>'forumlv', 'action'=>'move discussion', 'mtable'=>'forumlv_discussions', 'field'=>'name'),
-    array('module'=>'forumlv', 'action'=>'view subscribers', 'mtable'=>'forumlv', 'field'=>'name'),
-    array('module'=>'forumlv', 'action'=>'view discussion', 'mtable'=>'forumlv_discussions', 'field'=>'name'),
-    array('module'=>'forumlv', 'action'=>'view forumlv', 'mtable'=>'forumlv', 'field'=>'name'),
-    array('module'=>'forumlv', 'action'=>'subscribe', 'mtable'=>'forumlv', 'field'=>'name'),
-    array('module'=>'forumlv', 'action'=>'unsubscribe', 'mtable'=>'forumlv', 'field'=>'name'),
+    array('module' => 'forumlv', 'action' => 'add', 'mtable' => 'forumlv', 'field' => 'name'),
+    array('module' => 'forumlv', 'action' => 'update', 'mtable' => 'forumlv', 'field' => 'name'),
+    array('module' => 'forumlv', 'action' => 'add discussion', 'mtable' => 'forumlv_discussions', 'field' => 'name'),
+    array('module' => 'forumlv', 'action' => 'add post', 'mtable' => 'forumlv_posts', 'field' => 'subject'),
+    array('module' => 'forumlv', 'action' => 'update post', 'mtable' => 'forumlv_posts', 'field' => 'subject'),
+    array('module' => 'forumlv', 'action' => 'user report', 'mtable' => 'user',
+          'field'  => $DB->sql_concat('firstname', "' '", 'lastname')),
+    array('module' => 'forumlv', 'action' => 'move discussion', 'mtable' => 'forumlv_discussions', 'field' => 'name'),
+    array('module' => 'forumlv', 'action' => 'view subscribers', 'mtable' => 'forumlv', 'field' => 'name'),
+    array('module' => 'forumlv', 'action' => 'view discussion', 'mtable' => 'forumlv_discussions', 'field' => 'name'),
+    array('module' => 'forumlv', 'action' => 'view forumlv', 'mtable' => 'forumlv', 'field' => 'name'),
+    array('module' => 'forumlv', 'action' => 'subscribe', 'mtable' => 'forumlv', 'field' => 'name'),
+    array('module' => 'forumlv', 'action' => 'unsubscribe', 'mtable' => 'forumlv', 'field' => 'name'),
+    array('module' => 'forumlv', 'action' => 'pin discussion', 'mtable' => 'forumlv_discussions', 'field' => 'name'),
+    array('module' => 'forumlv', 'action' => 'unpin discussion', 'mtable' => 'forumlv_discussions', 'field' => 'name'),
 );

@@ -13,7 +13,7 @@ function forumlv_produce_tracking_link(forumlvid, ltext, ltitle) {
     var elementid = "trackinglink";
     var subs_link = document.getElementById(elementid);
     if(subs_link){
-        subs_link.innerHTML = "<a title='"+ltitle+"' href='"+M.cfg.wwwroot+"/mod/forumlv/settracking.php?id="+forumlvid+"'>"+ltext+"<\/a>";
+        subs_link.innerHTML = "<a title='"+ltitle+"' href='"+M.cfg.wwwroot+"/mod/forumlv/settracking.php?id="+forumlvid+"&amp;sesskey="+M.cfg.sesskey+"'>"+ltext+"<\/a>";
     }
 }
 

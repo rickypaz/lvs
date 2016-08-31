@@ -17,15 +17,13 @@
 /**
  * Version information
  *
- * @package    mod
- * @subpackage forumlv
- * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_forumlv
+ * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$module->version   = 2013050100;       // The current module version (Date: YYYYMMDDXX)
-$module->requires  = 2013050100;       // Requires this Moodle version
-$module->component = 'mod_forumlv';      // Full name of the plugin (used for diagnostics)
-$module->cron      = 60;
+$plugin->version   = 2016052300;       // The current module version (Date: YYYYMMDDXX)
+$plugin->requires  = 2016051900;       // Requires this Moodle version
+$plugin->component = 'mod_forumlv';      // Full name of the plugin (used for diagnostics)

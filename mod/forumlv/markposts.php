@@ -18,7 +18,7 @@
 /**
  * Set tracking option for the forumlv.
  *
- * @package mod-forumlv
+ * @package   mod_forumlv
  * @copyright 2005 mchurch
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -55,11 +55,12 @@ if (!$cm = get_coursemodule_from_instance("forumlv", $forumlv->id, $course->id))
 $user = $USER;
 
 require_login($course, false, $cm);
+require_sesskey();
 
 if ($returnpage == 'index.php') {
-    $returnto = forumlv_go_back_to($returnpage.'?id='.$course->id);
+    $returnto = new moodle_url("/mod/forumlv/$returnpage", array('id' => $course->id));
 } else {
-    $returnto = forumlv_go_back_to($returnpage.'?f='.$forumlv->id);
+    $returnto = new moodle_url("/mod/forumlv/$returnpage", array('f' => $forumlv->id));
 }
 
 if (isguestuser()) {   // Guests can't change forumlv
@@ -81,9 +82,7 @@ if ($mark == 'read') {
             print_error('invaliddiscussionid', 'forumlv');
         }
 
-        if (forumlv_tp_mark_discussion_read($user, $d)) {
-            add_to_log($course->id, "discussion", "mark read", "view.php?f=$forumlv->id", $d, $cm->id);
-        }
+        forumlv_tp_mark_discussion_read($user, $d);
     } else {
         // Mark all messages read in current group
         $currentgroup = groups_get_activity_group($cm);
@@ -92,18 +91,15 @@ if ($mark == 'read') {
             // may return 0
             $currentgroup=false;
         }
-        if (forumlv_tp_mark_forumlv_read($user, $forumlv->id,$currentgroup)) {
-            add_to_log($course->id, "forumlv", "mark read", "view.php?f=$forumlv->id", $forumlv->id, $cm->id);
-        }
+        forumlv_tp_mark_forumlv_read($user, $forumlv->id, $currentgroup);
     }
 
 /// FUTURE - Add ability to mark them as unread.
 //    } else { // subscribe
 //        if (forumlv_tp_start_tracking($forumlv->id, $user->id)) {
-//            add_to_log($course->id, "forumlv", "mark unread", "view.php?f=$forumlv->id", $forumlv->id, $cm->id);
 //            redirect($returnto, get_string("nowtracking", "forumlv", $info), 1);
 //        } else {
-//            print_error("Could not start tracking that forumlv", $_SERVER["HTTP_REFERER"]);
+//            print_error("Could not start tracking that forumlv", get_local_referer());
 //        }
 }
 

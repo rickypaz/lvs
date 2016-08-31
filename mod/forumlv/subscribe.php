@@ -26,8 +26,7 @@
  * through a confirmation page that redirects the user back with the
  * sesskey.
  *
- * @package    mod
- * @subpackage forumlv
+ * @package   mod_forumlv
  * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -35,10 +34,12 @@
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once($CFG->dirroot.'/mod/forumlv/lib.php');
 
-$id      = required_param('id', PARAM_INT);             // the forumlv to subscribe or unsubscribe to
-$mode    = optional_param('mode', null, PARAM_INT);     // the forumlv's subscription mode
-$user    = optional_param('user', 0, PARAM_INT);        // userid of the user to subscribe, defaults to $USER
-$sesskey = optional_param('sesskey', null, PARAM_RAW);  // sesskey
+$id             = required_param('id', PARAM_INT);             // The forumlv to set subscription on.
+$mode           = optional_param('mode', null, PARAM_INT);     // The forumlv's subscription mode.
+$user           = optional_param('user', 0, PARAM_INT);        // The userid of the user to subscribe, defaults to $USER.
+$discussionid   = optional_param('d', null, PARAM_INT);        // The discussionid to subscribe.
+$sesskey        = optional_param('sesskey', null, PARAM_RAW);
+$returnurl      = optional_param('returnurl', null, PARAM_RAW);
 
 $url = new moodle_url('/mod/forumlv/subscribe.php', array('id'=>$id));
 if (!is_null($mode)) {
@@ -49,6 +50,12 @@ if ($user !== 0) {
 }
 if (!is_null($sesskey)) {
     $url->param('sesskey', $sesskey);
+}
+if (!is_null($discussionid)) {
+    $url->param('d', $discussionid);
+    if (!$discussion = $DB->get_record('forumlv_discussions', array('id' => $discussionid, 'forumlv' => $id))) {
+        print_error('invaliddiscussionid', 'forumlv');
+    }
 }
 $PAGE->set_url($url);
 
@@ -72,7 +79,11 @@ if (isset($cm->groupmode) && empty($course->groupmodeforce)) {
 } else {
     $groupmode = $course->groupmode;
 }
-if ($groupmode && !forumlv_is_subscribed($user->id, $forumlv) && !has_capability('moodle/site:accessallgroups', $context)) {
+
+$issubscribed = \mod_forumlv\subscriptions::is_subscribed($user->id, $forumlv, $discussionid, $cm);
+
+// For a user to subscribe when a groupmode is set, they must have access to at least one group.
+if ($groupmode && !$issubscribed && !has_capability('moodle/site:accessallgroups', $context)) {
     if (!groups_get_all_groups($course->id, $USER->id)) {
         print_error('cannotsubscribe', 'forumlv');
     }
@@ -90,8 +101,13 @@ if (is_null($mode) and !is_enrolled($context, $USER, '', true)) {   // Guests an
         echo $OUTPUT->footer();
         exit;
     } else {
-        // there should not be any links leading to this place, just redirect
-        redirect(new moodle_url('/mod/forumlv/view.php', array('f'=>$id)), get_string('subscribeenrolledonly', 'forumlv'));
+        // There should not be any links leading to this place, just redirect.
+        redirect(
+                new moodle_url('/mod/forumlv/view.php', array('f'=>$id)),
+                get_string('subscribeenrolledonly', 'forumlv'),
+                null,
+                \core\output\notification::NOTIFY_ERROR
+            );
     }
 }
 
@@ -99,81 +115,164 @@ $returnto = optional_param('backtoindex',0,PARAM_INT)
     ? "index.php?id=".$course->id
     : "view.php?f=$id";
 
+if ($returnurl) {
+    $returnto = $returnurl;
+}
+
 if (!is_null($mode) and has_capability('mod/forumlv:managesubscriptions', $context)) {
     require_sesskey();
     switch ($mode) {
         case FORUMLV_CHOOSESUBSCRIBE : // 0
-            forumlv_forcesubscribe($forumlv->id, FORUMLV_CHOOSESUBSCRIBE);
-            redirect($returnto, get_string("everyonecannowchoose", "forumlv"), 1);
+            \mod_forumlv\subscriptions::set_subscription_mode($forumlv->id, FORUMLV_CHOOSESUBSCRIBE);
+            redirect(
+                    $returnto,
+                    get_string('everyonecannowchoose', 'forumlv'),
+                    null,
+                    \core\output\notification::NOTIFY_SUCCESS
+                );
             break;
         case FORUMLV_FORCESUBSCRIBE : // 1
-            forumlv_forcesubscribe($forumlv->id, FORUMLV_FORCESUBSCRIBE);
-            redirect($returnto, get_string("everyoneisnowsubscribed", "forumlv"), 1);
+            \mod_forumlv\subscriptions::set_subscription_mode($forumlv->id, FORUMLV_FORCESUBSCRIBE);
+            redirect(
+                    $returnto,
+                    get_string('everyoneisnowsubscribed', 'forumlv'),
+                    null,
+                    \core\output\notification::NOTIFY_SUCCESS
+                );
             break;
         case FORUMLV_INITIALSUBSCRIBE : // 2
             if ($forumlv->forcesubscribe <> FORUMLV_INITIALSUBSCRIBE) {
-                $users = forumlv_get_potential_subscribers($context, 0, 'u.id, u.email', '');
+                $users = \mod_forumlv\subscriptions::get_potential_subscribers($context, 0, 'u.id, u.email', '');
                 foreach ($users as $user) {
-                    forumlv_subscribe($user->id, $forumlv->id);
+                    \mod_forumlv\subscriptions::subscribe_user($user->id, $forumlv, $context);
                 }
             }
-            forumlv_forcesubscribe($forumlv->id, FORUMLV_INITIALSUBSCRIBE);
-            redirect($returnto, get_string("everyoneisnowsubscribed", "forumlv"), 1);
+            \mod_forumlv\subscriptions::set_subscription_mode($forumlv->id, FORUMLV_INITIALSUBSCRIBE);
+            redirect(
+                    $returnto,
+                    get_string('everyoneisnowsubscribed', 'forumlv'),
+                    null,
+                    \core\output\notification::NOTIFY_SUCCESS
+                );
             break;
         case FORUMLV_DISALLOWSUBSCRIBE : // 3
-            forumlv_forcesubscribe($forumlv->id, FORUMLV_DISALLOWSUBSCRIBE);
-            redirect($returnto, get_string("noonecansubscribenow", "forumlv"), 1);
+            \mod_forumlv\subscriptions::set_subscription_mode($forumlv->id, FORUMLV_DISALLOWSUBSCRIBE);
+            redirect(
+                    $returnto,
+                    get_string('noonecansubscribenow', 'forumlv'),
+                    null,
+                    \core\output\notification::NOTIFY_SUCCESS
+                );
             break;
         default:
             print_error(get_string('invalidforcesubscribe', 'forumlv'));
     }
 }
 
-if (forumlv_is_forcesubscribed($forumlv)) {
-    redirect($returnto, get_string("everyoneisnowsubscribed", "forumlv"), 1);
+if (\mod_forumlv\subscriptions::is_forcesubscribed($forumlv)) {
+    redirect(
+            $returnto,
+            get_string('everyoneisnowsubscribed', 'forumlv'),
+            null,
+            \core\output\notification::NOTIFY_SUCCESS
+        );
 }
 
 $info = new stdClass();
 $info->name  = fullname($user);
 $info->forumlv = format_string($forumlv->name);
 
-if (forumlv_is_subscribed($user->id, $forumlv->id)) {
-    if (is_null($sesskey)) {    // we came here via link in email
+if ($issubscribed) {
+    if (is_null($sesskey)) {
+        // We came here via link in email.
         $PAGE->set_title($course->shortname);
         $PAGE->set_heading($course->fullname);
         echo $OUTPUT->header();
-        echo $OUTPUT->confirm(get_string('confirmunsubscribe', 'forumlv', format_string($forumlv->name)),
-                new moodle_url($PAGE->url, array('sesskey' => sesskey())), new moodle_url('/mod/forumlv/view.php', array('f' => $id)));
+
+        $viewurl = new moodle_url('/mod/forumlv/view.php', array('f' => $id));
+        if ($discussionid) {
+            $a = new stdClass();
+            $a->forumlv = format_string($forumlv->name);
+            $a->discussion = format_string($discussion->name);
+            echo $OUTPUT->confirm(get_string('confirmunsubscribediscussion', 'forumlv', $a),
+                    $PAGE->url, $viewurl);
+        } else {
+            echo $OUTPUT->confirm(get_string('confirmunsubscribe', 'forumlv', format_string($forumlv->name)),
+                    $PAGE->url, $viewurl);
+        }
         echo $OUTPUT->footer();
         exit;
     }
     require_sesskey();
-    if (forumlv_unsubscribe($user->id, $forumlv->id)) {
-        add_to_log($course->id, "forumlv", "unsubscribe", "view.php?f=$forumlv->id", $forumlv->id, $cm->id);
-        redirect($returnto, get_string("nownotsubscribed", "forumlv", $info), 1);
+    if ($discussionid === null) {
+        if (\mod_forumlv\subscriptions::unsubscribe_user($user->id, $forumlv, $context, true)) {
+            redirect(
+                    $returnto,
+                    get_string('nownotsubscribed', 'forumlv', $info),
+                    null,
+                    \core\output\notification::NOTIFY_SUCCESS
+                );
+        } else {
+            print_error('cannotunsubscribe', 'forumlv', get_local_referer(false));
+        }
     } else {
-        print_error('cannotunsubscribe', 'forumlv', $_SERVER["HTTP_REFERER"]);
+        if (\mod_forumlv\subscriptions::unsubscribe_user_from_discussion($user->id, $discussion, $context)) {
+            $info->discussion = $discussion->name;
+            redirect(
+                    $returnto,
+                    get_string('discussionnownotsubscribed', 'forumlv', $info),
+                    null,
+                    \core\output\notification::NOTIFY_SUCCESS
+                );
+        } else {
+            print_error('cannotunsubscribe', 'forumlv', get_local_referer(false));
+        }
     }
 
 } else {  // subscribe
-    if ($forumlv->forcesubscribe == FORUMLV_DISALLOWSUBSCRIBE &&
-                !has_capability('mod/forumlv:managesubscriptions', $context)) {
-        print_error('disallowsubscribe', 'forumlv', $_SERVER["HTTP_REFERER"]);
+    if (\mod_forumlv\subscriptions::subscription_disabled($forumlv) && !has_capability('mod/forumlv:managesubscriptions', $context)) {
+        print_error('disallowsubscribe', 'forumlv', get_local_referer(false));
     }
     if (!has_capability('mod/forumlv:viewdiscussion', $context)) {
-        print_error('noviewdiscussionspermission', 'forumlv', $_SERVER["HTTP_REFERER"]);
+        print_error('noviewdiscussionspermission', 'forumlv', get_local_referer(false));
     }
-    if (is_null($sesskey)) {    // we came here via link in email
+    if (is_null($sesskey)) {
+        // We came here via link in email.
         $PAGE->set_title($course->shortname);
         $PAGE->set_heading($course->fullname);
         echo $OUTPUT->header();
-        echo $OUTPUT->confirm(get_string('confirmsubscribe', 'forumlv', format_string($forumlv->name)),
-                new moodle_url($PAGE->url, array('sesskey' => sesskey())), new moodle_url('/mod/forumlv/view.php', array('f' => $id)));
+
+        $viewurl = new moodle_url('/mod/forumlv/view.php', array('f' => $id));
+        if ($discussionid) {
+            $a = new stdClass();
+            $a->forumlv = format_string($forumlv->name);
+            $a->discussion = format_string($discussion->name);
+            echo $OUTPUT->confirm(get_string('confirmsubscribediscussion', 'forumlv', $a),
+                    $PAGE->url, $viewurl);
+        } else {
+            echo $OUTPUT->confirm(get_string('confirmsubscribe', 'forumlv', format_string($forumlv->name)),
+                    $PAGE->url, $viewurl);
+        }
         echo $OUTPUT->footer();
         exit;
     }
     require_sesskey();
-    forumlv_subscribe($user->id, $forumlv->id);
-    add_to_log($course->id, "forumlv", "subscribe", "view.php?f=$forumlv->id", $forumlv->id, $cm->id);
-    redirect($returnto, get_string("nowsubscribed", "forumlv", $info), 1);
+    if ($discussionid == null) {
+        \mod_forumlv\subscriptions::subscribe_user($user->id, $forumlv, $context, true);
+        redirect(
+                $returnto,
+                get_string('nowsubscribed', 'forumlv', $info),
+                null,
+                \core\output\notification::NOTIFY_SUCCESS
+            );
+    } else {
+        $info->discussion = $discussion->name;
+        \mod_forumlv\subscriptions::subscribe_user_to_discussion($user->id, $discussion, $context);
+        redirect(
+                $returnto,
+                get_string('discussionnowsubscribed', 'forumlv', $info),
+                null,
+                \core\output\notification::NOTIFY_SUCCESS
+            );
+    }
 }

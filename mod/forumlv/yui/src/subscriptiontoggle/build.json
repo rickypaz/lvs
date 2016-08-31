@@ -1,0 +1,10 @@
+{
+    "name": "moodle-mod_forumlv-subscriptiontoggle",
+    "builds": {
+        "moodle-mod_forumlv-subscriptiontoggle": {
+            "jsfiles": [
+                "toggle.js"
+            ]
+        }
+    }
+}

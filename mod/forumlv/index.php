@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod-forumlv
+ * @package   mod_forumlv
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -51,7 +51,12 @@ $coursecontext = context_course::instance($course->id);
 
 unset($SESSION->fromdiscussion);
 
-add_to_log($course->id, 'forumlv', 'view forumlvs', "index.php?id=$course->id");
+$params = array(
+    'context' => context_course::instance($course->id)
+);
+$event = \mod_forumlv\event\course_module_instance_list_viewed::create($params);
+$event->add_record_snapshot('course', $course);
+$event->trigger();
 
 $strforumlvs       = get_string('forumlvs', 'forumlv');
 $strforumlv        = get_string('forumlv', 'forumlv');
@@ -68,11 +73,23 @@ $strunsubscribe  = get_string('unsubscribe', 'forumlv');
 $stryes          = get_string('yes');
 $strno           = get_string('no');
 $strrss          = get_string('rss');
+$stremaildigest  = get_string('emaildigest');
 
 $searchform = forumlv_search_form($course);
 
+// Retrieve the list of forumlv digest options for later.
+$digestoptions = forumlv_get_user_digest_options();
+$digestoptions_selector = new single_select(new moodle_url('/mod/forumlv/maildigest.php',
+    array(
+        'backtoindex' => 1,
+    )),
+    'maildigest',
+    $digestoptions,
+    null,
+    '');
+$digestoptions_selector->method = 'post';
 
-// Start of the table for General Forums
+// Start of the table for General Forumlvs
 
 $generaltable = new html_table();
 $generaltable->head  = array ($strforumlv, $strdescription, $strdiscussions);
@@ -88,11 +105,15 @@ if ($usetracking = forumlv_tp_can_track_forumlvs()) {
     $generaltable->align[] = 'center';
 }
 
-$subscribed_forumlvs = forumlv_get_subscribed_forumlvs($course);
+// Fill the subscription cache for this course and user combination.
+\mod_forumlv\subscriptions::fill_subscription_cache_for_course($course->id, $USER->id);
 
 $can_subscribe = is_enrolled($coursecontext);
 if ($can_subscribe) {
     $generaltable->head[] = $strsubscribed;
+    $generaltable->align[] = 'center';
+
+    $generaltable->head[] = $stremaildigest . ' ' . $OUTPUT->help_icon('emaildigesttype', 'mod_forumlv');
     $generaltable->align[] = 'center';
 }
 
@@ -111,17 +132,19 @@ $table = new html_table();
 // some special ones are not.  These get placed in the general forumlvs
 // category with the forumlvs in section 0.
 
-$forumlvs = $DB->get_records('forumlv', array('course' => $course->id));
+$forumlvs = $DB->get_records_sql("
+    SELECT f.*,
+           d.maildigest
+      FROM {forumlv} f
+ LEFT JOIN {forumlv_digests} d ON d.forumlv = f.id AND d.userid = ?
+     WHERE f.course = ?
+    ", array($USER->id, $course->id));
 
 $generalforumlvs  = array();
 $learningforumlvs = array();
 $modinfo = get_fast_modinfo($course);
 
-if (!isset($modinfo->instances['forumlv'])) {
-    $modinfo->instances['forumlv'] = array();
-}
-
-foreach ($modinfo->instances['forumlv'] as $forumlvid=>$cm) {
+foreach ($modinfo->get_instances_of('forumlv') as $forumlvid=>$cm) {
     if (!$cm->uservisible or !isset($forumlvs[$forumlvid])) {
         continue;
     }
@@ -151,11 +174,16 @@ foreach ($modinfo->instances['forumlv'] as $forumlvid=>$cm) {
 // Do course wide subscribe/unsubscribe if requested
 if (!is_null($subscribe)) {
     if (isguestuser() or !$can_subscribe) {
-        // there should not be any links leading to this place, just redirect
-        redirect(new moodle_url('/mod/forumlv/index.php', array('id' => $id)), get_string('subscribeenrolledonly', 'forumlv'));
+        // There should not be any links leading to this place, just redirect.
+        redirect(
+                new moodle_url('/mod/forumlv/index.php', array('id' => $id)),
+                get_string('subscribeenrolledonly', 'forumlv'),
+                null,
+                \core\output\notification::NOTIFY_ERROR
+            );
     }
     // Can proceed now, the user is not guest and is enrolled
-    foreach ($modinfo->instances['forumlv'] as $forumlvid=>$cm) {
+    foreach ($modinfo->get_instances_of('forumlv') as $forumlvid=>$cm) {
         $forumlv = $forumlvs[$forumlvid];
         $modcontext = context_module::instance($cm->id);
         $cansub = false;
@@ -168,23 +196,32 @@ if (!is_null($subscribe)) {
         {
             $cansub = false;
         }
-        if (!forumlv_is_forcesubscribed($forumlv)) {
-            $subscribed = forumlv_is_subscribed($USER->id, $forumlv);
-            if ((has_capability('moodle/course:manageactivities', $coursecontext, $USER->id) || $forumlv->forcesubscribe != FORUMLV_DISALLOWSUBSCRIBE) && $subscribe && !$subscribed && $cansub) {
-                forumlv_subscribe($USER->id, $forumlvid);
+        if (!\mod_forumlv\subscriptions::is_forcesubscribed($forumlv)) {
+            $subscribed = \mod_forumlv\subscriptions::is_subscribed($USER->id, $forumlv, null, $cm);
+            $canmanageactivities = has_capability('moodle/course:manageactivities', $coursecontext, $USER->id);
+            if (($canmanageactivities || \mod_forumlv\subscriptions::is_subscribable($forumlv)) && $subscribe && !$subscribed && $cansub) {
+                \mod_forumlv\subscriptions::subscribe_user($USER->id, $forumlv, $modcontext, true);
             } else if (!$subscribe && $subscribed) {
-                forumlv_unsubscribe($USER->id, $forumlvid);
+                \mod_forumlv\subscriptions::unsubscribe_user($USER->id, $forumlv, $modcontext, true);
             }
         }
     }
-    $returnto = forumlv_go_back_to("index.php?id=$course->id");
+    $returnto = forumlv_go_back_to(new moodle_url('/mod/forumlv/index.php', array('id' => $course->id)));
     $shortname = format_string($course->shortname, true, array('context' => context_course::instance($course->id)));
     if ($subscribe) {
-        add_to_log($course->id, 'forumlv', 'subscribeall', "index.php?id=$course->id", $course->id);
-        redirect($returnto, get_string('nowallsubscribed', 'forumlv', $shortname), 1);
+        redirect(
+                $returnto,
+                get_string('nowallsubscribed', 'forumlv', $shortname),
+                null,
+                \core\output\notification::NOTIFY_SUCCESS
+            );
     } else {
-        add_to_log($course->id, 'forumlv', 'unsubscribeall', "index.php?id=$course->id", $course->id);
-        redirect($returnto, get_string('nowallunsubscribed', 'forumlv', $shortname), 1);
+        redirect(
+                $returnto,
+                get_string('nowallunsubscribed', 'forumlv', $shortname),
+                null,
+                \core\output\notification::NOTIFY_SUCCESS
+            );
     }
 }
 
@@ -208,16 +245,20 @@ if ($generalforumlvs) {
                 } else if ($unread = forumlv_tp_count_forumlv_unread_posts($cm, $course)) {
                         $unreadlink = '<span class="unread"><a href="view.php?f='.$forumlv->id.'">'.$unread.'</a>';
                     $unreadlink .= '<a title="'.$strmarkallread.'" href="markposts.php?f='.
-                                   $forumlv->id.'&amp;mark=read"><img src="'.$OUTPUT->pix_url('t/markasread') . '" alt="'.$strmarkallread.'" class="iconsmall" /></a></span>';
+                                   $forumlv->id.'&amp;mark=read&amp;sesskey=' . sesskey() . '"><img src="'.$OUTPUT->pix_url('t/markasread') . '" alt="'.$strmarkallread.'" class="iconsmall" /></a></span>';
                 } else {
                     $unreadlink = '<span class="read">0</span>';
                 }
 
-                if ($forumlv->trackingtype == FORUMLV_TRACKING_ON) {
+                if (($forumlv->trackingtype == FORUMLV_TRACKING_FORCED) && ($CFG->forumlv_allowforcedreadtracking)) {
                     $trackedlink = $stryes;
-
+                } else if ($forumlv->trackingtype === FORUMLV_TRACKING_OFF || ($USER->trackforumlvs == 0)) {
+                    $trackedlink = '-';
                 } else {
-                    $aurl = new moodle_url('/mod/forumlv/settracking.php', array('id'=>$forumlv->id));
+                    $aurl = new moodle_url('/mod/forumlv/settracking.php', array(
+                            'id' => $forumlv->id,
+                            'sesskey' => sesskey(),
+                        ));
                     if (!isset($untracked[$forumlv->id])) {
                         $trackedlink = $OUTPUT->single_button($aurl, $stryes, 'post', array('title'=>$strnotrackforumlv));
                     } else {
@@ -245,13 +286,17 @@ if ($generalforumlvs) {
         }
 
         if ($can_subscribe) {
-            if ($forumlv->forcesubscribe != FORUMLV_DISALLOWSUBSCRIBE) {
-                $row[] = forumlv_get_subscribe_link($forumlv, $context, array('subscribed' => $stryes,
-                        'unsubscribed' => $strno, 'forcesubscribed' => $stryes,
-                        'cantsubscribe' => '-'), false, false, true, $subscribed_forumlvs);
+            $row[] = forumlv_get_subscribe_link($forumlv, $context, array('subscribed' => $stryes,
+                    'unsubscribed' => $strno, 'forcesubscribed' => $stryes,
+                    'cantsubscribe' => '-'), false, false, true);
+
+            $digestoptions_selector->url->param('id', $forumlv->id);
+            if ($forumlv->maildigest === null) {
+                $digestoptions_selector->selected = -1;
             } else {
-                $row[] = '-';
+                $digestoptions_selector->selected = $forumlv->maildigest;
             }
+            $row[] = $OUTPUT->render($digestoptions_selector);
         }
 
         //If this forumlv has RSS activated, calculate it
@@ -281,7 +326,7 @@ if ($generalforumlvs) {
 }
 
 
-// Start of the table for Learning Forums
+// Start of the table for Learning Forumlvs
 $learningtable = new html_table();
 $learningtable->head  = array ($strforumlv, $strdescription, $strdiscussions);
 $learningtable->align = array ('left', 'left', 'center');
@@ -296,6 +341,9 @@ if ($usetracking) {
 
 if ($can_subscribe) {
     $learningtable->head[] = $strsubscribed;
+    $learningtable->align[] = 'center';
+
+    $learningtable->head[] = $stremaildigest . ' ' . $OUTPUT->help_icon('emaildigesttype', 'mod_forumlv');
     $learningtable->align[] = 'center';
 }
 
@@ -335,14 +383,15 @@ if ($course->id != SITEID) {    // Only real courses have learning forumlvs
                     } else if ($unread = forumlv_tp_count_forumlv_unread_posts($cm, $course)) {
                         $unreadlink = '<span class="unread"><a href="view.php?f='.$forumlv->id.'">'.$unread.'</a>';
                         $unreadlink .= '<a title="'.$strmarkallread.'" href="markposts.php?f='.
-                                       $forumlv->id.'&amp;mark=read"><img src="'.$OUTPUT->pix_url('t/markasread') . '" alt="'.$strmarkallread.'" class="iconsmall" /></a></span>';
+                                       $forumlv->id.'&amp;mark=read&sesskey=' . sesskey() . '"><img src="'.$OUTPUT->pix_url('t/markasread') . '" alt="'.$strmarkallread.'" class="iconsmall" /></a></span>';
                     } else {
                         $unreadlink = '<span class="read">0</span>';
                     }
 
-                    if ($forumlv->trackingtype == FORUMLV_TRACKING_ON) {
+                    if (($forumlv->trackingtype == FORUMLV_TRACKING_FORCED) && ($CFG->forumlv_allowforcedreadtracking)) {
                         $trackedlink = $stryes;
-
+                    } else if ($forumlv->trackingtype === FORUMLV_TRACKING_OFF || ($USER->trackforumlvs == 0)) {
+                        $trackedlink = '-';
                     } else {
                         $aurl = new moodle_url('/mod/forumlv/settracking.php', array('id'=>$forumlv->id));
                         if (!isset($untracked[$forumlv->id])) {
@@ -383,13 +432,17 @@ if ($course->id != SITEID) {    // Only real courses have learning forumlvs
             }
 
             if ($can_subscribe) {
-                if ($forumlv->forcesubscribe != FORUMLV_DISALLOWSUBSCRIBE) {
-                    $row[] = forumlv_get_subscribe_link($forumlv, $context, array('subscribed' => $stryes,
-                        'unsubscribed' => $strno, 'forcesubscribed' => $stryes,
-                        'cantsubscribe' => '-'), false, false, true, $subscribed_forumlvs);
+                $row[] = forumlv_get_subscribe_link($forumlv, $context, array('subscribed' => $stryes,
+                    'unsubscribed' => $strno, 'forcesubscribed' => $stryes,
+                    'cantsubscribe' => '-'), false, false, true);
+
+                $digestoptions_selector->url->param('id', $forumlv->id);
+                if ($forumlv->maildigest === null) {
+                    $digestoptions_selector->selected = -1;
                 } else {
-                    $row[] = '-';
+                    $digestoptions_selector->selected = $forumlv->maildigest;
                 }
+                $row[] = $OUTPUT->render($digestoptions_selector);
             }
 
             //If this forumlv has RSS activated, calculate it
@@ -437,12 +490,12 @@ if (!isguestuser() && isloggedin() && $can_subscribe) {
 }
 
 if ($generalforumlvs) {
-    echo $OUTPUT->heading(get_string('generalforumlvs', 'forumlv'));
+    echo $OUTPUT->heading(get_string('generalforumlvs', 'forumlv'), 2);
     echo html_writer::table($generaltable);
 }
 
 if ($learningforumlvs) {
-    echo $OUTPUT->heading(get_string('learningforumlvs', 'forumlv'));
+    echo $OUTPUT->heading(get_string('learningforumlvs', 'forumlv'), 2);
     echo html_writer::table($learningtable);
 }
 

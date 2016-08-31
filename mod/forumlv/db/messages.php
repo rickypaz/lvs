@@ -18,18 +18,17 @@
 /**
  * Defines message providers (types of messages being sent)
  *
- * @package mod-forumlv
- * @copyright  1999 onwards  Martin Dougiamas  http://moodle.com
+ * @package   mod_forumlv
+ * @copyright 1999 onwards  Martin Dougiamas  http://moodle.com
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 $messageproviders = array (
+    // Ordinary single forumlv posts.
+    'posts' => array(
+    ),
 
-/// Ordinary single forumlv posts
-    'posts' => array (
-    )
-
+    // Forumlv digest messages.
+    'digests' => array(
+    ),
 );
-
-
-

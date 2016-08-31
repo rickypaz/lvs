@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod-forumlv
+ * @package   mod_forumlv
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -32,7 +32,7 @@ $showform = optional_param('showform', 0, PARAM_INT);   // Just show the form
 
 $user    = trim(optional_param('user', '', PARAM_NOTAGS));    // Names to search for
 $userid  = trim(optional_param('userid', 0, PARAM_INT));      // UserID to search for
-$forumlvid = trim(optional_param('forumlvid', 0, PARAM_INT));      // ForumID to search for
+$forumlvid = trim(optional_param('forumlvid', 0, PARAM_INT));      // ForumlvID to search for
 $subject = trim(optional_param('subject', '', PARAM_NOTAGS)); // Subject
 $phrase  = trim(optional_param('phrase', '', PARAM_NOTAGS));  // Phrase
 $words   = trim(optional_param('words', '', PARAM_NOTAGS));   // Words
@@ -46,7 +46,9 @@ $fromyear = optional_param('fromyear', 0, PARAM_INT);      // Starting date
 $fromhour = optional_param('fromhour', 0, PARAM_INT);      // Starting date
 $fromminute = optional_param('fromminute', 0, PARAM_INT);      // Starting date
 if ($timefromrestrict) {
-    $datefrom = make_timestamp($fromyear, $frommonth, $fromday, $fromhour, $fromminute);
+    $calendartype = \core_calendar\type_factory::get_calendar_instance();
+    $gregorianfrom = $calendartype->convert_to_gregorian($fromyear, $frommonth, $fromday);
+    $datefrom = make_timestamp($gregorianfrom['year'], $gregorianfrom['month'], $gregorianfrom['day'], $fromhour, $fromminute);
 } else {
     $datefrom = optional_param('datefrom', 0, PARAM_INT);      // Starting date
 }
@@ -58,7 +60,9 @@ $toyear = optional_param('toyear', 0, PARAM_INT);      // Ending date
 $tohour = optional_param('tohour', 0, PARAM_INT);      // Ending date
 $tominute = optional_param('tominute', 0, PARAM_INT);      // Ending date
 if ($timetorestrict) {
-    $dateto = make_timestamp($toyear, $tomonth, $today, $tohour, $tominute);
+    $calendartype = \core_calendar\type_factory::get_calendar_instance();
+    $gregorianto = $calendartype->convert_to_gregorian($toyear, $tomonth, $today);
+    $dateto = make_timestamp($gregorianto['year'], $gregorianto['month'], $gregorianto['day'], $tohour, $tominute);
 } else {
     $dateto = optional_param('dateto', 0, PARAM_INT);      // Ending date
 }
@@ -112,7 +116,13 @@ if (!$course = $DB->get_record('course', array('id'=>$id))) {
 
 require_course_login($course);
 
-add_to_log($course->id, "forumlv", "search", "search.php?id=$course->id&amp;search=".urlencode($search), $search);
+$params = array(
+    'context' => $PAGE->context,
+    'other' => array('searchterm' => $search)
+);
+
+$event = \mod_forumlv\event\course_searched::create($params);
+$event->trigger();
 
 $strforumlvs = get_string("modulenameplural", "forumlv");
 $strsearch = get_string("search", "forumlv");
@@ -146,7 +156,9 @@ if (!$posts = forumlv_search_posts($searchterms, $course->id, $page*$perpage, $p
     $PAGE->set_title($strsearchresults);
     $PAGE->set_heading($course->fullname);
     echo $OUTPUT->header();
-    echo $OUTPUT->heading(get_string("noposts", "forumlv"));
+    echo $OUTPUT->heading($strforumlvs, 2);
+    echo $OUTPUT->heading($strsearchresults, 3);
+    echo $OUTPUT->heading(get_string("noposts", "forumlv"), 4);
 
     if (!$individualparams) {
         $words = $search;
@@ -189,7 +201,8 @@ echo '<a href="search.php?id='.$course->id.
                          '">'.get_string('advancedsearch','forumlv').'...</a>';
 echo '</div>';
 
-echo $OUTPUT->heading("$strsearchresults: $totalcount");
+echo $OUTPUT->heading($strforumlvs, 2);
+echo $OUTPUT->heading("$strsearchresults: $totalcount", 3);
 
 $url = new moodle_url('search.php', array('search' => $search, 'id' => $course->id, 'perpage' => $perpage));
 echo $OUTPUT->paging_bar($totalcount, $page, $perpage, $url);
@@ -283,6 +296,11 @@ foreach ($posts as $post) {
     // Prepare a link to the post in context, to be displayed after the forumlv post.
     $fulllink = "<a href=\"discuss.php?d=$post->discussion#p$post->id\">".get_string("postincontext", "forumlv")."</a>";
 
+    // Message is now html format.
+    if ($post->messageformat != FORMAT_HTML) {
+        $post->messageformat = FORMAT_HTML;
+    }
+
     // Now pring the post.
     forumlv_print_post($post, $discussion, $forumlv, $cm, $course, false, false, false,
             $fulllink, '', -99, false);
@@ -293,10 +311,12 @@ echo $OUTPUT->paging_bar($totalcount, $page, $perpage, $url);
 echo $OUTPUT->footer();
 
 
-
-/**
- * @todo Document this function
- */
+ /**
+  * Print a full-sized search form for the specified course.
+  *
+  * @param stdClass $course The Course that will be searched.
+  * @return void The function prints the form.
+  */
 function forumlv_print_big_search_form($course) {
     global $CFG, $DB, $words, $subject, $phrase, $user, $userid, $fullwords, $notwords, $datefrom, $dateto, $PAGE, $OUTPUT;
 
@@ -418,12 +438,13 @@ function forumlv_print_big_search_form($course) {
 
 /**
  * This function takes each word out of the search string, makes sure they are at least
- * two characters long and returns an array containing every good word.
+ * two characters long and returns an string of the space-separated search
+ * terms.
  *
- * @param string $words String containing space-separated strings to search for
- * @param string $prefix String to prepend to the each token taken out of $words
- * @returns array
- * @todo Take the hardcoded limit out of this function and put it into a user-specified parameter
+ * @param string $words String containing space-separated strings to search for.
+ * @param string $prefix String to prepend to the each token taken out of $words.
+ * @return string The filtered search terms, separated by spaces.
+ * @todo Take the hardcoded limit out of this function and put it into a user-specified parameter.
  */
 function forumlv_clean_search_terms($words, $prefix='') {
     $searchterms = explode(' ', $words);
@@ -437,15 +458,16 @@ function forumlv_clean_search_terms($words, $prefix='') {
     return trim(implode(' ', $searchterms));
 }
 
-/**
- * @todo Document this function
- */
+ /**
+  * Retrieve a list of the forumlvs that this user can view.
+  *
+  * @param stdClass $course The Course to use.
+  * @return array A set of formatted forumlv names stored against the forumlv id.
+  */
 function forumlv_menu_list($course)  {
-
     $menu = array();
 
     $modinfo = get_fast_modinfo($course);
-
     if (empty($modinfo->instances['forumlv'])) {
         return $menu;
     }
@@ -463,4 +485,3 @@ function forumlv_menu_list($course)  {
 
     return $menu;
 }
-

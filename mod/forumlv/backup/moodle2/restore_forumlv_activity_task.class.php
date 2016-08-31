@@ -16,10 +16,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package moodlecore
+ * @package    mod_forumlv
  * @subpackage backup-moodle2
- * @copyright 2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -69,7 +69,7 @@ class restore_forumlv_activity_task extends restore_activity_task {
 
         // List of forumlvs in course
         $rules[] = new restore_decode_rule('FORUMLVINDEX', '/mod/forumlv/index.php?id=$1', 'course');
-        // Forum by cm->id and forumlv->id
+        // Forumlv by cm->id and forumlv->id
         $rules[] = new restore_decode_rule('FORUMLVVIEWBYID', '/mod/forumlv/view.php?id=$1', 'course_module');
         $rules[] = new restore_decode_rule('FORUMLVVIEWBYF', '/mod/forumlv/view.php?f=$1', 'forumlv');
         // Link to forumlv discussion
