@@ -18,9 +18,9 @@
 /**
  * This file contains all necessary code to edit a wikilv page
  *
- * @package mod-wikilv-2.0
- * @copyrigth 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
- * @copyrigth 2009 Universitat Politecnica de Catalunya http://www.upc.edu
+ * @package mod_wikilv
+ * @copyright 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
+ * @copyright 2009 Universitat Politecnica de Catalunya http://www.upc.edu
  *
  * @author Jordi Piguillem
  * @author Marc Alier
@@ -40,7 +40,7 @@ require_once($CFG->dirroot . '/mod/wikilv/pagelib.php');
 $pageid = required_param('pageid', PARAM_INT);
 $contentformat = optional_param('contentformat', '', PARAM_ALPHA);
 $option = optional_param('editoption', '', PARAM_TEXT);
-$section = optional_param('section', "", PARAM_TEXT);
+$section = optional_param('section', "", PARAM_RAW);
 $version = optional_param('version', -1, PARAM_INT);
 $attachments = optional_param('attachments', 0, PARAM_INT);
 $deleteuploads = optional_param('deleteuploads', 0, PARAM_RAW);
@@ -75,7 +75,10 @@ if (!empty($section) && !$sectioncontent = wikilv_get_section_page($page, $secti
 require_login($course, true, $cm);
 
 $context = context_module::instance($cm->id);
-require_capability('mod/wikilv:editpage', $context);
+
+if (!wikilv_user_can_edit($subwikilv)) {
+    print_error('cannoteditpage', 'wikilv');
+}
 
 if ($option == get_string('save', 'wikilv')) {
     if (!confirm_sesskey()) {
@@ -85,7 +88,6 @@ if ($option == get_string('save', 'wikilv')) {
     $wikilvpage->set_page($page);
     $wikilvpage->set_newcontent($newcontent);
     $wikilvpage->set_upload(true);
-    add_to_log($course->id, 'wikilv', 'edit', "view.php?pageid=".$pageid, $pageid, $cm->id);
 } else {
     if ($option == get_string('preview')) {
         if (!confirm_sesskey()) {

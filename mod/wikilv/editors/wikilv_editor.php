@@ -6,7 +6,7 @@
  * @author Kenneth Riba
  *
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @package wikilv
+ * @package mod_wikilv
  *
  */
 
@@ -60,7 +60,7 @@ function wikilv_print_editor_wikilv($pageid, $content, $editor, $version = -1, $
     $tag = getTokens($editor, 'nowikilv');
     $wikilv_editor['nowikilv'] = array('ed_nowikilv.gif', get_string('wikilvnowikilvtext', 'wikilv'), $tag[0], $tag[1], get_string('wikilvnowikilvtext', 'wikilv'));
 
-    $OUTPUT->heading(strtoupper(get_string('format' . $editor, 'wikilv')));
+    $OUTPUT->heading(strtoupper(get_string('format' . $editor, 'wikilv')), 3);
 
     $PAGE->requires->js('/mod/wikilv/editors/wikilv/buttons.js');
 

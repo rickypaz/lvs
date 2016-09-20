@@ -18,9 +18,9 @@
 /**
  * This page lists all the instances of wikilv in a particular course
  *
- * @package mod-wikilv-2.0
- * @copyrigth 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
- * @copyrigth 2009 Universitat Politecnica de Catalunya http://www.upc.edu
+ * @package mod_wikilv
+ * @copyright 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
+ * @copyright 2009 Universitat Politecnica de Catalunya http://www.upc.edu
  *
  * @author Jordi Piguillem
  * @author Marc Alier
@@ -45,7 +45,9 @@ require_login($course, true);
 $PAGE->set_pagelayout('incourse');
 $context = context_course::instance($course->id);
 
-add_to_log($course->id, 'wikilv', 'view', "index.php?id=".$id, "");
+$event = \mod_wikilv\event\course_module_instance_list_viewed::create(array('context' => $context));
+$event->add_record_snapshot('course', $course);
+$event->trigger();
 
 /// Get all required stringswikilv
 $strwikilvs = get_string("modulenameplural", "wikilv");
@@ -56,6 +58,7 @@ $PAGE->navbar->add($strwikilvs, "index.php?id=$course->id");
 $PAGE->set_title($strwikilvs);
 $PAGE->set_heading($course->fullname);
 echo $OUTPUT->header();
+echo $OUTPUT->heading($strwikilvs);
 
 /// Get all the appropriate data
 if (!$wikilvs = get_all_instances_in_course("wikilv", $course)) {
@@ -68,11 +71,11 @@ $usesections = course_format_uses_sections($course->format);
 /// Print the list of instances (your module will probably extend this)
 
 $timenow = time();
-$strsectionname = get_string('sectionname', 'format_' . $course->format);
 $strname = get_string("name");
 $table = new html_table();
 
 if ($usesections) {
+    $strsectionname = get_string('sectionname', 'format_' . $course->format);
     $table->head = array($strsectionname, $strname);
 } else {
     $table->head = array($strname);

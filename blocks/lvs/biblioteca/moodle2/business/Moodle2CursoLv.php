@@ -88,7 +88,7 @@ class Moodle2CursoLv extends CursoLv {
 	
 	public function avaliarDesempenho( $estudante ) {
 		global $DB;
-
+	
 		$modulos = $this->getGerenciadores();
 		$desempenho = new \stdClass();
 		$desempenho->usuario = new \stdClass();
@@ -578,10 +578,17 @@ class Moodle2CursoLv extends CursoLv {
 		$id_item_curso = $item_curso->id;
 		
 		$nota_curso = $DB->get_record('grade_grades', array('userid'=>$desempenho->usuario->id, 'itemid'=>$id_item_curso), 'id');
+		
+		echo 'user:' . $desempenho->usuario->id;
+		echo 'item:' . $id_item_curso;
+		echo '<pre>';
+		print_r($nota_curso);
+		echo '</pre>';
+		
 		$id_nota_curso = (!empty($nota_curso)) ? $nota_curso->id : null;
 
 		$grade = new \stdClass();		
-		$grade->finalgrade = (isset($desempenho->mediaFinal)) ? round($desempenho->mediaFinal, 1) : round($desempenho->mediaParcial, 1);
+		$grade->finalgrade = 5;//(isset($desempenho->mediaFinal)) ? round($desempenho->mediaFinal, 1) : round($desempenho->mediaParcial, 1);
 
 		if (empty($id_nota_curso)) {
 			$novaentrada = new \stdClass();
@@ -590,6 +597,12 @@ class Moodle2CursoLv extends CursoLv {
 			$DB->insert_record('grade_grades', $grade);
 		} else {
 			$grade->id = $id_nota_curso;
+			
+			echo '<pre>';
+			print_r($grade);
+			echo '</pre>';
+			
+			exit;
 			$DB->update_record('grade_grades', $grade);
 		}
 	}

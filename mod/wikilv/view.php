@@ -18,9 +18,9 @@
 /**
  * This file contains all necessary code to view a wikilv page
  *
- * @package mod-wikilv-2.0
- * @copyrigth 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
- * @copyrigth 2009 Universitat Politecnica de Catalunya http://www.upc.edu
+ * @package mod_wikilv
+ * @copyright 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
+ * @copyright 2009 Universitat Politecnica de Catalunya http://www.upc.edu
  *
  * @author Jordi Piguillem
  * @author Marc Alier
@@ -30,14 +30,13 @@
  *
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 // @lvs dependências lvs
 use uab\ifce\lvs\moodle2\business\Moodle2CursoLv;
 use uab\ifce\lvs\moodle2\business\WikisLv;
 use uab\ifce\lvs\moodle2\business\Wikilv;
 use uab\ifce\lvs\business\Item;
 use uab\ifce\lvs\avaliacao\NotasLvFactory;
-// fim 
+// fim
 
 require_once('../../config.php');
 require_once($CFG->dirroot . '/mod/wikilv/lib.php');
@@ -48,7 +47,7 @@ $id = optional_param('id', 0, PARAM_INT); // Course Module ID
 
 $pageid = optional_param('pageid', 0, PARAM_INT); // Page ID
 
-$wid = optional_param('wid', 0, PARAM_INT); // Wiki ID
+$wid = optional_param('wid', 0, PARAM_INT); // Wikilv ID
 $title = optional_param('title', '', PARAM_TEXT); // Page Title
 $currentgroup = optional_param('group', 0, PARAM_INT); // Group ID
 $userid = optional_param('uid', 0, PARAM_INT); // User ID
@@ -276,16 +275,12 @@ if ($id) {
     //     * Error. No more options
     //     */
 } else {
-    print_error('incorrectparameters');
+    print_error('invalidparameters', 'wikilv');
 }
 
-$context = context_module::instance($cm->id);
-require_capability('mod/wikilv:viewpage', $context);
-
-// Update 'viewed' state if required by completion system
-require_once($CFG->libdir . '/completionlib.php');
-$completion = new completion_info($course);
-$completion->set_module_viewed($cm);
+if (!wikilv_user_can_view($subwikilv, $wikilv)) {
+    print_error('cannotviewpage', 'wikilv');
+}
 
 if (($edit != - 1) and $PAGE->user_allowed_editing()) {
     $USER->editing = $edit;
@@ -293,24 +288,22 @@ if (($edit != - 1) and $PAGE->user_allowed_editing()) {
 
 $wikilvpage = new page_wikilv_view($wikilv, $subwikilv, $cm);
 
-/*The following piece of code is used in order
- * to perform set_url correctly. It is necessary in order
- * to make page_wikilv_view class know that this page
- * has been called via its id.
- */
-if ($id) {
-    $wikilvpage->set_coursemodule($id);
-}
-
 $wikilvpage->set_gid($currentgroup);
 $wikilvpage->set_page($page);
 
-if($pageid) {
-    add_to_log($course->id, 'wikilv', 'view', "view.php?pageid=".$pageid, $pageid, $cm->id);
-} else if($id) {
-    add_to_log($course->id, 'wikilv', 'view', "view.php?id=".$id, $id, $cm->id);
-} else if($wid && $title) {
-    add_to_log($course->id, 'wikilv', 'view', "view.php?wid=".$wid."&title=".$title, $wid, $cm->id);
+$context = context_module::instance($cm->id);
+if ($pageid) {
+    wikilv_page_view($wikilv, $page, $course, $cm, $context, null, null, $subwikilv);
+} else if ($id) {
+    wikilv_view($wikilv, $course, $cm, $context);
+} else if ($wid && $title) {
+    $other = array(
+        'title' => $title,
+        'wid' => $wid,
+        'group' => $gid,
+        'groupanduser' => $groupanduser
+    );
+    wikilv_page_view($wikilv, $page, $course, $cm, $context, $uid, $other, $subwikilv);
 }
 
 $wikilvpage->print_header();

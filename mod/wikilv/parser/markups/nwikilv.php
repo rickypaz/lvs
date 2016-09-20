@@ -1,12 +1,12 @@
 <?php
 
 /**
- * NWiki parser implementation
+ * NWikilv parser implementation
  *
  * @author Josep Arús
  *
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @package wikilv
+ * @package mod_wikilv
  */
 
 include_once("wikilvmarkup.php");

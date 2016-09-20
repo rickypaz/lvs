@@ -19,9 +19,9 @@
  * This file contains several classes uses to render the diferent pages
  * of the wikilv module
  *
- * @package mod-wikilv-2.0
- * @copyrigth 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
- * @copyrigth 2009 Universitat Politecnica de Catalunya http://www.upc.edu
+ * @package mod_wikilv
+ * @copyright 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
+ * @copyright 2009 Universitat Politecnica de Catalunya http://www.upc.edu
  *
  * @author Jordi Piguillem
  * @author Marc Alier
@@ -32,7 +32,6 @@
  *
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 // @lvs dependências lvs
 use uab\ifce\lvs\moodle2\business\Wikilv;
 use uab\ifce\lvs\Carinhas;
@@ -41,7 +40,6 @@ use uab\ifce\lvs\avaliacao\NotasLvFactory;
 // fim
 
 require_once($CFG->dirroot . '/mod/wikilv/edit_form.php');
-require_once($CFG->dirroot . '/tag/lib.php');
 
 /**
  * Class page_wikilv contains the common code between all pages
@@ -93,6 +91,10 @@ abstract class page_wikilv {
      * @var object wikilv renderer
      */
     protected $wikilvoutput;
+    /**
+     * @var stdClass course module.
+     */
+    protected $cm;
 
     /**
      * page_wikilv constructor
@@ -104,7 +106,8 @@ abstract class page_wikilv {
     function __construct($wikilv, $subwikilv, $cm) {
         global $PAGE, $CFG;
         $this->subwikilv = $subwikilv;
-        $this->modcontext = context_module::instance($PAGE->cm->id);
+        $this->cm = $cm;
+        $this->modcontext = context_module::instance($this->cm->id);
 
         // initialise wikilv renderer
         $this->wikilvoutput = $PAGE->get_renderer('mod_wikilv');
@@ -112,7 +115,10 @@ abstract class page_wikilv {
         $PAGE->set_cm($cm);
         $PAGE->set_activity_record($wikilv);
         // the search box
-        $PAGE->set_button(wikilv_search_form($cm));
+        if (!empty($subwikilv->id)) {
+            $search = optional_param('searchstring', null, PARAM_TEXT);
+            $PAGE->set_button(wikilv_search_form($cm, $search, $subwikilv));
+        }
     }
 
     /**
@@ -121,7 +127,7 @@ abstract class page_wikilv {
     function print_header() {
         global $OUTPUT, $PAGE, $CFG, $USER, $SESSION;
 
-        $PAGE->set_heading(format_string($PAGE->course->fullname));
+        $PAGE->set_heading($PAGE->course->fullname);
 
         $this->set_url();
 
@@ -134,6 +140,8 @@ abstract class page_wikilv {
         $this->setup_tabs();
 
         echo $OUTPUT->header();
+        $wikilv = $PAGE->activityrecord;
+        echo $OUTPUT->heading(format_string($wikilv->name));
 
         echo $this->wikilvoutput->wikilv_info();
 
@@ -150,8 +158,8 @@ abstract class page_wikilv {
         global $OUTPUT;
         $html = '';
 
-        $html .= $OUTPUT->container_start();
-        $html .= $OUTPUT->heading(format_string($this->title), 2, 'wikilv_headingtitle');
+        $html .= $OUTPUT->container_start('wikilv_headingtitle');
+        $html .= $OUTPUT->heading(format_string($this->title), 3);
         $html .= $OUTPUT->container_end();
         echo $html;
     }
@@ -162,7 +170,7 @@ abstract class page_wikilv {
      */
     protected function setup_tabs($options = array()) {
         global $CFG, $PAGE;
-        $groupmode = groups_get_activity_groupmode($PAGE->cm);
+        $groupmode = groups_get_activity_groupmode($this->cm);
 
         if (empty($CFG->usecomments) || !has_capability('mod/wikilv:viewcomment', $PAGE->context)){
             unset($this->tabs['comments']);
@@ -173,8 +181,8 @@ abstract class page_wikilv {
         }
 
         if ($groupmode and $groupmode == VISIBLEGROUPS) {
-            $currentgroup = groups_get_activity_group($PAGE->cm);
-            $manage = has_capability('mod/wikilv:managewikilv', $PAGE->cm->context);
+            $currentgroup = groups_get_activity_group($this->cm);
+            $manage = has_capability('mod/wikilv:managewikilv', $this->modcontext);
             $edit = has_capability('mod/wikilv:editpage', $PAGE->context);
             if (!$manage and !($edit and groups_is_member($currentgroup))) {
                 unset($this->tabs['edit']);
@@ -290,10 +298,6 @@ abstract class page_wikilv {
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class page_wikilv_view extends page_wikilv {
-    /**
-     * @var int the coursemodule id
-     */
-    private $coursemodule;
 
     function print_header() {
         global $PAGE;
@@ -336,12 +340,12 @@ class page_wikilv_view extends page_wikilv {
         global $PAGE, $CFG;
         $params = array();
 
-        if (isset($this->coursemodule)) {
-            $params['id'] = $this->coursemodule;
+        if (isset($this->cm->id)) {
+            $params['id'] = $this->cm->id;
         } else if (!empty($this->page) and $this->page != null) {
             $params['pageid'] = $this->page->id;
         } else if (!empty($this->gid)) {
-            $params['wid'] = $PAGE->cm->instance;
+            $params['wid'] = $this->cm->instance;
             $params['group'] = $this->gid;
         } else if (!empty($this->title)) {
             $params['swid'] = $this->subwikilv->id;
@@ -349,12 +353,7 @@ class page_wikilv_view extends page_wikilv {
         } else {
             print_error(get_string('invalidparameters', 'wikilv'));
         }
-
         $PAGE->set_url(new moodle_url($CFG->wwwroot . '/mod/wikilv/view.php', $params));
-    }
-
-    function set_coursemodule($id) {
-        $this->coursemodule = $id;
     }
 
     protected function create_navbar() {
@@ -366,7 +365,7 @@ class page_wikilv_view extends page_wikilv {
 }
 
 /**
- * Wiki page editing page
+ * Wikilv page editing page
  *
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -387,7 +386,12 @@ class page_wikilv_edit extends page_wikilv {
     function __construct($wikilv, $subwikilv, $cm) {
         global $CFG, $PAGE;
         parent::__construct($wikilv, $subwikilv, $cm);
-        self::$attachmentoptions = array('subdirs' => false, 'maxfiles' => - 1, 'maxbytes' => $CFG->maxbytes, 'accepted_types' => '*');
+        $showfilemanager = false;
+        if (has_capability('mod/wikilv:managefiles', context_module::instance($cm->id))) {
+            $showfilemanager = true;
+        }
+        self::$attachmentoptions = array('subdirs' => false, 'maxfiles' => - 1, 'maxbytes' => $CFG->maxbytes,
+                'accepted_types' => '*', 'enable_filemanagement' => $showfilemanager);
         $PAGE->requires->js_init_call('M.mod_wikilv.renew_lock', null, true);
     }
 
@@ -398,8 +402,8 @@ class page_wikilv_edit extends page_wikilv {
         if (isset($this->section)) {
             $title .= ' : ' . $this->section;
         }
-        echo $OUTPUT->container_start('wikilv_clear');
-        echo $OUTPUT->heading(format_string($title), 2, 'wikilv_headingtitle');
+        echo $OUTPUT->container_start('wikilv_clear wikilv_headingtitle');
+        echo $OUTPUT->heading(format_string($title), 3);
         echo $OUTPUT->container_end();
     }
 
@@ -572,22 +576,9 @@ class page_wikilv_edit extends page_wikilv {
             $params['filearea']   = 'attachments';
         }
 
-        if (!empty($CFG->usetags)) {
-            $params['tags'] = tag_get_tags_csv('wikilv_pages', $this->page->id, TAG_RETURN_TEXT);
-        }
+        $data->tags = core_tag_tag::get_item_tags_array('mod_wikilv', 'wikilv_pages', $this->page->id);
 
         $form = new mod_wikilv_edit_form($url, $params);
-
-        if ($formdata = $form->get_data()) {
-            if (!empty($CFG->usetags)) {
-                $data->tags = $formdata->tags;
-            }
-        } else {
-            if (!empty($CFG->usetags)) {
-                $data->tags = tag_get_tags_array('wikilv', $this->page->id);
-            }
-        }
-
         $form->set_data($data);
         $form->display();
     }
@@ -631,7 +622,7 @@ class page_wikilv_comments extends page_wikilv {
         $format = $version->contentformat;
 
         if (empty($comments)) {
-            echo $OUTPUT->heading(get_string('nocomments', 'wikilv'));
+            echo html_writer::tag('p', get_string('nocomments', 'wikilv'), array('class' => 'bold'));
         }
 
         foreach ($comments as $comment) {
@@ -644,6 +635,7 @@ class page_wikilv_comments extends page_wikilv {
             $by->date = userdate($comment->timecreated);
 
             $t = new html_table();
+            $t->id = 'wikilv-comments';
             $cell1 = new html_table_cell($OUTPUT->user_picture($user, array('popup' => true)));
             $cell2 = new html_table_cell(get_string('bynameondate', 'forum', $by));
             $cell3 = new html_table_cell();
@@ -684,21 +676,30 @@ class page_wikilv_comments extends page_wikilv {
 
             $t->data = array($row1, $row2);
 
-            $actionicons = false;
+            $canedit = $candelete = false;
+            if ((has_capability('mod/wikilv:editcomment', $this->modcontext)) and ($USER->id == $user->id)) {
+                $candelete = $canedit = true;
+            }
             if ((has_capability('mod/wikilv:managecomment', $this->modcontext))) {
-                $urledit = new moodle_url('/mod/wikilv/editcomments.php', array('commentid' => $comment->id, 'pageid' => $page->id, 'action' => 'edit'));
-                $urldelet = new moodle_url('/mod/wikilv/instancecomments.php', array('commentid' => $comment->id, 'pageid' => $page->id, 'action' => 'delete'));
-                $actionicons = true;
-            } else if ((has_capability('mod/wikilv:editcomment', $this->modcontext)) and ($USER->id == $user->id)) {
-                $urledit = new moodle_url('/mod/wikilv/editcomments.php', array('commentid' => $comment->id, 'pageid' => $page->id, 'action' => 'edit'));
-                $urldelet = new moodle_url('/mod/wikilv/instancecomments.php', array('commentid' => $comment->id, 'pageid' => $page->id, 'action' => 'delete'));
-                $actionicons = true;
+                $candelete = true;
             }
 
-            if ($actionicons) {
-                $cell6 = new html_table_cell($OUTPUT->action_icon($urledit, new pix_icon('t/edit', get_string('edit'),
-                        '', array('class' => 'iconsmall'))) . $OUTPUT->action_icon($urldelet, new pix_icon('t/delete',
-                        get_string('delete'), '', array('class' => 'iconsmall'))));
+            $editicon = $deleteicon = '';
+            if ($canedit) {
+                $urledit = new moodle_url('/mod/wikilv/editcomments.php', array('commentid' => $comment->id, 'pageid' => $page->id, 'action' => 'edit'));
+                $editicon = $OUTPUT->action_icon($urledit, new pix_icon('t/edit', get_string('edit'), '', array('class' => 'iconsmall')));
+            }
+            if ($candelete) {
+                $urldelete = new moodle_url('/mod/wikilv/instancecomments.php', array('commentid' => $comment->id, 'pageid' => $page->id, 'action' => 'delete'));
+                $deleteicon = $OUTPUT->action_icon($urldelete,
+                                                  new pix_icon('t/delete',
+                                                               get_string('delete'),
+                                                               '',
+                                                               array('class' => 'iconsmall')));
+            }
+
+            if ($candelete || $canedit) {
+                $cell6 = new html_table_cell($editicon.$deleteicon);
                 $row3 = new html_table_row();
                 $row3->cells[] = $cell5;
                 $row3->cells[] = $cell6;
@@ -826,7 +827,7 @@ class page_wikilv_editcomment extends page_wikilv {
 }
 
 /**
- * Wiki page search page
+ * Wikilv page search page
  *
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -853,6 +854,17 @@ class page_wikilv_search extends page_wikilv {
         global $PAGE, $CFG;
         $PAGE->set_url($CFG->wwwroot . '/mod/wikilv/search.php');
     }
+
+    function print_header() {
+        global $PAGE;
+
+        parent::print_header();
+
+        $wikilv = $PAGE->activityrecord;
+        $page = (object)array('title' => $wikilv->firstpagetitle);
+        $this->wikilvoutput->wikilv_print_subwikilv_selector($wikilv, $this->subwikilv, $page, 'search');
+    }
+
     function print_content() {
         global $PAGE;
 
@@ -1070,7 +1082,7 @@ class page_wikilv_preview extends page_wikilv_edit {
             }
             $parseroutput = wikilv_parse_content($data->contentformat, $text, $options);
             $this->set_newcontent($text);
-            echo $OUTPUT->notification(get_string('previewwarning', 'wikilv'), 'notifyproblem wikilv_info');
+            echo $OUTPUT->notification(get_string('previewwarning', 'wikilv'), 'notifyproblem');
             $content = format_text($parseroutput['parsed_text'], FORMAT_HTML, array('overflowdiv'=>true, 'filter'=>false));
             echo $OUTPUT->box($content, 'generalbox wikilv_previewbox');
             $content = $this->newcontent;
@@ -1101,7 +1113,7 @@ class page_wikilv_diff extends page_wikilv {
         $vstring = new stdClass();
         $vstring->old = $this->compare;
         $vstring->new = $this->comparewith;
-        echo $OUTPUT->heading(get_string('comparewith', 'wikilv', $vstring));
+        echo html_writer::tag('div', get_string('comparewith', 'wikilv', $vstring), array('class' => 'wikilv_headingtitle'));
     }
 
     /**
@@ -1208,8 +1220,8 @@ class page_wikilv_history extends page_wikilv {
         global $OUTPUT;
         $html = '';
 
-        $html .= $OUTPUT->container_start();
-        $html .= $OUTPUT->heading_with_help(format_string($this->title), 'history', 'wikilv');
+        $html .= $OUTPUT->container_start('wikilv_headingtitle');
+        $html .= $OUTPUT->heading_with_help(format_string($this->title), 'history', 'wikilv', '', '', 3);
         $html .= $OUTPUT->container_end();
         echo $html;
     }
@@ -1274,7 +1286,7 @@ class page_wikilv_history extends page_wikilv {
         $a = new StdClass;
         $a->date = userdate($this->page->timecreated, get_string('strftimedaydatetime', 'langconfig'));
         $a->username = fullname($creator);
-        echo $OUTPUT->heading(get_string('createddate', 'wikilv', $a), 4, 'wikilv_headingtime');
+        echo html_writer::tag ('div', get_string('createddate', 'wikilv', $a), array('class' => 'wikilv_headingtime'));
         if ($vcount > 0) {
 
             /// If there is only one version, we don't need radios nor forms
@@ -1288,7 +1300,7 @@ class page_wikilv_history extends page_wikilv {
                 $time = userdate($row->timecreated, get_string('strftimetime', 'langconfig'));
                 $versionid = wikilv_get_version($row->id);
                 $versionlink = new moodle_url('/mod/wikilv/viewversion.php', array('pageid' => $pageid, 'versionid' => $versionid->id));
-                $userlink = new moodle_url('/user/view.php', array('id' => $username->id, 'course' => $PAGE->cm->course));
+                $userlink = new moodle_url('/user/view.php', array('id' => $username->id, 'course' => $this->cm->course));
                 
                 /** @lvs exibindo nota atual no histórico do wikilv */
                 global $wikilv;
@@ -1304,8 +1316,8 @@ class page_wikilv_history extends page_wikilv {
                 	$carinhalv = '';
                 }
                 // lvs fim
-
-                $contents[] = array('', html_writer::link($versionlink->out(false), $row->version), $picture . html_writer::link($userlink->out(false), fullname($username)), $time, $OUTPUT->container($date, 'wikilv_histdate'), $carinhalv); // @lvs exibindo nota lv atual
+                
+				$contents[] = array('', html_writer::link($versionlink->out(false), $row->version), $picture . html_writer::link($userlink->out(false), fullname($username)), $time, $OUTPUT->container($date, 'wikilv_histdate'), $carinhalv); // @lvs exibindo nota lv atual                
 
                 $table = new html_table();
                 $table->head = array('', get_string('version'), get_string('user'), get_string('modified'), '', 'Nota LV'); // @lvs adiciona coluna de notas lv em history do wikilv
@@ -1332,7 +1344,7 @@ class page_wikilv_history extends page_wikilv {
                     } else {
                         $viewlink = $version->version;
                     }
-                    $userlink = new moodle_url('/user/view.php', array('id' => $version->userid, 'course' => $PAGE->cm->course));
+                    $userlink = new moodle_url('/user/view.php', array('id' => $version->userid, 'course' => $this->cm->course));
                     
                     /** @lvs exibindo nota atual no histórico do wikilv */
                     global $wikilv;
@@ -1348,15 +1360,15 @@ class page_wikilv_history extends page_wikilv {
                     	$carinhalv = '';
                     }
                     // lvs fim
-                    
-                    $contents[] = array($this->choose_from_radio(array($version->version  => null), 'compare', 'M.mod_wikilv.history()', $checked - 1, true) . $this->choose_from_radio(array($version->version  => null), 'comparewith', 'M.mod_wikilv.history()', $checked, true), $viewlink, $picture . html_writer::link($userlink->out(false), fullname($user)), $time, $OUTPUT->container($date, 'wikilv_histdate'), $carinhalv); // @lvs exibindo nota lv atual
+
+                    $contents[] = array($this->choose_from_radio(array($version->version  => null), 'compare', 'M.mod_wikilv.history()', $checked - 1, true) . $this->choose_from_radio(array($version->version  => null), 'comparewith', 'M.mod_wikilv.history()', $checked, true), $viewlink, $picture . html_writer::link($userlink->out(false), fullname($user)), $time, $OUTPUT->container($date, 'wikilv_histdate'), $carinhalv); // @lvs
                 }
 
                 $table = new html_table();
 
                 $icon = $OUTPUT->help_icon('diff', 'wikilv');
 
-                $table->head = array(get_string('diff', 'wikilv') . $icon, get_string('version'), get_string('user'), get_string('modified'), '', 'Nota LV'); // @lvs coluna para exibição da nota lv de uma versão do wiki
+                $table->head = array(get_string('diff', 'wikilv') . $icon, get_string('version'), get_string('user'), get_string('modified'), '', 'Nota LV'); // @lvs
                 $table->data = $contents;
                 $table->attributes['class'] = 'generaltable mdl-align';
                 $table->rowclasses = $rowclass;
@@ -1482,14 +1494,11 @@ class page_wikilv_map extends page_wikilv {
             echo $this->wikilvoutput->menu_map($this->page->id, $this->view);
             $this->print_index_content();
             break;
-        case 5:
-            echo $this->wikilvoutput->menu_map($this->page->id, $this->view);
-            $this->print_page_list_content();
-            break;
         case 6:
             echo $this->wikilvoutput->menu_map($this->page->id, $this->view);
             $this->print_updated_content();
             break;
+        case 5:
         default:
             echo $this->wikilvoutput->menu_map($this->page->id, $this->view);
             $this->print_page_list_content();
@@ -1679,9 +1688,9 @@ class page_wikilv_map extends page_wikilv {
         foreach ($pages as $page) {
             // We need to format the title here to account for any filtering
             $letter = format_string($page->title, true, array('context' => $this->modcontext));
-            $letter = textlib::substr($letter, 0, 1);
+            $letter = core_text::substr($letter, 0, 1);
             if (preg_match('/^[a-zA-Z]$/', $letter)) {
-                $letter = textlib::strtoupper($letter);
+                $letter = core_text::strtoupper($letter);
                 $stdaux->{$letter}[] = wikilv_parser_link($page);
             } else {
                 $stdaux->{$strspecial}[] = wikilv_parser_link($page);
@@ -1891,11 +1900,15 @@ class page_wikilv_restoreversion extends page_wikilv {
     }
 
     function print_content() {
-        global $CFG, $PAGE;
+        global $PAGE;
 
-        require_capability('mod/wikilv:managewikilv', $this->modcontext, NULL, true, 'nomanagewikilvpermission', 'wikilv');
+        $wikilv = $PAGE->activityrecord;
+        if (wikilv_user_can_edit($this->subwikilv, $wikilv)) {
+            $this->print_restoreversion();
+        } else {
+            echo get_string('cannoteditpage', 'wikilv');
+        }
 
-        $this->print_restoreversion();
     }
 
     function set_url() {
@@ -1937,15 +1950,17 @@ class page_wikilv_restoreversion extends page_wikilv {
         $restoreurl = new moodle_url('/mod/wikilv/restoreversion.php', $optionsyes);
         $return = new moodle_url('/mod/wikilv/viewversion.php', array('pageid'=>$this->page->id, 'versionid'=>$version->id));
 
-        echo $OUTPUT->heading(get_string('restoreconfirm', 'wikilv', $version->version), 2);
-        print_container_start(false, 'wikilv_restoreform');
+        echo $OUTPUT->container_start('wikilv-form-center');
+        echo html_writer::tag('div', get_string('restoreconfirm', 'wikilv', $version->version));
+        echo $OUTPUT->container_start(false, 'wikilv_restoreform');
         echo '<form class="wikilv_restore_yes" action="' . $restoreurl . '" method="post" id="restoreversion">';
         echo '<div><input type="submit" name="confirm" value="' . get_string('yes') . '" /></div>';
         echo '</form>';
         echo '<form class="wikilv_restore_no" action="' . $return . '" method="post">';
         echo '<div><input type="submit" name="norestore" value="' . get_string('no') . '" /></div>';
         echo '</form>';
-        print_container_end();
+        echo $OUTPUT->container_end();
+        echo $OUTPUT->container_end();
     }
 }
 /**
@@ -2005,15 +2020,17 @@ class page_wikilv_deletecomment extends page_wikilv {
         $deleteurl = new moodle_url('/mod/wikilv/instancecomments.php', $optionsyes);
         $return = new moodle_url('/mod/wikilv/comments.php', array('pageid'=>$this->page->id));
 
-        echo $OUTPUT->heading($strdeletecheckfull);
-        print_container_start(false, 'wikilv_deletecommentform');
+        echo $OUTPUT->container_start('wikilv-form-center');
+        echo html_writer::tag('p', $strdeletecheckfull);
+        echo $OUTPUT->container_start(false, 'wikilv_deletecommentform');
         echo '<form class="wikilv_deletecomment_yes" action="' . $deleteurl . '" method="post" id="deletecomment">';
         echo '<div><input type="submit" name="confirmdeletecomment" value="' . get_string('yes') . '" /></div>';
         echo '</form>';
         echo '<form class="wikilv_deletecomment_no" action="' . $return . '" method="post">';
         echo '<div><input type="submit" name="norestore" value="' . get_string('no') . '" /></div>';
         echo '</form>';
-        print_container_end();
+        echo $OUTPUT->container_end();
+        echo $OUTPUT->container_end();
     }
 }
 
@@ -2032,7 +2049,7 @@ class page_wikilv_save extends page_wikilv_edit {
     function print_content() {
         global $PAGE;
 
-        $context = context_module::instance($PAGE->cm->id);
+        $context = context_module::instance($this->cm->id);
         require_capability('mod/wikilv:editpage', $context, NULL, true, 'noeditpermission', 'wikilv');
 
         $this->print_save();
@@ -2083,9 +2100,7 @@ class page_wikilv_save extends page_wikilv_edit {
         }
 
         if ($save && $data) {
-            if (!empty($CFG->usetags)) {
-                tag_set('wikilv_pages', $this->page->id, $data->tags);
-            }
+            core_tag_tag::set_item_tags('mod_wikilv', 'wikilv_pages', $this->page->id, $this->modcontext, $data->tags);
 
             $message = '<p>' . get_string('saving', 'wikilv') . '</p>';
 
@@ -2170,36 +2185,38 @@ class page_wikilv_viewversion extends page_wikilv {
 
         if ($pageversion) {
             $restorelink = new moodle_url('/mod/wikilv/restoreversion.php', array('pageid' => $this->page->id, 'versionid' => $this->version->id));
-            echo $OUTPUT->heading(get_string('viewversion', 'wikilv', $pageversion->version) . '<br />' . html_writer::link($restorelink->out(false), '(' . get_string('restorethis', 'wikilv') . ')', array('class' => 'wikilv_restore')) . '&nbsp;', 4);
+            echo html_writer::tag('div', get_string('viewversion', 'wikilv', $pageversion->version) . '<br />' .
+                html_writer::link($restorelink->out(false), '(' . get_string('restorethis', 'wikilv') .
+                ')', array('class' => 'wikilv_restore')) . '&nbsp;', array('class' => 'wikilv_headingtitle'));
             $userinfo = wikilv_get_user_info($pageversion->userid);
             $heading = '<p><strong>' . get_string('modified', 'wikilv') . ':</strong>&nbsp;' . userdate($pageversion->timecreated, get_string('strftimedatetime', 'langconfig'));
             $viewlink = new moodle_url('/user/view.php', array('id' => $userinfo->id));
             $heading .= '&nbsp;&nbsp;&nbsp;<strong>' . get_string('user') . ':</strong>&nbsp;' . html_writer::link($viewlink->out(false), fullname($userinfo));
             $heading .= '&nbsp;&nbsp;&rarr;&nbsp;' . $OUTPUT->user_picture(wikilv_get_user_info($pageversion->userid), array('popup' => true)) . '</p>';
-            print_container($heading, false, 'mdl-align wikilv_modifieduser wikilv_headingtime');
+            echo $OUTPUT->container($heading, 'wikilv_headingtime', 'mdl-align wikilv_modifieduser');
             $options = array('swid' => $this->subwikilv->id, 'pretty_print' => true, 'pageid' => $this->page->id);
 
             $pageversion->content = file_rewrite_pluginfile_urls($pageversion->content, 'pluginfile.php', $this->modcontext->id, 'mod_wikilv', 'attachments', $this->subwikilv->id);
 
             $parseroutput = wikilv_parse_content($pageversion->contentformat, $pageversion->content, $options);
-            $content = print_container(format_text($parseroutput['parsed_text'], FORMAT_HTML, array('overflowdiv'=>true)), false, '', '', true);
+            $content = $OUTPUT->container(format_text($parseroutput['parsed_text'], FORMAT_HTML, array('overflowdiv'=>true)), false, '', '', true);
             
             // @lvs exibição da nota e do formulário de avaliação lv
             global $wikilv;
             $gerenciadorNotas = NotasLvFactory::criarGerenciador('moodle2');
             $gerenciadorNotas->setModulo( new Wikilv($wikilv->id) );
-            	
+             
             $itemavaliado = clone $pageversion;
             unset($itemavaliado->content);
             $item = new Item('wikilv', 'version', $itemavaliado);
-            	
+             
             $avaliacaolv = $gerenciadorNotas->getAvaliacao($item);
             $avaliacaolv->setEstudante($pageversion->userid);
-            	
+             
             echo $gerenciadorNotas->avaliacaoAtual($item);
             echo $gerenciadorNotas->formAvaliacao($item);
             // fim dos lvs
-            
+
             echo $OUTPUT->box($content, 'generalbox wikilv_contentbox');
 
         } else {
@@ -2217,13 +2234,17 @@ class page_wikilv_confirmrestore extends page_wikilv_save {
         $PAGE->set_url($CFG->wwwroot . '/mod/wikilv/viewversion.php', array('pageid' => $this->page->id, 'versionid' => $this->version->id));
     }
 
+    function print_header() {
+        $this->set_url();
+    }
+
     function print_content() {
         global $CFG, $PAGE;
 
-        require_capability('mod/wikilv:managewikilv', $this->modcontext, NULL, true, 'nomanagewikilvpermission', 'wikilv');
-
         $version = wikilv_get_version($this->version->id);
-        if (wikilv_restore_page($this->page, $version->content, $version->userid)) {
+        $wikilv = $PAGE->activityrecord;
+        if (wikilv_user_can_edit($this->subwikilv, $wikilv) &&
+                wikilv_restore_page($this->page, $version, $this->modcontext)) {
             redirect($CFG->wwwroot . '/mod/wikilv/view.php?pageid=' . $this->page->id, get_string('restoring', 'wikilv', $version->version), 3);
         } else {
             print_error('restoreerror', 'wikilv', $version->version);
@@ -2237,12 +2258,23 @@ class page_wikilv_confirmrestore extends page_wikilv_save {
 
 class page_wikilv_prettyview extends page_wikilv {
 
-    function print_header() {
-        global $CFG, $PAGE, $OUTPUT;
+    function __construct($wikilv, $subwikilv, $cm) {
+        global $PAGE;
         $PAGE->set_pagelayout('embedded');
-        echo $OUTPUT->header();
+        parent::__construct($wikilv, $subwikilv, $cm);
+    }
 
-        echo '<h1 id="wikilv_printable_title">' . format_string($this->title) . '</h1>';
+    function print_header() {
+        global $OUTPUT;
+        $this->set_url();
+
+        echo $OUTPUT->header();
+        // Print dialog link.
+        $printtext = get_string('print', 'wikilv');
+        $printlinkatt = array('onclick' => 'window.print();return false;', 'class' => 'printicon');
+        $printiconlink = html_writer::link('#', $printtext, $printlinkatt);
+        echo html_writer::tag('div', $printiconlink, array('class' => 'displayprinticon'));
+        echo html_writer::tag('h1', format_string($this->title), array('id' => 'wikilv_printable_title'));
     }
 
     function print_content() {
@@ -2264,8 +2296,14 @@ class page_wikilv_prettyview extends page_wikilv {
 
         $content = wikilv_parse_content($version->contentformat, $version->content, array('printable' => true, 'swid' => $this->subwikilv->id, 'pageid' => $this->page->id, 'pretty_print' => true));
 
+        $html = $content['parsed_text'];
+        $id = $this->subwikilv->wikilvid;
+        if ($cm = get_coursemodule_from_instance("wikilv", $id)) {
+            $context = context_module::instance($cm->id);
+            $html = file_rewrite_pluginfile_urls($html, 'pluginfile.php', $context->id, 'mod_wikilv', 'attachments', $this->subwikilv->id);
+        }
         echo '<div id="wikilv_printable_content">';
-        echo format_text($content['parsed_text'], FORMAT_HTML);
+        echo format_text($html, FORMAT_HTML);
         echo '</div>';
     }
 }
@@ -2284,23 +2322,29 @@ class page_wikilv_handlecomments extends page_wikilv {
         global $CFG, $PAGE, $USER;
 
         if ($this->action == 'add') {
-            if (has_capability('mod/wikilv:editcomment', $this->modcontext)) {
-                $this->add_comment($this->content, $this->commentid);
-            }
+            require_capability('mod/wikilv:editcomment', $this->modcontext);
+            $this->add_comment($this->content, $this->commentid);
         } else if ($this->action == 'edit') {
+            require_capability('mod/wikilv:editcomment', $this->modcontext);
+
             $comment = wikilv_get_comment($this->commentid);
-            $edit = has_capability('mod/wikilv:editcomment', $this->modcontext);
             $owner = ($comment->userid == $USER->id);
-            if ($owner && $edit) {
+
+            if ($owner) {
                 $this->add_comment($this->content, $this->commentid);
             }
         } else if ($this->action == 'delete') {
             $comment = wikilv_get_comment($this->commentid);
+
             $manage = has_capability('mod/wikilv:managecomment', $this->modcontext);
+            $edit = has_capability('mod/wikilv:editcomment', $this->modcontext);
             $owner = ($comment->userid == $USER->id);
-            if ($owner || $manage) {
+
+            if ($manage || ($owner && $edit)) {
                 $this->delete_comment($this->commentid);
                 redirect($CFG->wwwroot . '/mod/wikilv/comments.php?pageid=' . $this->page->id, get_string('deletecomment', 'wikilv'), 2);
+            } else {
+                print_error('nopermissiontoeditcomment');
             }
         }
 
@@ -2638,7 +2682,7 @@ class page_wikilv_admin extends page_wikilv {
         $a = new stdClass();
         $a->date = userdate($this->page->timecreated, get_string('strftimedaydatetime', 'langconfig'));
         $a->username = fullname($creator);
-        echo $OUTPUT->heading(get_string('createddate', 'wikilv', $a), 4, 'wikilv_headingtime');
+        echo $OUTPUT->heading(get_string('createddate', 'wikilv', $a), 4);
         if ($versioncount > 0) {
             /// If there is only one version, we don't need radios nor forms
             if (count($versions) == 1) {
@@ -2649,7 +2693,7 @@ class page_wikilv_admin extends page_wikilv {
                 $time = userdate($row->timecreated, get_string('strftimetime', 'langconfig'));
                 $versionid = wikilv_get_version($row->id);
                 $versionlink = new moodle_url('/mod/wikilv/viewversion.php', array('pageid' => $pageid, 'versionid' => $versionid->id));
-                $userlink = new moodle_url('/user/view.php', array('id' => $username->id, 'course' => $PAGE->cm->course));
+                $userlink = new moodle_url('/user/view.php', array('id' => $username->id, 'course' => $this->cm->course));
                 $picturelink = $picture . html_writer::link($userlink->out(false), fullname($username));
                 $historydate = $OUTPUT->container($date, 'wikilv_histdate');
                 $contents[] = array('', html_writer::link($versionlink->out(false), $row->version), $picturelink, $time, $historydate);
@@ -2686,7 +2730,7 @@ class page_wikilv_admin extends page_wikilv {
                         $viewlink = $version->version;
                     }
 
-                    $userlink = new moodle_url('/user/view.php', array('id' => $version->userid, 'course' => $PAGE->cm->course));
+                    $userlink = new moodle_url('/user/view.php', array('id' => $version->userid, 'course' => $this->cm->course));
                     $picturelink = $picture . html_writer::link($userlink->out(false), fullname($user));
                     $historydate = $OUTPUT->container($date, 'wikilv_histdate');
                     $radiofromelement = $this->choose_from_radio(array($version->version  => null), 'fromversion', 'M.mod_wikilv.deleteversion()', $versioncount, true);

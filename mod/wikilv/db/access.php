@@ -149,7 +149,6 @@ $capabilities = array(
         )
     ),
 		
-		
 	/** @lvs: permissões para ver e aplicar nota */
 	
 	'mod/wikilv:viewrating' => array(

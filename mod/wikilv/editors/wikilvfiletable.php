@@ -17,9 +17,9 @@
 /**
  * This file contains all necessary code to define a wikilv file table form element
  *
- * @package mod-wikilv-2.0
- * @copyrigth 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
- * @copyrigth 2009 Universitat Politecnica de Catalunya http://www.upc.edu
+ * @package mod_wikilv
+ * @copyright 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
+ * @copyright 2009 Universitat Politecnica de Catalunya http://www.upc.edu
  *
  * @author Josep Arus
  *
@@ -37,11 +37,21 @@ class MoodleQuickForm_wikilvfiletable extends HTML_QuickForm_element {
     private $_fileinfo;
     private $_value = array();
 
-    function MoodleQuickForm_wikilvfiletable($elementName = null, $elementLabel = null, $attributes = null, $fileinfo = null, $format = null) {
+    public function __construct($elementName = null, $elementLabel = null, $attributes = null, $fileinfo = null, $format = null) {
 
-        parent::HTML_QuickForm_element($elementName, $elementLabel, $attributes);
+        parent::__construct($elementName, $elementLabel, $attributes);
         $this->_fileinfo = $fileinfo;
         $this->_format = $format;
+    }
+
+    /**
+     * Old syntax of class constructor. Deprecated in PHP7.
+     *
+     * @deprecated since Moodle 3.1
+     */
+    public function MoodleQuickForm_wikilvfiletable($elementName = null, $elementLabel = null, $attributes = null, $fileinfo = null, $format = null) {
+        debugging('Use of class name as constructor is deprecated', DEBUG_DEVELOPER);
+        self::__construct($elementName, $elementLabel, $attributes, $fileinfo, $format);
     }
 
     function onQuickFormEvent($event, $arg, &$caller) {

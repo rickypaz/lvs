@@ -17,9 +17,9 @@
 
 /**
  *
- * @package mod-wikilv-2.0
- * @copyrigth 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
- * @copyrigth 2009 Universitat Politecnica de Catalunya http://www.upc.edu
+ * @package mod_wikilv
+ * @copyright 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
+ * @copyright 2009 Universitat Politecnica de Catalunya http://www.upc.edu
  *
  * @author Jordi Piguillem
  * @author Marc Alier
@@ -53,6 +53,10 @@ if (!$wikilv = wikilv_get_wikilv($subwikilv->wikilvid)) {
     print_error('incorrectwikilvid', 'wikilv');
 }
 require_login($course, true, $cm);
+
+if (!wikilv_user_can_view($subwikilv, $wikilv)) {
+    print_error('cannotviewpage', 'wikilv');
+}
 
 $editcomments = new page_wikilv_editcomment($wikilv, $subwikilv, $cm);
 $comment = new stdClass();

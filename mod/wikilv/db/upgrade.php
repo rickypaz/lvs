@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -9,11 +8,11 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * This file keeps track of upgrades to the wikilv module
@@ -26,9 +25,9 @@
  * to perform all the necessary actions to upgrade
  * your older installation to the current version.
  *
- * @package mod-wikilv-2.0
- * @copyrigth 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
- * @copyrigth 2009 Universitat Politecnica de Catalunya http://www.upc.edu
+ * @package mod_wikilv
+ * @copyright 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
+ * @copyright 2009 Universitat Politecnica de Catalunya http://www.upc.edu
  *
  * @author Jordi Piguillem
  *
@@ -36,43 +35,22 @@
  *
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 function xmldb_wikilv_upgrade($oldversion) {
-    global $CFG, $DB, $OUTPUT;
+    global $CFG;
 
-    $dbman = $DB->get_manager();
+    // Moodle v2.8.0 release upgrade line.
+    // Put any upgrade step following this.
 
+    // Moodle v2.9.0 release upgrade line.
+    // Put any upgrade step following this.
 
-    // Moodle v2.2.0 release upgrade line
-    // Put any upgrade step following this
+    // Moodle v3.0.0 release upgrade line.
+    // Put any upgrade step following this.
 
-    // Moodle v2.3.0 release upgrade line
-    // Put any upgrade step following this
-
-    if ($oldversion < 2012061701) {
-        // Drop all legacy upgrade tables, not used anymore.
-
-        $table = new xmldb_table('wikilv_entries_old');
-        if ($dbman->table_exists('wikilv_entries_old')) {
-            $dbman->drop_table($table);
-        }
-
-        $table = new xmldb_table('wikilv_locks_old');
-        if ($dbman->table_exists('wikilv_locks_old')) {
-            $dbman->drop_table($table);
-        }
-
-        $table = new xmldb_table('wikilv_pages_old');
-        if ($dbman->table_exists('wikilv_pages_old')) {
-            $dbman->drop_table($table);
-        }
-
-        upgrade_plugin_savepoint(true, 2012061701, 'mod', 'wikilv');
-    }
-
-
-    // Moodle v2.4.0 release upgrade line
-    // Put any upgrade step following this
-
+    // Moodle v3.1.0 release upgrade line.
+    // Put any upgrade step following this.
 
     return true;
 }

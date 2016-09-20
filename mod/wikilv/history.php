@@ -18,9 +18,9 @@
 /**
  * This file contains all necessary code to view the history page
  *
- * @package mod-wikilv-2.0
- * @copyrigth 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
- * @copyrigth 2009 Universitat Politecnica de Catalunya http://www.upc.edu
+ * @package mod_wikilv
+ * @copyright 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
+ * @copyright 2009 Universitat Politecnica de Catalunya http://www.upc.edu
  *
  * @author Jordi Piguillem
  * @author Marc Alier
@@ -59,9 +59,22 @@ if (!$cm = get_coursemodule_from_instance('wikilv', $wikilv->id)) {
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 
 require_login($course, true, $cm);
+
+if (!wikilv_user_can_view($subwikilv, $wikilv)) {
+    print_error('cannotviewpage', 'wikilv');
+}
+
+// Trigger history viewed event.
 $context = context_module::instance($cm->id);
-require_capability('mod/wikilv:viewpage', $context);
-add_to_log($course->id, 'wikilv', 'history', "history.php?pageid=".$pageid, $pageid, $cm->id);
+$event = \mod_wikilv\event\page_history_viewed::create(
+        array(
+            'context' => $context,
+            'objectid' => $pageid
+            ));
+$event->add_record_snapshot('wikilv_pages', $page);
+$event->add_record_snapshot('wikilv', $wikilv);
+$event->add_record_snapshot('wikilv_subwikilvs', $subwikilv);
+$event->trigger();
 
 /// Print the page header
 $wikilvpage = new page_wikilv_history($wikilv, $subwikilv, $cm);

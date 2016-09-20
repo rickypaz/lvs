@@ -18,9 +18,9 @@
 /**
  * This file contains all necessary code to view an old version of a page
  *
- * @package mod-wikilv-2.0
- * @copyrigth 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
- * @copyrigth 2009 Universitat Politecnica de Catalunya http://www.upc.edu
+ * @package mod_wikilv
+ * @copyright 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
+ * @copyright 2009 Universitat Politecnica de Catalunya http://www.upc.edu
  *
  * @author Jordi Piguillem
  * @author Marc Alier
@@ -60,12 +60,27 @@ $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST)
 
 require_login($course, true, $cm);
 
+if (!wikilv_user_can_view($subwikilv, $wikilv)) {
+    print_error('cannotviewpage', 'wikilv');
+}
+
 $wikilvpage = new page_wikilv_viewversion($wikilv, $subwikilv, $cm);
 
 $wikilvpage->set_page($page);
 $wikilvpage->set_versionid($versionid);
 
-add_to_log($course->id, "wikilv", "history", "viewversion.php?pageid=".$pageid."&versionid=".$versionid, $pageid, $cm->id);
+$event = \mod_wikilv\event\page_version_viewed::create(
+        array(
+            'context' => context_module::instance($cm->id),
+            'objectid' => $pageid,
+            'other' => array(
+                'versionid' => $versionid
+                )
+            ));
+$event->add_record_snapshot('wikilv_pages', $page);
+$event->add_record_snapshot('wikilv', $wikilv);
+$event->add_record_snapshot('wikilv_subwikilvs', $subwikilv);
+$event->trigger();
 
 // Print the page header
 $wikilvpage->print_header();

@@ -46,20 +46,20 @@ if (!empty($swid)) {
     $subwikilv = wikilv_get_subwikilv($swid);
 
     if (!$wikilv = wikilv_get_wikilv($subwikilv->wikilvid)) {
-        print_error('invalidwikilvid', 'wikilv');
+        print_error('incorrectwikilvid', 'wikilv');
     }
 
 } else {
     $subwikilv = wikilv_get_subwikilv_by_group($wid, $group, $uid);
 
     if (!$wikilv = wikilv_get_wikilv($wid)) {
-        print_error('invalidwikilvid', 'wikilv');
+        print_error('incorrectwikilvid', 'wikilv');
     }
 
 }
 
 if (!$cm = get_coursemodule_from_instance('wikilv', $wikilv->id)) {
-    print_error('invalidcoursemoduleid', 'wikilv');
+    print_error('invalidcoursemodule');
 }
 
 $groups = new stdClass();
@@ -107,14 +107,12 @@ $wikilvpage->set_action($action);
 switch ($action) {
 case 'create':
     $newpageid = $wikilvpage->create_page($title);
-    add_to_log($course->id, 'wikilv', 'add page', "view.php?pageid=".$newpageid, $newpageid, $cm->id);
     redirect($CFG->wwwroot . '/mod/wikilv/edit.php?pageid='.$newpageid);
     break;
 case 'new':
     // Go straight to editing if we know the page title and we're in force format mode.
     if ((int)$wikilv->forceformat == 1 && $title != get_string('newpage', 'wikilv')) {
         $newpageid = $wikilvpage->create_page($title);
-        add_to_log($course->id, 'wikilv', 'add page', "view.php?pageid=".$newpageid, $newpageid, $cm->id);
         redirect($CFG->wwwroot . '/mod/wikilv/edit.php?pageid='.$newpageid);
     } else {
         $wikilvpage->print_header();

@@ -24,35 +24,37 @@
 M.mod_wikilv = {};
 
 M.mod_wikilv.init = function(Y, args) {
-    var WikiHelper = function(args) {
-        WikiHelper.superclass.constructor.apply(this, arguments);
+    var WikilvHelper = function(args) {
+        WikilvHelper.superclass.constructor.apply(this, arguments);
     }
-    WikiHelper.NAME = "WIKILV";
-    WikiHelper.ATTRS = {
+    WikilvHelper.NAME = "WIKILV";
+    WikilvHelper.ATTRS = {
         options: {},
         lang: {}
     };
-    Y.extend(WikiHelper, Y.Base, {
+    Y.extend(WikilvHelper, Y.Base, {
         initializer: function(args) {
         }
     });
-    new WikiHelper(args);
+    new WikilvHelper(args);
 };
-M.mod_wikilv.renew_lock = function(Y, args) {
-    function renewLock() {
-        var args = {};
-        args['sesskey'] = M.cfg.sesskey;
-        args['pageid'] = wikilv.pageid;
-        if (wikilv.section) {
-            args['section'] = wikilv.section;
-        }
-        var callback = {};
-        Y.use('yui2-connection', function(Y) {
-            Y.YUI2.util.Connect.asyncRequest('GET', 'lock.php?' + build_querystring(args), callback);
-        });
+M.mod_wikilv.renew_lock = function() {
+    var args = {
+        sesskey: M.cfg.sesskey,
+        pageid: wikilv.pageid
+    };
+    if (wikilv.section) {
+        args.section = wikilv.section;
     }
-    setInterval(renewLock, wikilv.renew_lock_timeout * 1000);
-}
+    YUI().use('io', function(Y) {
+        function renewLock() {
+            Y.io('lock.php?' + build_querystring(args), {
+                method: 'POST'
+            });
+        }
+        setInterval(renewLock, wikilv.renew_lock_timeout * 1000);
+    });
+};
 M.mod_wikilv.history = function(Y, args) {
     var compare = false;
     var comparewith = false;

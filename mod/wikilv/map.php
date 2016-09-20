@@ -18,9 +18,9 @@
 /**
  * This file contains all necessary code to view the navigation tab
  *
- * @package mod-wikilv-2.0
- * @copyrigth 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
- * @copyrigth 2009 Universitat Politecnica de Catalunya http://www.upc.edu
+ * @package mod_wikilv
+ * @copyright 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
+ * @copyright 2009 Universitat Politecnica de Catalunya http://www.upc.edu
  *
  * @author Jordi Piguillem
  * @author Marc Alier
@@ -54,11 +54,26 @@ if (!$wikilv = wikilv_get_wikilv($subwikilv->wikilvid)) {
 }
 
 require_login($course, true, $cm);
-$context = context_module::instance($cm->id);
-require_capability('mod/wikilv:viewpage', $context);
+
+if (!wikilv_user_can_view($subwikilv, $wikilv)) {
+    print_error('cannotviewpage', 'wikilv');
+}
 
 $wikilvpage = new page_wikilv_map($wikilv, $subwikilv, $cm);
-add_to_log($course->id, "wikilv", "map", "map.php?pageid=".$pageid, $pageid, $cm->id);
+
+$context = context_module::instance($cm->id);
+$event = \mod_wikilv\event\page_map_viewed::create(
+        array(
+            'context' => $context,
+            'objectid' => $pageid,
+            'other' => array(
+                'option' => $option
+                )
+            ));
+$event->add_record_snapshot('wikilv_pages', $page);
+$event->add_record_snapshot('wikilv', $wikilv);
+$event->add_record_snapshot('wikilv_subwikilvs', $subwikilv);
+$event->trigger();
 
 // Print page header
 $wikilvpage->set_view($option);

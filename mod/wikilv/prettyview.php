@@ -17,9 +17,9 @@
 /**
  * This file contains all necessary code to get a printable version of a wikilv page
  *
- * @package mod-wikilv-2.0
- * @copyrigth 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
- * @copyrigth 2009 Universitat Politecnica de Catalunya http://www.upc.edu
+ * @package mod_wikilv
+ * @copyright 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
+ * @copyright 2009 Universitat Politecnica de Catalunya http://www.upc.edu
  *
  * @author Jordi Piguillem
  * @author Marc Alier
@@ -53,13 +53,18 @@ if (!$wikilv = wikilv_get_wikilv($subwikilv->wikilvid)) {
 
 require_login($course, true, $cm);
 
-$context = context_module::instance($cm->id);
-require_capability('mod/wikilv:viewpage', $context);
+if (!wikilv_user_can_view($subwikilv, $wikilv)) {
+    print_error('cannotviewpage', 'wikilv');
+}
 
 $wikilvpage = new page_wikilv_prettyview($wikilv, $subwikilv, $cm);
 
 $wikilvpage->set_page($page);
-add_to_log($course->id, "wikilv", "view", "prettyview.php?pageid=".$pageid, $pageid, $cm->id);
+
+$context = context_module::instance($cm->id);
+
+$other = array('prettyview' => true);
+wikilv_page_view($wikilv, $page, $course, $cm, $context, null, $other, $subwikilv);
 
 $wikilvpage->print_header();
 $wikilvpage->print_content();

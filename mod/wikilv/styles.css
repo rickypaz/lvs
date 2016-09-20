@@ -14,11 +14,11 @@
  You should have received a copy of the GNU General Public License
  along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 */ /**
- * Wiki module style sheet
+ * Wikilv module style sheet
  *
  * @package mod-wikilv-2.0
- * @copyrigth 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
- * @copyrigth 2009 Universitat Politecnica de Catalunya http://www.upc.edu
+ * @copyright 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
+ * @copyright 2009 Universitat Politecnica de Catalunya http://www.upc.edu
  *
  * @author Jordi Piguillem
  * @author Marc Alier
@@ -46,11 +46,6 @@
     width: 50%;
     margin: auto;
     border: thin solid blue;
-}
-
-.wikilv_info {
-    color: darkred;
-    text-decoration: underline;
 }
 
 .wikilv_button {
@@ -133,10 +128,6 @@
     text-align: right;
 }
 
-.wikilv-tags span {
-    font-weight: bold;
-}
-
 .wikilv_modifieduser p {
     line-height: 35px;
 }
@@ -145,11 +136,12 @@
     border: thin solid black;
 }
 
-.wikilv_restore_yes, .wikilv_deletecomment_yes {
+.wikilv_restore_yes, .wikilv_deletecomment_yes,
+.dir-rtl .wikilv_restore_no, .dir-rtl .wikilv_deletecomment_no {
     float: left;
 }
-
-.wikilv_restore_no, .wikilv_deletecomment_no {
+.wikilv_restore_no, .wikilv_deletecomment_no,
+.dir-rtl .wikilv_restore_yes, .dir-rtl .wikilv_deletecomment_yes {
     float: right;
 }
 
@@ -363,3 +355,8 @@ a.wikilv_edit_section {
     height: 22px;
     vertical-align: middle;
 }
+
+.path-mod-wikilv .printicon {
+    background: url([[pix:t/print]]) no-repeat scroll 2px center transparent; padding-left: 20px;
+}
+#page-mod-wikilv-prettyview .displayprinticon {text-align: right;}

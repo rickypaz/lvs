@@ -16,19 +16,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Moodle Wiki 2.0 Renderer
+ * Moodle Wikilv 2.0 Renderer
  *
- * @package   mod-wikilv
+ * @package   mod_wikilv
  * @copyright 2010 Dongsheng Cai <dongsheng@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 // @lvs dependências lvs
 use uab\ifce\lvs\business\Item;
 use uab\ifce\lvs\moodle2\business\Wikilv;
 use uab\ifce\lvs\avaliacao\NotasLvFactory;
 use uab\ifce\lvs\moodle2\business\Moodle2CursoLv;
-// fim 
+// fim
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -60,12 +59,12 @@ class mod_wikilv_renderer extends plugin_renderer_base {
     }
 
     public function search_result($records, $subwikilv) {
-        global $CFG, $PAGE;
+        global $CFG;
         $table = new html_table();
-        $context = context_module::instance($PAGE->cm->id);
+        $context = context_module::instance($this->page->cm->id);
         $strsearchresults = get_string('searchresult', 'wikilv');
         $totalcount = count($records);
-        $html = $this->output->heading("$strsearchresults $totalcount");
+        $html = $this->output->heading("$strsearchresults $totalcount", 3);
         foreach ($records as $page) {
             $table->head = array('title' => format_string($page->title) . ' (' . html_writer::link($CFG->wwwroot . '/mod/wikilv/view.php?pageid=' . $page->id, get_string('view', 'wikilv')) . ')');
             $table->align = array('title' => 'left');
@@ -301,7 +300,7 @@ class mod_wikilv_renderer extends plugin_renderer_base {
         $html = '';
         $link = new moodle_url('/mod/wikilv/prettyview.php', array('pageid' => $page->id));
         $html .= $this->output->container_start('wikilv_right');
-        $html .= $this->output->action_link($link, get_string('prettyprint', 'wikilv'), new popup_action('click', $link));
+        $html .= $this->output->action_link($link, get_string('prettyprint', 'wikilv'), new popup_action('click', $link), array('class' => 'printicon'));
         $html .= $this->output->container_end();
         return $html;
     }
@@ -309,17 +308,27 @@ class mod_wikilv_renderer extends plugin_renderer_base {
     public function wikilv_print_subwikilv_selector($wikilv, $subwikilv, $page, $pagetype = 'view') {
         global $CFG, $USER;
         require_once($CFG->dirroot . '/user/lib.php');
+        $cm = get_coursemodule_from_instance('wikilv', $wikilv->id);
+
         switch ($pagetype) {
         case 'files':
-            $baseurl = new moodle_url('/mod/wikilv/files.php');
+            $baseurl = new moodle_url('/mod/wikilv/files.php',
+                    array('wid' => $wikilv->id, 'title' => $page->title, 'pageid' => $page->id));
+            break;
+        case 'search':
+            $search = optional_param('searchstring', null, PARAM_TEXT);
+            $searchcontent = optional_param('searchwikilvcontent', 0, PARAM_INT);
+            $baseurl = new moodle_url('/mod/wikilv/search.php',
+                    array('cmid' => $cm->id, 'courseid' => $cm->course,
+                        'searchstring' => $search, 'searchwikilvcontent' => $searchcontent));
             break;
         case 'view':
         default:
-            $baseurl = new moodle_url('/mod/wikilv/view.php');
+            $baseurl = new moodle_url('/mod/wikilv/view.php',
+                    array('wid' => $wikilv->id, 'title' => $page->title));
             break;
         }
 
-        $cm = get_coursemodule_from_instance('wikilv', $wikilv->id);
         $context = context_module::instance($cm->id);
         // @TODO: A plenty of duplicated code below this lines.
         // Create private functions.
@@ -344,14 +353,10 @@ class mod_wikilv_renderer extends plugin_renderer_base {
                     }
 
                     echo $this->output->container_start('wikilv_right');
-                    $params = array('wid' => $wikilv->id, 'title' => $page->title);
-                    if ($pagetype == 'files') {
-                        $params['pageid'] = $page->id;
-                    }
-                    $baseurl->params($params);
                     $name = 'uid';
                     $selected = $subwikilv->userid;
-                    echo $this->output->single_select($baseurl, $name, $options, $selected);
+                    echo $this->output->single_select($baseurl, $name, $options, $selected, null, null,
+                        array('label' => get_string('user') . ':'));
                     echo $this->output->container_end();
                 }
                 return;
@@ -362,12 +367,6 @@ class mod_wikilv_renderer extends plugin_renderer_base {
         case SEPARATEGROUPS:
             if ($wikilv->wikilvmode == 'collaborative') {
                 // We need to print a select to choose a course group
-
-                $params = array('wid'=>$wikilv->id, 'title'=>$page->title);
-                if ($pagetype == 'files') {
-                    $params['pageid'] = $page->id;
-                }
-                $baseurl->params($params);
 
                 echo $this->output->container_start('wikilv_right');
                 groups_print_activity_menu($cm, $baseurl);
@@ -404,14 +403,10 @@ class mod_wikilv_renderer extends plugin_renderer_base {
                     }
                 }
                 echo $this->output->container_start('wikilv_right');
-                $params = array('wid' => $wikilv->id, 'title' => $page->title);
-                if ($pagetype == 'files') {
-                    $params['pageid'] = $page->id;
-                }
-                $baseurl->params($params);
                 $name = 'groupanduser';
                 $selected = $subwikilv->groupid . '-' . $subwikilv->userid;
-                echo $this->output->single_select($baseurl, $name, $options, $selected);
+                echo $this->output->single_select($baseurl, $name, $options, $selected, null, null,
+                    array('label' => get_string('user') . ':'));
                 echo $this->output->container_end();
 
                 return;
@@ -424,11 +419,6 @@ class mod_wikilv_renderer extends plugin_renderer_base {
             if ($wikilv->wikilvmode == 'collaborative') {
                 // We need to print a select to choose a course group
                 // moodle_url will take care of encoding for us
-                $params = array('wid'=>$wikilv->id, 'title'=>$page->title);
-                if ($pagetype == 'files') {
-                    $params['pageid'] = $page->id;
-                }
-                $baseurl->params($params);
 
                 echo $this->output->container_start('wikilv_right');
                 groups_print_activity_menu($cm, $baseurl);
@@ -451,14 +441,10 @@ class mod_wikilv_renderer extends plugin_renderer_base {
                 }
 
                 echo $this->output->container_start('wikilv_right');
-                $params = array('wid' => $wikilv->id, 'title' => $page->title);
-                if ($pagetype == 'files') {
-                    $params['pageid'] = $page->id;
-                }
-                $baseurl->params($params);
                 $name = 'groupanduser';
                 $selected = $subwikilv->groupid . '-' . $subwikilv->userid;
-                echo $this->output->single_select($baseurl, $name, $options, $selected);
+                echo $this->output->single_select($baseurl, $name, $options, $selected, null, null,
+                    array('label' => get_string('user') . ':'));
                 echo $this->output->container_end();
 
                 return;
@@ -476,6 +462,10 @@ class mod_wikilv_renderer extends plugin_renderer_base {
     }
 
     function menu_map($pageid, $currentselect) {
+        if (empty($currentselect)) {
+            // The wikilv uses digit number to match the options and 5 is the default one.
+            $currentselect = 5;
+        }
         $options = array('contributions', 'links', 'orphaned', 'pageindex', 'pagelist', 'updatedpages');
         $items = array();
         foreach ($options as $opt) {
@@ -485,7 +475,7 @@ class mod_wikilv_renderer extends plugin_renderer_base {
         foreach ($items as $key => $item) {
             $selectoptions[$key + 1] = $item;
         }
-        $select = new single_select(new moodle_url('/mod/wikilv/map.php', array('pageid' => $pageid)), 'option', $selectoptions, $currentselect);
+        $select = new single_select(new moodle_url('/mod/wikilv/map.php', array('pageid' => $pageid)), 'option', $selectoptions, $currentselect, null);
         $select->label = get_string('mapmenu', 'wikilv') . ': ';
         return $this->output->container($this->output->render($select), 'midpad');
     }
@@ -516,7 +506,7 @@ class mod_wikilv_renderer extends plugin_renderer_base {
         foreach ($items as $key => $item) {
             $selectoptions[$key + 1] = $item;
         }
-        $select = new single_select(new moodle_url('/mod/wikilv/admin.php', array('pageid' => $pageid)), 'option', $selectoptions, $currentselect);
+        $select = new single_select(new moodle_url('/mod/wikilv/admin.php', array('pageid' => $pageid)), 'option', $selectoptions, $currentselect, null);
         $select->label = get_string('adminmenu', 'wikilv') . ': ';
         return $this->output->container($this->output->render($select), 'midpad');
     }
@@ -549,7 +539,7 @@ class mod_wikilv_renderer extends plugin_renderer_base {
             $url = file_encode_url("$CFG->wwwroot/pluginfile.php", '/'.$tree->context->id.'/mod_wikilv/attachments/' . $tree->subwikilv->id . '/'. $file->get_filepath() . $file->get_filename(), true);
             $filename = $file->get_filename();
             $image = $this->output->pix_icon(file_file_icon($file), $filename, 'moodle', array('class'=>'icon'));
-            $result .= '<li yuiConfig=\''.json_encode($yuiconfig).'\'><div>'.$image.' '.html_writer::link($url, $filename);
+            $result .= '<li yuiConfig=\''.json_encode($yuiconfig).'\'><div>'.$image.' '.html_writer::link($url, $filename).'</div></li>';
             
             /** @lvs exibição do form de avaliação em files de wikilv */
             if ( in_array($file->get_userid(), $estudantes)) {
@@ -557,16 +547,16 @@ class mod_wikilv_renderer extends plugin_renderer_base {
             	$filelv->id = $file->get_id();
             	$filelv->userid = $file->get_userid();
             	$filelv->timecreated = $file->get_timecreated();
-            	 
+            
             	$item = new Item('wikilv', 'file', $filelv);
-            	 
+            
             	$result .= '<div>';
             	$result .= $gerenciadorNotas->avaliacaoAtual($item);
             	$result .= $gerenciadorNotas->avaliadoPor($item);
             	$result .= $gerenciadorNotas->formAvaliacaoAjax($item);
             	$result .= '</div>';
             }
-
+            
             $result .= '</div></li>';
             // lvs
         }

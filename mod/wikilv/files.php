@@ -15,10 +15,10 @@
 // along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Wiki files management
+ * Wikilv files management
  *
- * @package mod-wikilv-2.0
- * @copyrigth 2011 Dongsheng Cai <dongsheng@moodle.com>
+ * @package mod_wikilv
+ * @copyright 2011 Dongsheng Cai <dongsheng@moodle.com>
  *
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,7 +28,7 @@ require_once($CFG->dirroot . '/mod/wikilv/lib.php');
 require_once($CFG->dirroot . '/mod/wikilv/locallib.php');
 
 $pageid       = required_param('pageid', PARAM_INT); // Page ID
-$wid          = optional_param('wid', 0, PARAM_INT); // Wiki ID
+$wid          = optional_param('wid', 0, PARAM_INT); // Wikilv ID
 $currentgroup = optional_param('group', 0, PARAM_INT); // Group ID
 $userid       = optional_param('uid', 0, PARAM_INT); // User ID
 $groupanduser = optional_param('groupanduser', null, PARAM_TEXT);
@@ -78,11 +78,17 @@ $context = context_module::instance($cm->id);
 
 $PAGE->set_url('/mod/wikilv/files.php', array('pageid'=>$pageid));
 require_login($course, true, $cm);
-$PAGE->set_context($context);
+
+if (!wikilv_user_can_view($subwikilv, $wikilv)) {
+    print_error('cannotviewfiles', 'wikilv');
+}
+
 $PAGE->set_title(get_string('wikilvfiles', 'wikilv'));
-$PAGE->set_heading(get_string('wikilvfiles', 'wikilv'));
+$PAGE->set_heading($course->fullname);
 $PAGE->navbar->add(format_string(get_string('wikilvfiles', 'wikilv')));
 echo $OUTPUT->header();
+echo $OUTPUT->heading(format_string($wikilv->name));
+echo $OUTPUT->box(format_module_intro('wikilv', $wikilv, $PAGE->cm->id), 'generalbox', 'intro');
 
 $renderer = $PAGE->get_renderer('mod_wikilv');
 
@@ -93,12 +99,8 @@ echo $renderer->tabs($page, $tabitems, $options);
 
 
 echo $OUTPUT->box_start('generalbox');
-if (has_capability('mod/wikilv:viewpage', $context)) {
-    echo $renderer->wikilv_print_subwikilv_selector($PAGE->activityrecord, $subwikilv, $page, 'files');
-    echo $renderer->wikilv_files_tree($context, $subwikilv);
-} else {
-    echo $OUTPUT->notification(get_string('cannotviewfiles', 'wikilv'));
-}
+echo $renderer->wikilv_print_subwikilv_selector($PAGE->activityrecord, $subwikilv, $page, 'files');
+echo $renderer->wikilv_files_tree($context, $subwikilv);
 echo $OUTPUT->box_end();
 
 if (has_capability('mod/wikilv:managefiles', $context)) {

@@ -21,9 +21,9 @@
  * It contains the great majority of functions defined by Moodle
  * that are mandatory to develop a module.
  *
- * @package mod-wikilv-2.0
- * @copyrigth 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
- * @copyrigth 2009 Universitat Politecnica de Catalunya http://www.upc.edu
+ * @package mod_wikilv
+ * @copyright 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
+ * @copyright 2009 Universitat Politecnica de Catalunya http://www.upc.edu
  *
  * @author Jordi Piguillem
  * @author Marc Alier
@@ -40,7 +40,6 @@ use uab\ifce\lvs\moodle2\business\Moodle2CursoLv;
 require_once($CFG->dirroot.'/blocks/lvs/biblioteca/lib.php'); // @lvs inclusão do loader dos lvs
 /** fim das dependências */
 
-
 /**
  * Given an object containing all the necessary data,
  * (defined by the form in mod.html) this function
@@ -55,10 +54,8 @@ function wikilv_add_instance($wikilv) {
 
     $wikilv->timemodified = time();
     # May have to add extra stuff in here #
-    
-    //	@lvs adicionando período de avaliação lv
     if (empty($wikilv->forceformat)) {
-    	$wikilv->forceformat = 0;
+        $wikilv->forceformat = 0;
     }
     
     /** @lvs adição configuração wikilv */
@@ -70,10 +67,8 @@ function wikilv_add_instance($wikilv) {
     
     //@lvs se o checkbox estiver desmarcado setar para 0
     $wikilv->exibir = (isset($wikilv->exibir)) ? 1 : 0;
-    
-    $wikilvid = $DB->insert_record('wikilv', $wikilv);
-    
-    return $wikilvid;
+
+    return $DB->insert_record('wikilv', $wikilv);
 }
 
 /**
@@ -99,17 +94,10 @@ function wikilv_update_instance($wikilv) {
     	$wikilv->assesstimestart  = 0;
     	$wikilv->assesstimefinish = 0;
     }
-    
-//     if ($atual->fator_multiplicativo != $configuracao->fator_multiplicativo) {
-//     	$wikilv = new Wikilv($configuracao->id);
-//     	$estudantes = $wikilv->recalcularNotas();
-//     	$this->_cursolv->atualizarCurso($estudantes);
-//     }
-    // lvs
-    
+
     //@lvs se o checkbox estiver desmarcado setar para 0
     $wikilv->exibir = (isset($wikilv->exibir)) ? 1 : 0;
-    
+
     return $DB->update_record('wikilv', $wikilv);
 }
 
@@ -170,13 +158,13 @@ function wikilv_delete_instance($id) {
         }
     }
 
-    # Delete any dependent records here #
     /** @lvs remove notas, avaliações e configuração do wikilv */
     $cursolv = new Moodle2CursoLv($wikilv->course);
     $gerenciadorWikis = new WikisLv( new Moodle2CursoLv($wikilv->course) );
     $cursolv->getGerenciador('wikilv')->removerAtividade($wikilv->id);
     // lvs fim
-    
+
+    # Delete any dependent records here #
     if (!$DB->delete_records('wikilv', array('id' => $wikilv->id))) {
         $result = false;
     }
@@ -184,10 +172,16 @@ function wikilv_delete_instance($id) {
     return $result;
 }
 
+/**
+ * Implements callback to reset course
+ *
+ * @param stdClass $data
+ * @return boolean|array
+ */
 function wikilv_reset_userdata($data) {
     global $CFG,$DB;
     require_once($CFG->dirroot . '/mod/wikilv/pagelib.php');
-    require_once($CFG->dirroot . '/tag/lib.php');
+    require_once($CFG->dirroot . "/mod/wikilv/locallib.php");
 
     $componentstr = get_string('modulenameplural', 'wikilv');
     $status = array();
@@ -196,34 +190,60 @@ function wikilv_reset_userdata($data) {
     if (!$wikilvs = $DB->get_records('wikilv', array('course' => $data->courseid))) {
         return false;
     }
-    $errors = false;
+    if (empty($data->reset_wikilv_comments) && empty($data->reset_wikilv_tags) && empty($data->reset_wikilv_pages)) {
+        return $status;
+    }
+
     foreach ($wikilvs as $wikilv) {
-
-        // remove all comments
-        if (!empty($data->reset_wikilv_comments)) {
-            if (!$cm = get_coursemodule_from_instance('wikilv', $wikilv->id)) {
-                continue;
-            }
-            $context = context_module::instance($cm->id);
-            $DB->delete_records_select('comments', "contextid = ? AND commentarea='wikilv_page'", array($context->id));
-            $status[] = array('component'=>$componentstr, 'item'=>get_string('deleteallcomments'), 'error'=>false);
+        if (!$cm = get_coursemodule_from_instance('wikilv', $wikilv->id, $data->courseid)) {
+            continue;
         }
+        $context = context_module::instance($cm->id);
 
-        if (!empty($data->reset_wikilv_tags)) {
-            # Get subwikilv information #
-            $subwikilvs = $DB->get_records('wikilv_subwikilvs', array('wikilvid' => $wikilv->id));
+        // Remove tags or all pages.
+        if (!empty($data->reset_wikilv_pages) || !empty($data->reset_wikilv_tags)) {
+
+            // Get subwikilv information.
+            $subwikilvs = wikilv_get_subwikilvs($wikilv->id);
 
             foreach ($subwikilvs as $subwikilv) {
-                if ($pages = $DB->get_records('wikilv_pages', array('subwikilvid' => $subwikilv->id))) {
-                    foreach ($pages as $page) {
-                        $tags = tag_get_tags_array('wikilv_pages', $page->id);
-                        foreach ($tags as $tagid => $tagname) {
-                            // Delete the related tag_instances related to the wikilv page.
-                            $errors = tag_delete_instance('wikilv_pages', $page->id, $tagid);
-                            $status[] = array('component' => $componentstr, 'item' => get_string('tagsdeleted', 'wikilv'), 'error' => $errors);
+                // Get existing pages.
+                if ($pages = wikilv_get_page_list($subwikilv->id)) {
+                    // If the wikilv page isn't selected then we are only removing tags.
+                    if (empty($data->reset_wikilv_pages)) {
+                        // Go through each page and delete the tags.
+                        foreach ($pages as $page) {
+                            core_tag_tag::remove_all_item_tags('mod_wikilv', 'wikilv_pages', $page->id);
                         }
+                    } else {
+                        // Otherwise we are removing pages and tags.
+                        wikilv_delete_pages($context, $pages, $subwikilv->id);
                     }
                 }
+                if (!empty($data->reset_wikilv_pages)) {
+                    // Delete any subwikilvs.
+                    $DB->delete_records('wikilv_subwikilvs', array('id' => $subwikilv->id), IGNORE_MISSING);
+
+                    // Delete any attached files.
+                    $fs = get_file_storage();
+                    $fs->delete_area_files($context->id, 'mod_wikilv', 'attachments');
+                }
+            }
+
+            if (!empty($data->reset_wikilv_pages)) {
+                $status[] = array('component' => $componentstr, 'item' => get_string('deleteallpages', 'wikilv'),
+                    'error' => false);
+            }
+            if (!empty($data->reset_wikilv_tags)) {
+                $status[] = array('component' => $componentstr, 'item' => get_string('tagsdeleted', 'wikilv'), 'error' => false);
+            }
+        }
+
+        // Remove all comments.
+        if (!empty($data->reset_wikilv_comments) || !empty($data->reset_wikilv_pages)) {
+            $DB->delete_records_select('comments', "contextid = ? AND commentarea='wikilv_page'", array($context->id));
+            if (!empty($data->reset_wikilv_comments)) {
+                $status[] = array('component' => $componentstr, 'item' => get_string('deleteallcomments'), 'error' => false);
             }
         }
     }
@@ -233,34 +253,9 @@ function wikilv_reset_userdata($data) {
 
 function wikilv_reset_course_form_definition(&$mform) {
     $mform->addElement('header', 'wikilvheader', get_string('modulenameplural', 'wikilv'));
+    $mform->addElement('advcheckbox', 'reset_wikilv_pages', get_string('deleteallpages', 'wikilv'));
     $mform->addElement('advcheckbox', 'reset_wikilv_tags', get_string('removeallwikilvtags', 'wikilv'));
     $mform->addElement('advcheckbox', 'reset_wikilv_comments', get_string('deleteallcomments'));
-}
-
-/**
- * Return a small object with summary information about what a
- * user has done with a given particular instance of this module
- * Used for user activity reports.
- * $return->time = the time they did it
- * $return->info = a short text description
- *
- * @return null
- * @todo Finish documenting this function
- **/
-function wikilv_user_outline($course, $user, $mod, $wikilv) {
-    $return = NULL;
-    return $return;
-}
-
-/**
- * Print a detailed representation of what a user has done with
- * a given particular instance of this module, for user activity reports.
- *
- * @return boolean
- * @todo Finish documenting this function
- **/
-function wikilv_user_complete($course, $user, $mod, $wikilv) {
-    return true;
 }
 
 /**
@@ -268,7 +263,6 @@ function wikilv_user_complete($course, $user, $mod, $wikilv) {
  *
  * @uses FEATURE_GROUPS
  * @uses FEATURE_GROUPINGS
- * @uses FEATURE_GROUPMEMBERSONLY
  * @uses FEATURE_MOD_INTRO
  * @uses FEATURE_COMPLETION_TRACKS_VIEWS
  * @uses FEATURE_COMPLETION_HAS_RULES
@@ -282,8 +276,6 @@ function wikilv_supports($feature) {
     case FEATURE_GROUPS:
         return true;
     case FEATURE_GROUPINGS:
-        return true;
-    case FEATURE_GROUPMEMBERSONLY:
         return true;
     case FEATURE_MOD_INTRO:
         return true;
@@ -322,7 +314,7 @@ function wikilv_supports($feature) {
 function wikilv_print_recent_activity($course, $viewfullnames, $timestart) {
     global $CFG, $DB, $OUTPUT;
 
-    $sql = "SELECT p.*, w.id as wikilvid, sw.groupid
+    $sql = "SELECT p.id, p.timemodified, p.subwikilvid, sw.wikilvid, w.wikilvmode, sw.userid, sw.groupid
             FROM {wikilv_pages} p
                 JOIN {wikilv_subwikilvs} sw ON sw.id = p.subwikilvid
                 JOIN {wikilv} w ON w.id = sw.wikilvid
@@ -331,48 +323,25 @@ function wikilv_print_recent_activity($course, $viewfullnames, $timestart) {
     if (!$pages = $DB->get_records_sql($sql, array($timestart, $course->id))) {
         return false;
     }
-    $modinfo = get_fast_modinfo($course);
+    require_once($CFG->dirroot . "/mod/wikilv/locallib.php");
 
     $wikilvs = array();
 
     $modinfo = get_fast_modinfo($course);
 
+    $subwikilvvisible = array();
     foreach ($pages as $page) {
-        if (!isset($modinfo->instances['wikilv'][$page->wikilvid])) {
-            // not visible
-            continue;
+        if (!isset($subwikilvvisible[$page->subwikilvid])) {
+            $subwikilv = (object)array('id' => $page->subwikilvid, 'wikilvid' => $page->wikilvid,
+                'groupid' => $page->groupid, 'userid' => $page->userid);
+            $wikilv = (object)array('id' => $page->wikilvid, 'course' => $course->id, 'wikilvmode' => $page->wikilvmode);
+            $subwikilvvisible[$page->subwikilvid] = wikilv_user_can_view($subwikilv, $wikilv);
         }
-        $cm = $modinfo->instances['wikilv'][$page->wikilvid];
-        if (!$cm->uservisible) {
-            continue;
+        if ($subwikilvvisible[$page->subwikilvid]) {
+            $wikilvs[] = $page;
         }
-        $context = context_module::instance($cm->id);
-
-        if (!has_capability('mod/wikilv:viewpage', $context)) {
-            continue;
-        }
-
-        $groupmode = groups_get_activity_groupmode($cm, $course);
-
-        if ($groupmode) {
-            if ($groupmode == SEPARATEGROUPS and !has_capability('mod/wikilv:managewikilv', $context)) {
-                // separate mode
-                if (isguestuser()) {
-                    // shortcut
-                    continue;
-                }
-
-                if (is_null($modinfo->groups)) {
-                    $modinfo->groups = groups_get_user_groups($course->id); // load all my groups and cache it in modinfo
-                    }
-
-                if (!in_array($page->groupid, $modinfo->groups[0])) {
-                    continue;
-                }
-            }
-        }
-        $wikilvs[] = $page;
     }
+    unset($subwikilvvisible);
     unset($pages);
 
     if (!$wikilvs) {
@@ -505,13 +474,11 @@ function wikilv_pluginfile($course, $cm, $context, $filearea, $args, $forcedownl
             return false;
         }
 
-        $lifetime = isset($CFG->filelifetime) ? $CFG->filelifetime : 86400;
-
-        send_stored_file($file, $lifetime, 0, $options);
+        send_stored_file($file, null, 0, $options);
     }
 }
 
-function wikilv_search_form($cm, $search = '') {
+function wikilv_search_form($cm, $search = '', $subwikilv = null) {
     global $CFG, $OUTPUT;
 
     $output = '<div class="wikilvsearch">';
@@ -522,6 +489,9 @@ function wikilv_search_form($cm, $search = '') {
     $output .= '<input id="searchwikilv" name="searchstring" type="text" size="18" value="' . s($search, true) . '" alt="search" />';
     $output .= '<input name="courseid" type="hidden" value="' . $cm->course . '" />';
     $output .= '<input name="cmid" type="hidden" value="' . $cm->id . '" />';
+    if (!empty($subwikilv->id)) {
+        $output .= '<input name="subwikilvid" type="hidden" value="' . $subwikilv->id . '" />';
+    }
     $output .= '<input name="searchwikilvcontent" type="hidden" value="1" />';
     $output .= '<input value="' . get_string('searchwikilvs', 'wikilv') . '" type="submit" />';
     $output .= '</fieldset>';
@@ -563,7 +533,7 @@ function wikilv_extend_navigation(navigation_node $navref, $course, $module, $cm
         $pageid = $page->id;
     }
 
-    if (has_capability('mod/wikilv:createpage', $context)) {
+    if (wikilv_can_create_pages($context)) {
         $link = new moodle_url('/mod/wikilv/create.php', array('action' => 'new', 'swid' => $swid));
         $node = $navref->add(get_string('newpage', 'wikilv'), $link, navigation_node::TYPE_SETTING);
     }
@@ -726,4 +696,73 @@ function wikilv_page_type_list($pagetype, $parentcontext, $currentcontext) {
         'mod-wikilv-map'=>get_string('page-mod-wikilv-map', 'wikilv')
     );
     return $module_pagetype;
+}
+
+/**
+ * Mark the activity completed (if required) and trigger the course_module_viewed event.
+ *
+ * @param  stdClass $wikilv       Wikilv object.
+ * @param  stdClass $course     Course object.
+ * @param  stdClass $cm         Course module object.
+ * @param  stdClass $context    Context object.
+ * @since Moodle 3.1
+ */
+function wikilv_view($wikilv, $course, $cm, $context) {
+    // Trigger course_module_viewed event.
+    $params = array(
+        'context' => $context,
+        'objectid' => $wikilv->id
+    );
+    $event = \mod_wikilv\event\course_module_viewed::create($params);
+    $event->add_record_snapshot('course_modules', $cm);
+    $event->add_record_snapshot('course', $course);
+    $event->add_record_snapshot('wikilv', $wikilv);
+    $event->trigger();
+
+    // Completion.
+    $completion = new completion_info($course);
+    $completion->set_module_viewed($cm);
+}
+
+/**
+ * Mark the activity completed (if required) and trigger the page_viewed event.
+ *
+ * @param  stdClass $wikilv       Wikilv object.
+ * @param  stdClass $page       Page object.
+ * @param  stdClass $course     Course object.
+ * @param  stdClass $cm         Course module object.
+ * @param  stdClass $context    Context object.
+ * @param  int $uid             Optional User ID.
+ * @param  array $other         Optional Other params: title, wikilv ID, group ID, groupanduser, prettyview.
+ * @param  stdClass $subwikilv    Optional Subwikilv.
+ * @since Moodle 3.1
+ */
+function wikilv_page_view($wikilv, $page, $course, $cm, $context, $uid = null, $other = null, $subwikilv = null) {
+
+    // Trigger course_module_viewed event.
+    $params = array(
+        'context' => $context,
+        'objectid' => $page->id
+    );
+    if ($uid != null) {
+        $params['relateduserid'] = $uid;
+    }
+    if ($other != null) {
+        $params['other'] = $other;
+    }
+
+    $event = \mod_wikilv\event\page_viewed::create($params);
+
+    $event->add_record_snapshot('wikilv_pages', $page);
+    $event->add_record_snapshot('course_modules', $cm);
+    $event->add_record_snapshot('course', $course);
+    $event->add_record_snapshot('wikilv', $wikilv);
+    if ($subwikilv != null) {
+        $event->add_record_snapshot('wikilv_subwikilvs', $subwikilv);
+    }
+    $event->trigger();
+
+    // Completion.
+    $completion = new completion_info($course);
+    $completion->set_module_viewed($cm);
 }

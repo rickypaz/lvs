@@ -17,7 +17,7 @@
 /**
  * Edit wikilv files form
  *
- * @package   mod-wikilv-2.0
+ * @package   mod_wikilv
  * @copyright 2011 Dongsheng Cai <dongsheng@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -32,7 +32,7 @@ class mod_wikilv_filesedit_form extends moodleform {
 
         $data    = $this->_customdata['data'];
         $options = $this->_customdata['options'];
-
+        $mform->addElement('header', 'general', get_string('editfiles', 'wikilv'));
         $mform->addElement('filemanager', 'files_filemanager', get_string('files'), null, $options);
 
         $mform->addElement('hidden', 'returnurl', $data->returnurl);

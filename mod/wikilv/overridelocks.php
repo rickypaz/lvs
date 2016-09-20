@@ -18,9 +18,9 @@
 /**
  * This file contains all necessary code to edit a wikilv page
  *
- * @package mod-wikilv-2.0
- * @copyrigth 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
- * @copyrigth 2009 Universitat Politecnica de Catalunya http://www.upc.edu
+ * @package mod_wikilv
+ * @copyright 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
+ * @copyright 2009 Universitat Politecnica de Catalunya http://www.upc.edu
  *
  * @author Jordi Piguillem
  * @author Marc Alier
@@ -64,12 +64,13 @@ if (!empty($section) && !$sectioncontent = wikilv_get_section_page($page, $secti
 
 require_login($course, true, $cm);
 
+require_sesskey();
+
+if (!wikilv_user_can_view($subwikilv, $wikilv)) {
+    print_error('cannotviewpage', 'wikilv');
+}
 $context = context_module::instance($cm->id);
 require_capability('mod/wikilv:overridelock', $context);
-
-if (!confirm_sesskey()) {
-    print_error(get_string('invalidsesskey', 'wikilv'));
-}
 
 $wikilvpage = new page_wikilv_overridelocks($wikilv, $subwikilv, $cm);
 $wikilvpage->set_page($page);
@@ -77,7 +78,6 @@ $wikilvpage->set_page($page);
 if (!empty($section)) {
     $wikilvpage->set_section($sectioncontent, $section);
 }
-add_to_log($course->id, "wikilv", "overridelocks", "view.php?pageid=".$pageid, $pageid, $cm->id);
 
 $wikilvpage->print_header();
 

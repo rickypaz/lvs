@@ -19,8 +19,7 @@
  * Provides support for the conversion of moodle1 backup to the moodle2 format
  * Based off of a template @ http://docs.moodle.org/dev/Backup_1.9_conversion_for_developers
  *
- * @package    mod
- * @subpackage wikilv
+ * @package    mod_wikilv
  * @copyright  2011 Aparup Banerjee <aparup@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,7 +27,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * WikiLV conversion handler
+ * Wikilv conversion handler
  */
 class moodle1_mod_wikilv_handler extends moodle1_mod_handler {
 
@@ -154,7 +153,7 @@ class moodle1_mod_wikilv_handler extends moodle1_mod_handler {
         }
 
         if (empty($data['name'])) {
-            $data['name'] = 'WikiLV';
+            $data['name'] = 'Wikilv';
         }
         // get the course module id and context id
         $instanceid     = $data['id'];

@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package moodlecore
+ * @package    mod_wikilv
  * @subpackage backup-moodle2
  * @copyright 2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -104,8 +104,10 @@ class backup_wikilv_activity_structure_step extends backup_activity_structure_st
                                     FROM {tag} t
                                     JOIN {tag_instance} ti ON ti.tagid = t.id
                                    WHERE ti.itemtype = ?
+                                     AND ti.component = ?
                                      AND ti.itemid = ?', array(
                                          backup_helper::is_sqlparam('wikilv_pages'),
+                                         backup_helper::is_sqlparam('mod_wikilv'),
                                          backup::VAR_PARENTID));
         }
 
@@ -120,7 +122,7 @@ class backup_wikilv_activity_structure_step extends backup_activity_structure_st
 
         // Define file annotations
         $wikilv->annotate_files('mod_wikilv', 'intro', null); // This file area hasn't itemid
-        $page->annotate_files('mod_wikilv', 'attachments', 'id'); // This file area hasn't itemid
+        $subwikilv->annotate_files('mod_wikilv', 'attachments', 'id'); // This file area hasn't itemid
 
         // Return the root element (wikilv), wrapped into standard activity structure
         return $this->prepare_activity_structure($wikilv);

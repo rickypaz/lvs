@@ -18,9 +18,9 @@
 /**
  * This file defines de main wikilv configuration form
  *
- * @package mod-wikilv-2.0
- * @copyrigth 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
- * @copyrigth 2009 Universitat Politecnica de Catalunya http://www.upc.edu
+ * @package mod_wikilv
+ * @copyright 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
+ * @copyright 2009 Universitat Politecnica de Catalunya http://www.upc.edu
  *
  * @author Jordi Piguillem
  * @author Marc Alier
@@ -30,7 +30,6 @@
  *
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 /** @LVs dependências mod_form wikilv */
 use uab\ifce\lvs\forms\FormModulosLV;
 // fim das dependências
@@ -44,7 +43,7 @@ require_once($CFG->dirroot . '/mod/wikilv/locallib.php');
 require_once($CFG->dirroot . '/lib/datalib.php');
 
 class mod_wikilv_mod_form extends moodleform_mod {
-	
+
     protected function definition() {
         $mform = $this->_form;
         $required = get_string('required');
@@ -59,7 +58,7 @@ class mod_wikilv_mod_form extends moodleform_mod {
         $mform->addRule('name', $required, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         // Adding the optional "intro" and "introformat" pair of fields
-        $this->add_intro_editor(true, get_string('wikilvintro', 'wikilv'));
+        $this->standard_intro_elements(get_string('wikilvintro', 'wikilv'));
 
         $wikilvmodeoptions = array ('collaborative' => get_string('wikilvmodecollaborative', 'wikilv'), 'individual' => get_string('wikilvmodeindividual', 'wikilv'));
         // Don't allow changes to the wikilv type once it is set.
@@ -95,29 +94,27 @@ class mod_wikilv_mod_form extends moodleform_mod {
         $mform->addElement('checkbox', 'forceformat', get_string('forceformat', 'wikilv'));
         $mform->addHelpButton('forceformat', 'forceformat', 'wikilv');
 
-        
         //-------------------------------------------------------------------------------
         // Add standard elements, common to all modules.
         $this->standard_coursemodule_elements();
-        
+
         /** @lvs inputs lvs */
         $formlv = new FormModulosLV(); //@lvs adicionado campos essenciais para o fórum lv
         $formlv->add_header_lv_wikilv($mform);
         /** @lvs end */
-        
         //-------------------------------------------------------------------------------
         // Add standard buttons, common to all modules.
         $this->add_action_buttons();
 
     }
     
-    // @lvs 
+    // @lvs
     function data_preprocessing(&$default_values){
     	if(isset($default_values['fator_multiplicativo']) &&  $default_values['fator_multiplicativo'] == 3) {
     		$default_values['ratingtime'] = $default_values['assesstimestart'] = $default_values['assesstimefinish'] = 0;
     	}
-    	
-    	if(isset($default_values['assesstimestart']) &&  isset($default_values['assesstimefinish'])) 
+    	 
+    	if(isset($default_values['assesstimestart']) &&  isset($default_values['assesstimefinish']))
     		$default_values['ratingtime'] = ($default_values['assesstimestart'] && $default_values['assesstimefinish']) ? 1 : 0;
     }
 }

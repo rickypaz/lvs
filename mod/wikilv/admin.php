@@ -22,7 +22,7 @@
  * If user have wikilv:managewikilv ability then only this page will show delete
  * options
  *
- * @package mod-wikilv-2.0
+ * @package mod_wikilv
  * @copyright 2011 Rajesh Taneja
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -55,14 +55,22 @@ if (!$wikilv = wikilv_get_wikilv($subwikilv->wikilvid)) {
 
 require_login($course, true, $cm);
 
+if (!wikilv_user_can_view($subwikilv, $wikilv)) {
+    print_error('cannotviewpage', 'wikilv');
+}
 
 $context = context_module::instance($cm->id);
 require_capability('mod/wikilv:managewikilv', $context);
 
-add_to_log($course->id, "wikilv", "admin", "admin.php?pageid=".$page->id, $page->id, $cm->id);
-
 //Delete page if a page ID to delete was supplied
 if (!empty($delete) && confirm_sesskey()) {
+    if ($pageid != $delete) {
+        // Validate that we are deleting from the same subwikilv.
+        $deletepage = wikilv_get_page($delete);
+        if (!$deletepage || $deletepage->subwikilvid != $page->subwikilvid) {
+            print_error('incorrectsubwikilvid', 'wikilv');
+        }
+    }
     wikilv_delete_pages($context, $delete, $page->subwikilvid);
     //when current wikilv page is deleted, then redirect user to create that page, as
     //current pageid is invalid after deletion.
@@ -92,7 +100,7 @@ if (!empty($toversion) && !empty($fromversion) && confirm_sesskey()) {
             }
         }
         $purgeversions[$pageid] = $versions;
-        wikilv_delete_page_versions($purgeversions);
+        wikilv_delete_page_versions($purgeversions, $context);
     }
 }
 

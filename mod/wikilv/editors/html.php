@@ -6,7 +6,7 @@
  * @author Josep Arus
  *
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @package wikilv
+ * @package mod_wikilv
  *
  */
 
@@ -16,7 +16,7 @@
 function wikilv_print_editor_html($pageid, $content, $version = -1, $section = null, $upload = false, $deleteuploads = array()) {
     global $CFG, $OUTPUT;
 
-    $OUTPUT->heading(strtoupper(get_string('formathtml', 'wikilv')));
+    $OUTPUT->heading(strtoupper(get_string('formathtml', 'wikilv')), 3);
 
     $action = $CFG->wwwroot.'/mod/wikilv/edit.php?pageid='.$pageid;
 

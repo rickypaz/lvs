@@ -18,9 +18,9 @@
 /**
  * This file contains all necessary code to execute a lock renewal based on an ajax call
  *
- * @package mod-wikilv-2.0
- * @copyrigth 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
- * @copyrigth 2009 Universitat Politecnica de Catalunya http://www.upc.edu
+ * @package mod_wikilv
+ * @copyright 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
+ * @copyright 2009 Universitat Politecnica de Catalunya http://www.upc.edu
  *
  * @author Jordi Piguillem
  * @author Marc Alier
@@ -68,8 +68,9 @@ if (!empty($section) && !$sectioncontent = wikilv_get_section_page($page, $secti
 
 require_login($course, false, $cm);
 
-$context = context_module::instance($cm->id);
-require_capability('mod/wikilv:editpage', $context);
+if (!wikilv_user_can_edit($subwikilv)) {
+    print_error('cannoteditpage', 'wikilv');
+}
 
 $wikilvpage = new page_wikilv_lock($wikilv, $subwikilv, $cm);
 $wikilvpage->set_page($page);

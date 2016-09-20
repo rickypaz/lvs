@@ -18,9 +18,9 @@
  * Code fragment to define the version of wikilv
  * This fragment is called by moodle_needs_upgrading() and /admin/index.php
  *
- * @package    mod-wikilv-2.0
- * @copyrigth  2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
- * @copyrigth  2009 Universitat Politecnica de Catalunya http://www.upc.edu
+ * @package    mod_wikilv
+ * @copyright  2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
+ * @copyright  2009 Universitat Politecnica de Catalunya http://www.upc.edu
  *
  * @author Jordi Piguillem
  * @author Marc Alier
@@ -33,7 +33,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2013050100;       // The current module version (Date: YYYYMMDDXX)
-$plugin->requires  = 2013050100;    // Requires this Moodle version
+$plugin->version   = 2016052300;       // The current module version (Date: YYYYMMDDXX)
+$plugin->requires  = 2016051900;    // Requires this Moodle version
 $plugin->component = 'mod_wikilv';       // Full name of the plugin (used for diagnostics)
 $plugin->cron      = 0;

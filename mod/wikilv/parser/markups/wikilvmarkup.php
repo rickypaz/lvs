@@ -6,7 +6,7 @@
  * @author Josep Arús
  *
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @package wikilv
+ * @package mod_wikilv
  */
 
 abstract class wikilv_markup_parser extends generic_parser {
@@ -29,7 +29,7 @@ abstract class wikilv_markup_parser extends generic_parser {
     /**
      * function wikilv_parser_link_callback($link = "")
      *
-     * Returns array('content' => "Inside the link", 'url' => "http://url.com/Wiki/Entry", 'new' => false).
+     * Returns array('content' => "Inside the link", 'url' => "http://url.com/Wikilv/Entry", 'new' => false).
      */
     private $linkgeneratorcallback = array('parser_utils', 'wikilv_parser_link_callback');
     private $linkgeneratorcallbackargs = array();
@@ -178,19 +178,24 @@ abstract class wikilv_markup_parser extends generic_parser {
      */
 
     protected function generate_header($text, $level) {
-        $text = trim($text);
+        $toctext = $text = trim($text);
 
         if (!$this->pretty_print && $level == 1) {
-            $text .= parser_utils::h('a', '['.get_string('editsection', 'wikilv').']', array('href' => "edit.php?pageid={$this->wikilv_page_id}&section=" . urlencode($text), 'class' => 'wikilv_edit_section'));
+            $editlink = '[' . get_string('editsection', 'wikilv') . ']';
+            $url = array('href' => "edit.php?pageid={$this->wikilv_page_id}&section=" . urlencode($text),
+                'class' => 'wikilv_edit_section');
+            $text .= ' ' . parser_utils::h('a', $this->protect($editlink), $url);
+            $toctext .= ' ' . parser_utils::h('a', $editlink, $url);
         }
 
         if ($level <= $this->maxheaderdepth) {
-            $this->toc[] = array($level, $text);
+            $this->toc[] = array($level, $toctext);
             $num = count($this->toc);
             $text = parser_utils::h('a', "", array('name' => "toc-$num")) . $text;
         }
 
-        return parser_utils::h('h' . $level, $text) . "\n\n";
+        // Display headers as <h3> and lower for accessibility.
+        return parser_utils::h('h' . min(6, $level + 2), $text) . "\n\n";
     }
 
     /**
@@ -226,7 +231,7 @@ abstract class wikilv_markup_parser extends generic_parser {
                 }
                 break;
             default:
-                continue;
+                continue 2;
             }
             $number = "$currentsection[0]";
             if (!empty($currentsection[1])) {
@@ -235,7 +240,9 @@ abstract class wikilv_markup_parser extends generic_parser {
                     $number .= ".$currentsection[2]";
                 }
             }
-            $toc .= parser_utils::h('p', $number . ". " . parser_utils::h('a', $header[1], array('href' => "#toc-$i")), array('class' => 'wikilv-toc-section-' . $header[0] . " wikilv-toc-section"));
+            $toc .= parser_utils::h('p', $number . ". " .
+               parser_utils::h('a', str_replace(array('[[', ']]'), '', $header[1]), array('href' => "#toc-$i")),
+               array('class' => 'wikilv-toc-section-' . $header[0] . " wikilv-toc-section"));
             $i++;
         }
 
@@ -401,7 +408,8 @@ abstract class wikilv_markup_parser extends generic_parser {
             $text .= "\n\n";
         }
 
-        preg_match("/(.*?)(=\ *\Q$header\E\ *=*\n.*?)((?:\n=[^=]+.*)|$)/is", $text, $match);
+        $regex = "/(.*?)(=\ *".preg_quote($header, '/')."\ *=*\n.*?)((?:\n=[^=]+.*)|$)/is";
+        preg_match($regex, $text, $match);
 
         if (!empty($match)) {
             return array($match[1], $match[2], $match[3]);

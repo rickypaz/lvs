@@ -6,7 +6,7 @@
  * @author Josep Arús
  *
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @package wikilv
+ * @package mod_wikilv
  */
 include_once("nwikilv.php");
 
@@ -15,18 +15,37 @@ class html_parser extends nwikilv_parser {
 
     protected $section_editing = true;
 
+    /** @var int Minimum level of the headers on the page (usually tinymce uses <h1> and atto <h3>)  */
+    protected $minheaderlevel = null;
+
     public function __construct() {
         parent::__construct();
-        $this->tagrules = array('link' => $this->tagrules['link'], 'url' => $this->tagrules['url']);
-
-        // Headers are considered tags here.
-        $this->tagrules['header'] = array('expression' => "/<\s*h([1-$this->maxheaderdepth])\s*>(.+?)<\/h[1-$this->maxheaderdepth]>/is"
+        // The order is important, headers should be parsed before links.
+        $this->tagrules = array(
+            // Headers are considered tags here.
+            'header' => array(
+                'expression' => "/<\s*h([1-6])\s*>(.+?)<\/h[1-6]>/is"
+            ),
+            'link' => $this->tagrules['link'],
+            'url' => $this->tagrules['url']
         );
+    }
+
+    /**
+     * Find minimum header level used on the page (<h1>, <h3>, ...)
+     *
+     * @param string $text
+     * @return int
+     */
+    protected function find_min_header_level($text) {
+        preg_match_all($this->tagrules['header']['expression'], $text, $matches);
+        return !empty($matches[1]) ? min($matches[1]) : 1;
     }
 
     protected function before_parsing() {
         parent::before_parsing();
 
+        $this->minheaderlevel = $this->find_min_header_level($this->string);
         $this->rules($this->string);
     }
 
@@ -36,7 +55,7 @@ class html_parser extends nwikilv_parser {
      * @return string
      */
     protected function header_tag_rule($match) {
-        return $this->generate_header($match[2], $match[1]);
+        return $this->generate_header($match[2], (int)$match[1] - $this->minheaderlevel + 1);
     }
 
     /**
@@ -50,9 +69,12 @@ class html_parser extends nwikilv_parser {
             $text .= "\n\n";
         }
 
-        $h1 = array("<\s*h1\s*>", "<\/h1>");
+        $minheaderlevel = $this->find_min_header_level($text);
 
-        preg_match("/(.*?)({$h1[0]}\s*\Q$header\E\s*{$h1[1]}.*?)((?:\n{$h1[0]}.*)|$)/is", $text, $match);
+        $h1 = array("<\s*h{$minheaderlevel}\s*>", "<\/h{$minheaderlevel}>");
+
+        $regex = "/(.*?)({$h1[0]}\s*".preg_quote($header, '/')."\s*{$h1[1]}.*?)((?:{$h1[0]}.*)|$)/is";
+        preg_match($regex, $text, $match);
 
         if (!empty($match)) {
             return array($match[1], $match[2], $match[3]);

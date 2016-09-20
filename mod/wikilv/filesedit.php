@@ -17,7 +17,7 @@
 /**
  * Manage files in wikilv
  *
- * @package   mod-wikilv-2.0
+ * @package   mod_wikilv
  * @copyright 2011 Dongsheng Cai <dongsheng@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -53,13 +53,18 @@ $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST)
 $context = context_module::instance($cm->id);
 
 require_login($course, true, $cm);
+
+if (!wikilv_user_can_view($subwikilv, $wikilv)) {
+    print_error('cannotviewpage', 'wikilv');
+}
 require_capability('mod/wikilv:managefiles', $context);
 
 if (empty($returnurl)) {
-    if (!empty($_SERVER["HTTP_REFERER"])) {
-        $returnurl = $_SERVER["HTTP_REFERER"];
+    $referer = get_local_referer(false);
+    if (!empty($referer)) {
+        $returnurl = $referer;
     } else {
-        $returnurl = new moodle_url('/mod/wikilv/files.php', array('subwikilv'=>$subwikilv->id));
+        $returnurl = new moodle_url('/mod/wikilv/files.php', array('subwikilv' => $subwikilv->id, 'pageid' => $pageid));
     }
 }
 
@@ -70,7 +75,7 @@ $url = new moodle_url('/mod/wikilv/filesedit.php', array('subwikilv'=>$subwikilv
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title($title);
-$PAGE->set_heading($title);
+$PAGE->set_heading($course->fullname);
 $PAGE->navbar->add(format_string(get_string('wikilvfiles', 'wikilv')), $CFG->wwwroot . '/mod/wikilv/files.php?pageid=' . $pageid);
 $PAGE->navbar->add(format_string($title));
 
@@ -91,6 +96,8 @@ if ($mform->is_cancelled()) {
 }
 
 echo $OUTPUT->header();
+echo $OUTPUT->heading(format_string($wikilv->name));
+echo $OUTPUT->box(format_module_intro('wikilv', $wikilv, $PAGE->cm->id), 'generalbox', 'intro');
 echo $OUTPUT->box_start('generalbox');
 $mform->display();
 echo $OUTPUT->box_end();

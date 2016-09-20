@@ -18,9 +18,9 @@
 /**
  * This file renders the restoring wikilvpage HTML
  *
- * @package mod-wikilv-2.0
- * @copyrigth 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
- * @copyrigth 2009 Universitat Politecnica de Catalunya http://www.upc.edu
+ * @package mod_wikilv
+ * @copyright 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
+ * @copyright 2009 Universitat Politecnica de Catalunya http://www.upc.edu
  *
  * @author Jordi Piguillem
  * @author Marc Alier
@@ -60,6 +60,10 @@ $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST)
 
 require_login($course, true, $cm);
 
+if (!wikilv_user_can_view($subwikilv)) {
+    print_error('cannotviewpage', 'wikilv');
+}
+
 if ($confirm) {
     if (!confirm_sesskey()) {
         print_error(get_string('invalidsesskey', 'wikilv'));
@@ -75,7 +79,6 @@ if ($confirm) {
     $wikilvpage->set_versionid($versionid);
 
 }
-add_to_log($course->id, "wikilv", "restore", "view.php?pageid=".$pageid, $pageid, $cm->id);
 
 $wikilvpage->print_header();
 $wikilvpage->print_content();
