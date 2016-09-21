@@ -229,7 +229,7 @@ class Moodle2NotasLv implements NotasLv {
 		$contribuicao = $this->_modulo->contribuicao($item);
 		
 		if(!isset($context)) 
-			$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+			$context = \context_module::instance($cm->id);
 
 		if(!has_capability("mod/$cm->modname:viewrating", $context))
 			return false;

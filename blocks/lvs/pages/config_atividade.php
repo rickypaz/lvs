@@ -10,7 +10,7 @@
 	if (!$course = $DB->get_record('course', array('id'=>$course_id)) ) {
 		print_error('Invalid course id');
 	}
-	$context = get_context_instance(CONTEXT_COURSE, $course->id);
+	$context = context_course::instance($course->id);
 	
 	require_login($course);
 	require_capability('moodle/course:viewhiddenactivities', $PAGE->context);
