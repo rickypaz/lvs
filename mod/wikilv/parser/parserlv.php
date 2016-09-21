@@ -73,7 +73,7 @@ class wikilv_parser_proxy {
     }
 }
 
-// require_once('..\..\wiki\utils.php');
+require_once('utils.php');
 
 abstract class generic_parser {
     protected $string;

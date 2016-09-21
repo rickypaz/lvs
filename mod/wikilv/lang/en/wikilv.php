@@ -276,5 +276,6 @@ $string['wikilv:viewcomment'] = 'View page comments';
 $string['wikilv:viewpage'] = 'View wikilv pages';
 $string['wikilvpages'] = 'Wikilv pages';
 $string['wrongversionlock'] = 'Another user has edited this page while you were editing and your content is obsolete.';
-$string['wrongversionsave'] = 'Another user has created a version while you were editing and you have overwritten his changes, check the page history.';
+$string['minimo_contribuicoes'] = 'Minimun contributions';
+$string['ratingtime'] = 'Restrict ratings to items with dates in this range:';
 
