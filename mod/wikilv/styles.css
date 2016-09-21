@@ -1,0 +1,362 @@
+/*
+ This file is part of Moodle - http://moodle.org/
+
+ Moodle is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Moodle is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+*/ /**
+ * Wikilv module style sheet
+ *
+ * @package mod-wikilv-2.0
+ * @copyright 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
+ * @copyright 2009 Universitat Politecnica de Catalunya http://www.upc.edu
+ *
+ * @author Jordi Piguillem
+ * @author Marc Alier
+ * @author David Jimenez
+ * @author Josep Arus
+ * @author Kenneth Riba
+ *
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+.wikilv_contentbox {
+    width: 80%;
+    margin: auto;
+    min-width: 200px;
+    min-height: 100px;
+}
+
+.wikilv_editor {
+    width: 50%;
+    margin: auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.wikilv_previewbox {
+    width: 50%;
+    margin: auto;
+    border: thin solid blue;
+}
+
+.wikilv_button {
+    margin: 5px;
+}
+
+.wikilv_warning {
+    color: red;
+}
+
+.emptycomments {
+    color: red;
+    display: inline;
+}
+
+.wikilv-toc {
+    border: 1px solid #BBB;
+    background: #EEE;
+    margin: 16px;
+    padding: 8px;
+}
+
+.wikilv-toc-title {
+    color: #666;
+    font-size: 1.1em;
+    font-variant: small-caps;
+    text-align: center;
+}
+
+.wikilv-toc-section {
+    padding: 0;
+    margin: 2px 8px;
+}
+
+.wikilv-toc-section-2 {
+    padding-left: 12px;
+}
+
+.wikilv-toc-section-3 {
+    padding-left: 24px;
+}
+
+.wikilv_form-button {
+    margin-left: 0%;
+}
+
+.wikilv-form-center {
+    text-align: center;
+    margin: auto;
+    width: 320px;
+}
+
+.wikilv-upload-table {
+    margin: 8px auto;
+    clear: both;
+}
+
+.wikilv-upload-table table {
+    margin: auto;
+}
+
+.wikilv-upload-table h3 {
+    margin: 4px 0px;
+    text-align: center;
+}
+
+.wikilv-upload-section {
+    border: 1px solid #EEE;
+    width: 400px;
+    margin: 8px auto;
+}
+
+.wikilv-upload-section legend {
+    font-weight: bold;
+    font-size: 0.9em;
+    margin-left: 16px;
+}
+
+.wikilv-tags {
+    text-align: right;
+}
+
+.wikilv_modifieduser p {
+    line-height: 35px;
+}
+
+.wikilv_modifieduser img {
+    border: thin solid black;
+}
+
+.wikilv_restore_yes, .wikilv_deletecomment_yes,
+.dir-rtl .wikilv_restore_no, .dir-rtl .wikilv_deletecomment_no {
+    float: left;
+}
+.wikilv_restore_no, .wikilv_deletecomment_no,
+.dir-rtl .wikilv_restore_yes, .dir-rtl .wikilv_deletecomment_yes {
+    float: right;
+}
+
+.wikilv_restoreform, .wikilv_deletecommentform {
+    width: 10%;
+    margin: auto;
+}
+
+.wikilv_versionuser {
+    float: left;
+}
+
+.wikilv_diffuserleft,.wikilv_diffuserright {
+    font-weight: normal;
+    padding-top: 1%;
+}
+
+.wikilv_diffuserleft {
+    float: right;
+}
+
+.dir-rtl .wikilv_diffuserleft {
+    float: left;
+}
+
+.wikilv_diffuserright {
+    float: left;
+}
+
+.wikilv_compareheading {
+    font-weight: normal;
+}
+
+.wikilv_restore,.wikilv_diffview,.wikilv_difftime,.wikilv_headingtime {
+    font-size: 0.8em;
+    font-weight: normal;
+}
+
+.wikilv_difftime,.wikilv_headingtime {
+    font-style: oblique;
+    text-align: center;
+}
+
+.wikilv_diff_oldpaging {
+    float: left;
+    width: 40%;
+    min-width: 200px;
+    margin-left: 5%;
+}
+
+.wikilv_diff_newpaging {
+    float: right;
+    width: 40%;
+    min-width: 200px;
+    margin-right: 5%;
+}
+
+.wikilv_diff_old,.wikilv_diff_new {
+    float: left;
+    min-width: 200px;
+    width: 40%;
+}
+
+.wikilv_difftable td {
+    width: 50%;
+    float: left;
+}
+
+.wikilv_histdate {
+    text-align: left;
+}
+
+.wikilv_histnewdate {
+    border-top: 1px dotted gray;
+}
+
+.ouw_deleted {
+    background: #FFFFAA;
+    color: red;
+    text-decoration: line-through;
+}
+
+.ouw_added {
+    background: #CCFFCC;
+    color: red;
+}
+
+a.wikilv_newentry:link, a.wikilv_newentry:visited {
+    color: red;
+    font-style: italic;
+}
+
+.wikilv_newentry a {
+    color: red;
+    font-style: italic;
+}
+
+#intro.generalbox {
+    margin-top: 10px;
+    padding: 5px;
+}
+
+.wikilv_navigation_container {
+    margin: 0 auto;
+}
+
+.wikilv_navigation_from {
+    float: left;
+    width: 40%;
+    min-width: 200px;
+    margin-left: 5%;
+}
+
+.wikilv_navigation_to {
+    float: left;
+    width: 40%;
+    min-width: 200px;
+    margin-right: 5%;
+}
+
+.wikilv_headingtitle {
+    text-align: center;
+}
+
+.wikilv_clear {
+    clear: both;
+}
+
+.wikilv_right {
+    text-align: right;
+}
+
+.wikilv_index {
+    text-align: right;
+}
+
+.notunderlined {
+    text-decoration: none;
+}
+
+a.wikilv_edit_section {
+    font-size: 0.6em;
+    vertical-align: top;
+    position: relative;
+    float: right;
+}
+
+.midpad {
+    text-align: center;
+    margin-top: 0.4em;
+    margin-bottom: 0.4em;
+}
+
+.block_wikilv_search ul {
+    margin-top: 0.5em;
+    margin-bottom: 3px;
+}
+
+.wikilv-attachment:before {
+    content: url("/mod/wikilv/pix/attachment.png");
+    padding-right: 2px;
+}
+
+/** Print CSS */
+#wikilv_printable_content {
+    text-align: left;
+}
+
+.dir-rtl #wikilv_printable_content {
+    text-align: right;
+}
+
+#wikilv_printable_content a {
+    color: black;
+}
+
+#wikilv_printable_title {
+    font-size: 2.2em;
+    text-decoration: underline;
+}
+
+.wikilv_diff_boxes {
+    width: 100%;
+    clear: both;
+}
+
+.wikilv_diff_paging {
+    width: 100%;
+    clear: both;
+}
+
+.wikilv_grayline {
+    color: gray
+}
+
+.wikilvsearchresults{
+    padding-left: 50px;
+    padding-top: 20px;
+}
+
+.wikilv-diff-container {width:95%;margin:10px auto;}
+.wikilv-diff-container .wikilv-diff-leftside,
+.wikilv-diff-container .wikilv-diff-rightside {width:49.5%;margin:0;padding:0;float:left;}
+.wikilv-diff-container .wikilv-diff-rightside {margin-left:1%;}
+.wikilv-diff-container .wikilv-diff-heading,
+.wikilv-diff-container .no-overflow {padding:10px;border:1px solid #DDD;}
+.wikilv-diff-container .wikilv-diff-rightside .wikilv_diffversion {text-align:right;}
+
+.wikilveditor-toolbar img{
+    width: 22px;
+    height: 22px;
+    vertical-align: middle;
+}
+
+.path-mod-wikilv .printicon {
+    background: url([[pix:t/print]]) no-repeat scroll 2px center transparent; padding-left: 20px;
+}
+#page-mod-wikilv-prettyview .displayprinticon {text-align: right;}
