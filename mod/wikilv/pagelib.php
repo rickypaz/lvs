@@ -664,8 +664,10 @@ class page_wikilv_comments extends page_wikilv {
             /** @lvs form de avaliação de comments em wikilv */
             $gerenciadorNotas = NotasLvFactory::criarGerenciador('moodle2');
             $gerenciadorNotas->setModulo( new Wikilv($wikilv->id) );
-            $item = new Item('wikilv', 'comment', $comment);
-            
+            $itemavaliado = clone $comment;
+            unset($itemavaliado->content);
+            $item = new Item('wikilv', 'comment', $itemavaliado);
+
             $cell4->text .= $gerenciadorNotas->avaliacaoAtual($item);
             $cell4->text .= $gerenciadorNotas->avaliadoPor($item);
             $cell4->text .= $gerenciadorNotas->formAvaliacao($item);

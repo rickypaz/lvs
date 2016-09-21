@@ -10,6 +10,12 @@
         <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Course wikilv activity belongs to"/>
         <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="Wikilv" SEQUENCE="false" COMMENT="name field for moodle instances"/>
         <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="General introduction of the wikilv activity"/>
+        <FIELD NAME="porcentagem" TYPE="float" LENGTH="12" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="etapa" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="fator_multiplicativo" TYPE="float" LENGTH="3" NOTNULL="false" SEQUENCE="false" DECIMALS="2"/>
+        <FIELD NAME="assessed" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="assesstimestart" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="assesstimefinish" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" />
         <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the intro field (MOODLE, HTML, MARKDOWN...)"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -19,6 +25,7 @@
         <FIELD NAME="forceformat" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Forces the default editor"/>
         <FIELD NAME="editbegin" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="editbegin"/>
         <FIELD NAME="editend" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="editend"/>
+      	<FIELD NAME="exibir" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

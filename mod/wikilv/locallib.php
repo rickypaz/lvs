@@ -37,14 +37,14 @@ require_once($CFG->dirroot . '/mod/wiki/parser/parser.php');
 require_once($CFG->libdir . '/filelib.php');
 
 define('WIKILV_REFRESH_CACHE_TIME', 30); // @TODO: To be deleted.
-// define('FORMAT_CREOLE', '37');
+// define('FORMAT_CREOLE', '37'); // @LVs comentado
 define('FORMAT_NWIKILV', '38');
-// define('NO_VALID_RATE', '-999');
-// define('IMPROVEMENT', '+');
-// define('EQUAL', '=');
-// define('WORST', '-');
+// define('NO_VALID_RATE', '-999'); // @LVs comentado
+// define('IMPROVEMENT', '+'); // @LVs comentado
+// define('EQUAL', '='); // @LVs comentado
+// define('WORST', '-'); // @LVs comentado
 
-// define('LOCK_TIMEOUT', 30);
+define('LOCK_TIMEOUT', 30); // @LVs comentado
 
 /**
  * Get a wikilv instance
@@ -168,7 +168,7 @@ function wikilv_get_last_version($pageid) {
 function wikilv_get_section_page($page, $section) {
 
     $version = wikilv_get_current_version($page->id);
-    return wikilv_parser_proxy::get_section($version->content, $version->contentformat, $section);
+    return wiki_parser_proxy::get_section($version->content, $version->contentformat, $section);
 }
 
 /**
@@ -217,7 +217,7 @@ function wikilv_save_section($wikilvpage, $sectiontitle, $sectioncontent, $useri
 
     if (has_capability('mod/wikilv:editpage', $context)) {
         $version = wikilv_get_current_version($wikilvpage->id);
-        $content = wikilv_parser_proxy::get_section($version->content, $version->contentformat, $sectiontitle, true);
+        $content = wiki_parser_proxy::get_section($version->content, $version->contentformat, $sectiontitle, true);
 
         $newcontent = $content[0] . $sectioncontent . $content[2];
 
@@ -633,7 +633,7 @@ function wikilv_parse_content($markup, $pagecontent, $options = array()) {
         'printable' => (isset($options['printable']) && $options['printable'])
     );
 
-    return wikilv_parser_proxy::parse($pagecontent, $markup, $parser_options);
+    return wiki_parser_proxy::parse($pagecontent, $markup, $parser_options);
 }
 
 /**
@@ -750,7 +750,7 @@ function wikilv_parser_real_path($url, $context, $component, $filearea, $swid) {
  **/
 function wikilv_parser_get_token($markup, $name) {
 
-    return wikilv_parser_proxy::get_token($name, $markup);
+    return wiki_parser_proxy::get_token($name, $markup);
 }
 
 /**

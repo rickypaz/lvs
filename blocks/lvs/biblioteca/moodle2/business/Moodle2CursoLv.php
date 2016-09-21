@@ -57,10 +57,10 @@ class Moodle2CursoLv extends CursoLv {
 		$this->_presenciais = new AtividadesPresenciais($this);
 
 		$this->addGerenciador('forumlv', new ForunsLv($this));
-		$this->addGerenciador('tarefalv', new TarefasLv($this));
-		$this->addGerenciador('chatlv', new ChatsLv($this));
+// 		$this->addGerenciador('tarefalv', new TarefasLv($this));
+// 		$this->addGerenciador('chatlv', new ChatsLv($this));
 		$this->addGerenciador('wikilv', new WikisLv($this));
-		$this->addGerenciador('quizlv', new Quizzes($this));
+// 		$this->addGerenciador('quizlv', new Quizzes($this));
 	}
 	
 	/**
@@ -134,7 +134,7 @@ class Moodle2CursoLv extends CursoLv {
 		$desempenho->situacao = $this->_analisarSituacao($desempenho);
 		$desempenho->lvicone = $this->obterCarinha($desempenho);
 	
-		$this->_salvarGrade($desempenho); //FIXME descomentar
+//		$this->_salvarGrade($desempenho); //FIXME descomentar
 		return $this->_salvarDesempenho($desempenho);
 	}
 
@@ -531,7 +531,13 @@ class Moodle2CursoLv extends CursoLv {
 			'id_usuario'=> $desempenho->usuario->id
 		));
 		
+		// TODO: criar objeto próprio
 		$nova_avaliacao = new \stdClass();
+		$nova_avaliacao->numero_carinhas_azul 	  = 0;
+		$nova_avaliacao->numero_carinhas_verde 	  = 0;
+		$nova_avaliacao->numero_carinhas_amarela  = 0;
+		$nova_avaliacao->numero_carinhas_laranja  = 0;
+		$nova_avaliacao->numero_carinhas_vermelha = 0;
 		
 		foreach ($modulos as $nomeModulo => $gerenciador) {
 			$str_nota = "nota_$nomeModulo";
@@ -539,7 +545,7 @@ class Moodle2CursoLv extends CursoLv {
 			
 			$nova_avaliacao->$str_nota 		= round($this->configuracao->porcentagem_distancia / 100 * $desempenho->$nomeModulo->notaFinal, 2);
 			$nova_avaliacao->$str_ausencias = $desempenho->$nomeModulo->numeroFaltas . ' de ' . $desempenho->$nomeModulo->numeroAtividades;
-			
+
 			$nova_avaliacao->numero_carinhas_azul 	  += $desempenho->$nomeModulo->carinhasAzuis;
 			$nova_avaliacao->numero_carinhas_verde 	  += $desempenho->$nomeModulo->carinhasVerdes;
 			$nova_avaliacao->numero_carinhas_amarela  += $desempenho->$nomeModulo->carinhasAmarelas;
