@@ -75,7 +75,7 @@ class wikilv_parser_proxy {
 
 require_once('utils.php');
 
-abstract class generic_parser {
+abstract class generic_parser_lv { // @LVS adição do sufixo lvs
     protected $string;
 
     protected $blockrules = array();
@@ -162,7 +162,7 @@ abstract class generic_parser {
 
         if(is_array($stuff) && $rule['rule']['tag']) {
             $this->rules($stuff[0], $rule['rule']['tags']);
-            $stuff = "\n".parser_utils::h($rule['rule']['tag'], $stuff[0], $stuff[1])."\n";
+            $stuff = "\n".parser_utils_lvs::h($rule['rule']['tag'], $stuff[0], $stuff[1])."\n"; // @LVS adição do sufixo lvs
         }
         else {
             if(!isset($rule['rule']['tags'])) {
@@ -170,7 +170,7 @@ abstract class generic_parser {
             }
             $this->rules($stuff, $rule['rule']['tags']);
             if(isset($rule['rule']['tag']) && is_string($rule['rule']['tag'])) {
-                $stuff = "\n".parser_utils::h($rule['rule']['tag'], $stuff)."\n";
+                $stuff = "\n".parser_utils_lvs::h($rule['rule']['tag'], $stuff)."\n"; // @LVS adição do sufixo lvs
             }
         }
 
@@ -218,7 +218,7 @@ abstract class generic_parser {
                 $replace = "<{$rule['tag']} />";
             }
             else {
-                $replace = parser_utils::h($rule['tag'], "$1");
+                $replace = parser_utils_lvs::h($rule['tag'], "$1"); // @LVS adição do sufixo lvs
             }
             
             $text = preg_replace($rule['expression'], $replace, $text);
@@ -230,7 +230,7 @@ abstract class generic_parser {
         $stuff = $this->{$rule['callback']}($match);
 
         if(is_array($stuff)) {
-            return parser_utils::h($rule['rule']['tag'], $stuff[0], $stuff[1]);
+            return parser_utils_lvs::h($rule['rule']['tag'], $stuff[0], $stuff[1]); // @LVS adição do sufixo lvs
         }
         else {
             return $stuff;

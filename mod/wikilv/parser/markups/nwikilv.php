@@ -158,10 +158,10 @@ class nwikilv_parser extends wikilv_markup_parser {
         $text = $match[2];
         $html = "";
         for($i = 0; $i < $num - 1; $i++) {
-            $html = parser_utils::h('p', $html, array('class' => 'wikilv_tab_paragraph'));
+            $html = parser_utils_lvs::h('p', $html, array('class' => 'wikilv_tab_paragraph')); // @LVS adição do sufixo lvs
         }
         
-        return parser_utils::h('p', $text, array('class' => 'wikilv_tab_paragraph'));
+        return parser_utils_lvs::h('p', $text, array('class' => 'wikilv_tab_paragraph')); // @LVS adição do sufixo lvs
     }
     
     protected function desc_list_block_rule($match) {
@@ -175,7 +175,7 @@ class nwikilv_parser extends wikilv_markup_parser {
             $description = $li[2];
             $this->rules($description);
             
-            $list .= parser_utils::h('dt', $term).parser_utils::h('dd', $description);
+            $list .= parser_utils_lvs::h('dt', $term).parser_utils_lvs::h('dd', $description); // @LVS adição do sufixo lvs
         }
         
         return $list;
@@ -273,7 +273,7 @@ class nwikilv_parser extends wikilv_markup_parser {
         }
         else {
             $url = $this->real_path($url);
-            return parser_utils::h('a', $text, array('href' => $url, 'class' => 'wikilv-attachment'));
+            return parser_utils_lvs::h('a', $text, array('href' => $url, 'class' => 'wikilv-attachment')); // @LVS adição do sufixo lvs
         }
     }
 }

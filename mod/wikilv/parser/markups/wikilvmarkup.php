@@ -9,7 +9,7 @@
  * @package mod_wikilv
  */
 
-abstract class wikilv_markup_parser extends generic_parser {
+abstract class wikilv_markup_parser extends generic_parser_lv { // @LVS adição do sufixo lvs
 
     protected $pretty_print = false;
     protected $printable = false;
@@ -31,19 +31,19 @@ abstract class wikilv_markup_parser extends generic_parser {
      *
      * Returns array('content' => "Inside the link", 'url' => "http://url.com/Wikilv/Entry", 'new' => false).
      */
-    private $linkgeneratorcallback = array('parser_utils', 'wikilv_parser_link_callback');
+    private $linkgeneratorcallback = array('parser_utils_lvs', 'wikilv_parser_link_callback'); // @LVS adição do sufixo lvs
     private $linkgeneratorcallbackargs = array();
 
     /**
      * Table generator callback
      */
 
-    private $tablegeneratorcallback = array('parser_utils', 'wikilv_parser_table_callback');
+    private $tablegeneratorcallback = array('parser_utils_lvs', 'wikilv_parser_table_callback'); // @LVS adição do sufixo lvs
 
     /**
      * Get real path from relative path
      */
-    private $realpathcallback = array('parser_utils', 'wikilv_parser_real_path');
+    private $realpathcallback = array('parser_utils_lvs', 'wikilv_parser_real_path'); // @LVS adição do sufixo lvs
     private $realpathcallbackargs = array();
 
     /**
@@ -162,7 +162,7 @@ abstract class wikilv_markup_parser extends generic_parser {
     }
 
     protected function nowikilv_block_rule($match) {
-        return parser_utils::h('pre', $this->protect($match[1]));
+        return parser_utils_lvs::h('pre', $this->protect($match[1])); // @LVS adição do sufixo lvs
     }
 
     /**
@@ -170,7 +170,7 @@ abstract class wikilv_markup_parser extends generic_parser {
      */
 
     protected function nowikilv_tag_rule($match) {
-        return parser_utils::h('tt', $this->protect($match[1]));
+        return parser_utils_lvs::h('tt', $this->protect($match[1])); // @LVS adição do sufixo lvs
     }
 
     /**
@@ -184,18 +184,18 @@ abstract class wikilv_markup_parser extends generic_parser {
             $editlink = '[' . get_string('editsection', 'wikilv') . ']';
             $url = array('href' => "edit.php?pageid={$this->wikilv_page_id}&section=" . urlencode($text),
                 'class' => 'wikilv_edit_section');
-            $text .= ' ' . parser_utils::h('a', $this->protect($editlink), $url);
-            $toctext .= ' ' . parser_utils::h('a', $editlink, $url);
+            $text .= ' ' . parser_utils_lvs::h('a', $this->protect($editlink), $url); // @LVS adição do sufixo lvs
+            $toctext .= ' ' . parser_utils_lvs::h('a', $editlink, $url); // @LVS adição do sufixo lvs
         }
 
         if ($level <= $this->maxheaderdepth) {
             $this->toc[] = array($level, $toctext);
             $num = count($this->toc);
-            $text = parser_utils::h('a', "", array('name' => "toc-$num")) . $text;
+            $text = parser_utils_lvs::h('a', "", array('name' => "toc-$num")) . $text; // @LVS adição do sufixo lvs
         }
 
         // Display headers as <h3> and lower for accessibility.
-        return parser_utils::h('h' . min(6, $level + 2), $text) . "\n\n";
+        return parser_utils_lvs::h('h' . min(6, $level + 2), $text) . "\n\n"; // @LVS adição do sufixo lvs
     }
 
     /**
@@ -240,8 +240,8 @@ abstract class wikilv_markup_parser extends generic_parser {
                     $number .= ".$currentsection[2]";
                 }
             }
-            $toc .= parser_utils::h('p', $number . ". " .
-               parser_utils::h('a', str_replace(array('[[', ']]'), '', $header[1]), array('href' => "#toc-$i")),
+            $toc .= parser_utils_lvs::h('p', $number . ". " . // @LVS adição do sufixo lvs
+               parser_utils_lvs::h('a', str_replace(array('[[', ']]'), '', $header[1]), array('href' => "#toc-$i")), // @LVS adição do sufixo lvs
                array('class' => 'wikilv-toc-section-' . $header[0] . " wikilv-toc-section"));
             $i++;
         }
@@ -290,7 +290,7 @@ abstract class wikilv_markup_parser extends generic_parser {
             $next_depth = $nli ? $nli[0] : null;
 
             if ($next_depth == $current_depth || $next_depth == null) {
-                $list .= parser_utils::h('li', $text) . "\n";
+                $list .= parser_utils_lvs::h('li', $text) . "\n"; // @LVS adição do sufixo lvs
             } else if ($next_depth > $current_depth) {
                 $next_depth = $current_depth + 1;
 
@@ -298,7 +298,7 @@ abstract class wikilv_markup_parser extends generic_parser {
                 $list .= "<" . $nli[2] . ">" . "\n";
                 $liststack[] = $nli[2];
             } else {
-                $list .= parser_utils::h('li', $text) . "\n";
+                $list .= parser_utils_lvs::h('li', $text) . "\n"; // @LVS adição do sufixo lvs
 
                 for ($lv = $next_depth; $lv < $current_depth; $lv++) {
                     $type = array_pop($liststack);
@@ -327,7 +327,7 @@ abstract class wikilv_markup_parser extends generic_parser {
 
     protected function format_image($src, $alt, $caption = "", $align = 'left') {
         $src = $this->real_path($src);
-        return parser_utils::h('div', parser_utils::h('p', $caption) . '<img src="' . $src . '" alt="' . $alt . '" />', array('class' => 'wikilv_image_' . $align));
+        return parser_utils_lvs::h('div', parser_utils_lvs::h('p', $caption) . '<img src="' . $src . '" alt="' . $alt . '" />', array('class' => 'wikilv_image_' . $align)); // @LVS adição do sufixo lvs
     }
 
     protected function real_path($url) {

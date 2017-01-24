@@ -93,7 +93,7 @@ class html_parser extends nwikilv_parser {
 
         if (in_array($text, $this->repeated_sections)) {
             $this->returnvalues['repeated_sections'][] = $text;
-            return parser_utils::h('p', $text);
+            return parser_utils_lvs::h('p', $text); // @LVS adição do sufixo lvs
         } else {
             $this->repeated_sections[] = $text;
         }

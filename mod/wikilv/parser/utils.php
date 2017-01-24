@@ -11,7 +11,7 @@
 
 require_once($CFG->dirroot . "/lib/outputcomponents.php");
     
-class parser_utils {
+class parser_utils_lvs { // @LVS adição do sufixo lvs
         
     public static function h($tag, $text = null, $options = array(), $escape_text = false) {
         $tag = htmlentities($tag, ENT_COMPAT, 'UTF-8');
@@ -46,17 +46,17 @@ class parser_utils {
         foreach($headers as $h) {
             $text = trim($h[1]);
             if($h[0] == 'header') {
-                $headerhtml .= "\n".parser_utils::h('th', $text)."\n";
+                $headerhtml .= "\n".parser_utils_lvs::h('th', $text)."\n"; // @LVS adição do sufixo lvs
                 $hasheaders = true;
             }
             else if($h[0] == 'normal'){
-                $headerhtml .= "\n".parser_utils::h("td", $text)."\n";
+                $headerhtml .= "\n".parser_utils_lvs::h("td", $text)."\n"; // @LVS adição do sufixo lvs
             }
         }
-        $headerhtml = "\n".parser_utils::h('tr', $headerhtml)."\n";
+        $headerhtml = "\n".parser_utils_lvs::h('tr', $headerhtml)."\n"; // @LVS adição do sufixo lvs
         $bodyhtml = "";
         if(isset($hasheaders)) {
-            $html = "\n".parser_utils::h('thead', $headerhtml)."\n";
+            $html = "\n".parser_utils_lvs::h('thead', $headerhtml)."\n"; // @LVS adição do sufixo lvs
         }
         else {
             $bodyhtml .= $headerhtml;
@@ -68,23 +68,23 @@ class parser_utils {
             for($i = 0; $i < $columncount; $i++) {
                 $text = "";
                 if(!isset($row[$i])) {
-                    $htmlrow .= "\n".parser_utils::h('td', $text)."\n";
+                    $htmlrow .= "\n".parser_utils_lvs::h('td', $text)."\n"; // @LVS adição do sufixo lvs
                 }
                 else {
                     $text = trim($row[$i][1]);
                     if($row[$i][0] == 'header') {
-                        $htmlrow .= "\n".parser_utils::h('th', $text)."\n";
+                        $htmlrow .= "\n".parser_utils_lvs::h('th', $text)."\n"; // @LVS adição do sufixo lvs
                     }
                     else if($row[$i][0] == 'normal'){
-                        $htmlrow .= "\n".parser_utils::h('td', $text)."\n";
+                        $htmlrow .= "\n".parser_utils_lvs::h('td', $text)."\n"; // @LVS adição do sufixo lvs
                     }   
                 }
             }
-            $bodyhtml .= "\n".parser_utils::h('tr', $htmlrow)."\n";
+            $bodyhtml .= "\n".parser_utils_lvs::h('tr', $htmlrow)."\n"; // @LVS adição do sufixo lvs
         }
 
-        $html .= "\n".parser_utils::h('tbody', $bodyhtml)."\n";
-        return "\n".parser_utils::h('table', $html)."\n";
+        $html .= "\n".parser_utils_lvs::h('tbody', $bodyhtml)."\n"; // @LVS adição do sufixo lvs
+        return "\n".parser_utils_lvs::h('table', $html)."\n"; // @LVS adição do sufixo lvs
     }
     
     /**

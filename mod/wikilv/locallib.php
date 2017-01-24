@@ -44,7 +44,7 @@ define('FORMAT_NWIKILV', '38');
 // define('EQUAL', '='); // @LVs comentado
 // define('WORST', '-'); // @LVs comentado
 
-define('LOCK_TIMEOUT', 30); // @LVs comentado
+// define('LOCK_TIMEOUT', 30); // @LVs comentado
 
 /**
  * Get a wikilv instance
