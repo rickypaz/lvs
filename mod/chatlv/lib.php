@@ -38,7 +38,7 @@ require_once($CFG->dirroot.'/blocks/lvs/biblioteca/lib.php'); // @lvs inclusão 
 
 // The HTML head for the message window to start with (<!-- nix --> is used to get some browsers starting with output.
 global $CHAT_HTMLHEAD;
-$CHAT_HTMLHEAD = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"http://www.w3.org/TR/REC-html40/loose.dtd\"><html><head></head>\n<body>\n\n".padding(200);
+$CHAT_HTMLHEAD = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"http://www.w3.org/TR/REC-html40/loose.dtd\"><html><head></head>\n<body>\n\n".padding_lvs(200);
 
 // The HTML head for the message window to start with (with js scrolling).
 global $CHAT_HTMLHEAD_JS;
@@ -59,7 +59,7 @@ move();
 <body onBlur="scroll_active = true" onFocus="scroll_active = false">
 EOD;
 global $CHAT_HTMLHEAD_JS;
-$CHAT_HTMLHEAD_JS .= padding(200);
+$CHAT_HTMLHEAD_JS .= padding_lvs(200);
 
 // The HTML code for standard empty pages (e.g. if a user was kicked out).
 global $CHAT_HTMLHEAD_OUT;
@@ -92,13 +92,13 @@ EOD;
 
 // Dummy data that gets output to the browser as needed, in order to make it show output.
 global $CHAT_DUMMY_DATA;
-$CHAT_DUMMY_DATA = padding(200);
+$CHAT_DUMMY_DATA = padding_lvs(200);
 
 /**
  * @param int $n
  * @return string
  */
-function padding($n) {
+function padding_lvs($n) {
     $str = '';
     for ($i = 0; $i < $n; $i++) {
         $str .= "<!-- nix -->\n";
