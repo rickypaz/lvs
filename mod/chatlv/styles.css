@@ -1,0 +1,40 @@
+/** General Styles **/
+.path-mod-chatlv .chatlv-event .picture,
+.path-mod-chatlv .chatlv-message .picture {width:40px;}
+.path-mod-chatlv .chatlv-event .text {text-align: left;}
+.path-mod-chatlv #messages-list,
+.path-mod-chatlv #users-list {list-style-type:none;padding:0;margin:0}
+.path-mod-chatlv #chatlv-header {overflow: hidden;}
+.path-mod-chatlv #chatlv-input-area table.generaltable td.cell {padding:1px;}
+
+/** shrink the text box so the theme link is always accessible */
+@media all and (max-device-width: 320px) {
+    .path-mod-chatlv #input-message {width: 150px;}
+}
+@media all and (min-device-width: 321px) and (max-device-width: 640px) {
+    .path-mod-chatlv #input-message {width: 175px;}
+}
+
+/** styles for view.php **/
+#page-mod-chatlv-view .chatlvcurrentusers .chatlvuserdetails {vertical-align: middle;}
+
+/** Styles for basic chatlv **/
+#page-mod-chatlv-gui_basic #participants ul {margin:0;padding:0;list-style-type:none;}
+#page-mod-chatlv-gui_basic #participants ul li {list-style-type:none;display:inline;margin-right:10px;}
+#page-mod-chatlv-gui_basic #participants ul li .userinfo {display:inline;}
+#page-mod-chatlv-gui_basic #messages {padding:0;margin:0}
+#page-mod-chatlv-gui_basic #messages dl {padding:0;margin:6px 0}
+#page-mod-chatlv-gui_basic #messages dt {margin-left:0;margin-right:5px;padding:0;display:inline;}
+#page-mod-chatlv-gui_basic #messages dd {padding:0;margin:0}
+
+/** Styles for header **/
+#page-mod-chatlv-gui_header_js-jsupdate .chatlv-event,
+#page-mod-chatlv-gui_header_js-jsupdate .chatlv-message {width:100%;}
+
+/** YUI Overrides **/
+.path-mod-chatlv .yui-layout-unit-top {background: #FFE39D;}
+.path-mod-chatlv .yui-layout-unit-right {background: #FFD46B;}
+.path-mod-chatlv .yui-layout-unit-bottom {background: #FFCB44;}
+.path-mod-chatlv .yui-layout .yui-layout-hd {border:0;}
+.path-mod-chatlv .yui-layout .yui-layout-unit div.yui-layout-bd {border:0;background: transparent;}
+.path-mod-chatlv .yui-layout .yui-layout-unit div.yui-layout-unit-right {background: white;}
