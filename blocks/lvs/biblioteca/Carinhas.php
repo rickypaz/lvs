@@ -40,15 +40,15 @@ class Carinhas {
 	 * 	Instancia Carinhas
 	 */
 	public function __construct() {
-		$this->diretorioImagens = LVS_WWWROOT . '/imgs/carinhas/';
+		$this->diretorioImagens = LVS_WWWROOT . '/imgs/carinhas/moodle3/';
 		$this->diretorioTemplate = LVS_DIRROOT . '/pages/html/';
 		$this->imagens = array(
-				'MUITO_BOM' 		=> array('arquivo' => 'mbom.png', 'descricao' => "MUITO_BOM"),
-				'BOM'		 		=> array('arquivo' => 'bom.png', 'descricao' => "BOM"),
-				'REGULAR' 			=> array('arquivo' => 'regular.png', 'descricao' => "REGULAR"),
-				'FRACO' 			=> array('arquivo' => 'fraco.png', 'descricao' => "FRACO"),
-				'NAO_SATISFATORIO' 	=> array('arquivo' => 'nsatisfatorio.png', 'descricao' => "NAO_SATISFATORIO"),
-				'NEUTRO' 			=> array('arquivo' => 'nav.png', 'descricao' => "NEUTRO")
+				'MUITO_BOM' 		=> array('arquivo' => 'azul.gif', 'descricao' => "MUITO_BOM"),
+				'BOM'		 		=> array('arquivo' => 'verde.gif', 'descricao' => "BOM"),
+				'REGULAR' 			=> array('arquivo' => 'amarela.gif', 'descricao' => "REGULAR"),
+				'FRACO' 			=> array('arquivo' => 'laranja.gif', 'descricao' => "FRACO"),
+				'NAO_SATISFATORIO' 	=> array('arquivo' => 'vermelha.gif', 'descricao' => "NAO_SATISFATORIO"),
+				'NEUTRO' 			=> array('arquivo' => 'cinza.gif', 'descricao' => "NEUTRO")
 		);
 	}
 
