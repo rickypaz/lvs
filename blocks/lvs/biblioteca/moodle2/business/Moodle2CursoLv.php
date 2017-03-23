@@ -249,34 +249,34 @@ class Moodle2CursoLv extends CursoLv {
 		global $CFG;
 	
 		if (strrpos($desempenho->situacao, "SC") !== FALSE) {
-			return '2chamada.png';
+			return '2cham.gif';
 		}
 	
 		if (( $desempenho->percentualFaltas > $this->configuracao->percentual_faltas && $desempenho->beta != 0 && $this->configuracao->exibelv == 1)) {
-			return 'nsatisfatorio.png';
+			return 'vermelha.gif';
 		}
 			
 		if ($desempenho->beta == 0) {
-			return 'nav.png';
+			return 'cinza.gif';
 		}
 			
 		if ($desempenho->beta >= 3.78) {
-			return 'mbom.png';
+			return 'azul.gif';
 		}
 			
 		if ($desempenho->beta >= 2.62) {
-			return 'bom.png';
+			return 'verde.gif';
 		}
 			
 		if ($desempenho->beta >= 0.9) {
-			return 'regular.png';
+			return 'amarela.gif';
 		}
 	
 		if ($desempenho->beta >= 0.3) {
-			return 'fraco.png';
+			return 'laranja.gif';
 		}
 	
-		return 'nsatisfatorio.png';
+		return 'vermelha.gif';
 	}
 	
 	public function porcentagemDistancia() {
