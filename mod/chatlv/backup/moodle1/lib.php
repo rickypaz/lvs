@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Chat conversion handler
+ * Chatlv conversion handler
  */
 class moodle1_mod_chatlv_handler extends moodle1_mod_handler {
 
@@ -43,7 +43,7 @@ class moodle1_mod_chatlv_handler extends moodle1_mod_handler {
      * For each path returned, the corresponding conversion method must be
      * defined.
      *
-     * Note that the path /MOODLE_BACKUP/COURSE/MODULES/MOD/CHAT does not
+     * Note that the path /MOODLE_BACKUP/COURSE/MODULES/MOD/CHATLV does not
      * actually exist in the file. The last element with the module name was
      * appended by the moodle1_converter class.
      *
@@ -52,7 +52,7 @@ class moodle1_mod_chatlv_handler extends moodle1_mod_handler {
     public function get_paths() {
         return array(
             new convert_path(
-                'chatlv', '/MOODLE_BACKUP/COURSE/MODULES/MOD/CHAT',
+                'chatlv', '/MOODLE_BACKUP/COURSE/MODULES/MOD/CHATLV',
                 array(
                     'newfields' => array(
                         'introformat' => 0
@@ -63,7 +63,7 @@ class moodle1_mod_chatlv_handler extends moodle1_mod_handler {
     }
 
     /**
-     * This is executed every time we have one /MOODLE_BACKUP/COURSE/MODULES/MOD/CHAT
+     * This is executed every time we have one /MOODLE_BACKUP/COURSE/MODULES/MOD/CHATLV
      * data available
      */
     public function process_chatlv($data) {
@@ -107,7 +107,7 @@ class moodle1_mod_chatlv_handler extends moodle1_mod_handler {
     }
 
     /**
-     * This is executed every time we have one /MOODLE_BACKUP/COURSE/MODULES/MOD/CHAT/MESSAGES/MESSAGE
+     * This is executed every time we have one /MOODLE_BACKUP/COURSE/MODULES/MOD/CHATLV/MESSAGES/MESSAGE
      * data available
      */
     public function process_chatlv_message($data) {

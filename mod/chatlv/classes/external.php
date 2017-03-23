@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Chat external API
+ * Chatlv external API
  *
  * @package    mod_chatlv
  * @category   external
@@ -30,7 +30,7 @@ require_once($CFG->libdir . '/externallib.php');
 require_once($CFG->dirroot . '/mod/chatlv/lib.php');
 
 /**
- * Chat external functions
+ * Chatlv external functions
  *
  * @package    mod_chatlv
  * @category   external
@@ -586,11 +586,11 @@ class mod_chatlv_external extends external_api {
                 'chatlvs' => new external_multiple_structure(
                     new external_single_structure(
                         array(
-                            'id' => new external_value(PARAM_INT, 'Chat id'),
+                            'id' => new external_value(PARAM_INT, 'Chatlv id'),
                             'coursemodule' => new external_value(PARAM_INT, 'Course module id'),
                             'course' => new external_value(PARAM_INT, 'Course id'),
-                            'name' => new external_value(PARAM_RAW, 'Chat name'),
-                            'intro' => new external_value(PARAM_RAW, 'The Chat intro'),
+                            'name' => new external_value(PARAM_RAW, 'Chatlv name'),
+                            'intro' => new external_value(PARAM_RAW, 'The Chatlv intro'),
                             'introformat' => new external_format_value('intro'),
                             'chatlvmethod' => new external_value(PARAM_ALPHA, 'chatlv method (sockets, daemon)', VALUE_OPTIONAL),
                             'keepdays' => new external_value(PARAM_INT, 'keep days', VALUE_OPTIONAL),

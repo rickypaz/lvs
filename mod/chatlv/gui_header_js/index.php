@@ -95,6 +95,6 @@ $courseshortname = format_string($course->shortname, true, array('context' => co
   <frame src="users.php?<?php echo $params ?>" name="users" scrolling="auto" marginwidth="5" marginheight="5">
  </frameset>
  <noframes>
-  Sorry, this version of Moodle Chat needs a browser that handles frames.
+  Sorry, this version of Moodle Chatlv needs a browser that handles frames.
  </noframes>
 </html>

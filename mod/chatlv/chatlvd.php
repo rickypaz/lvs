@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Chat daemon
+ * Chatlv daemon
  *
  * @package    mod_chatlv
  * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com}
@@ -64,7 +64,7 @@ function chatlv_empty_connection() {
 }
 
 class ChatConnection {
-    // Chat-related info.
+    // Chatlv-related info.
     public $sid  = null;
     public $type = null;
 

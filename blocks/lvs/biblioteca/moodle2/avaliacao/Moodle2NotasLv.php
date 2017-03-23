@@ -233,7 +233,7 @@ class Moodle2NotasLv implements NotasLv {
 
 		if(!has_capability("mod/$cm->modname:viewrating", $context))
 			return false;
-		
+
 		// verifica se o item pertence ao usuário logado
 		if ($contribuicao && $item->getItem()->userid != $USER->id && !has_capability("mod/$cm->modname:viewanyrating", $context))
 			return false;
@@ -241,7 +241,6 @@ class Moodle2NotasLv implements NotasLv {
 		// itens pertencentes a admin/professores/tutores não possuem notas
 		if(has_capability("mod/$cm->modname:viewanyrating", $context, $item->getItem()->userid))
 			return false;
-		
 
 		return $this->_modulo->podeVerNota($item);
 	}

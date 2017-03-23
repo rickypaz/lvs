@@ -67,7 +67,7 @@ if (!$chatlvsid = chatlv_login_user($chatlv->id, 'ajax', $groupid, $course)) {
 }
 $courseshortname = format_string($course->shortname, true, array('context' => context_course::instance($course->id)));
 $module = array(
-    'name'      => 'mod_chatlv_ajax', // Chat gui's are not real plugins, we have to break the naming standards for JS modules here.
+    'name'      => 'mod_chatlv_ajax', // Chatlv gui's are not real plugins, we have to break the naming standards for JS modules here.
     'fullpath'  => '/mod/chatlv/gui_ajax/module.js',
     'requires'  => array('base', 'dom', 'event', 'event-mouseenter', 'event-key', 'json-parse', 'io', 'overlay', 'yui2-resize',
                          'yui2-layout', 'yui2-menu'),

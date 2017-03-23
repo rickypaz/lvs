@@ -8,9 +8,9 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="porcentagem" TYPE="int" LENGTH="3" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" />
-        <FIELD NAME="etapa" TYPE="int" LENGTH="2" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" />
-        <FIELD NAME="fator_multiplicativo" TYPE="int" LENGTH="3" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" />
+        <FIELD NAME="porcentagem" TYPE="float" LENGTH="3" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" /><!--   @lvs novo campo na tabela -->
+        <FIELD NAME="etapa" TYPE="int" LENGTH="2" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" /><!--   @lvs novo campo na tabela -->
+        <FIELD NAME="fator_multiplicativo" TYPE="int" LENGTH="3" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" /><!--   @lvs novo campo na tabela -->
         <FIELD NAME="type" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="general" SEQUENCE="false"/>
         <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="intro" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
@@ -33,7 +33,7 @@
         <FIELD NAME="completionreplies" TYPE="int" LENGTH="9" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Nonzero if a certain number of replies are required to mark this forumlv complete for a user."/>
         <FIELD NAME="completionposts" TYPE="int" LENGTH="9" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Nonzero if a certain number of posts or replies (total) are required to mark this forumlv complete for a user."/>
         <FIELD NAME="displaywordcount" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="exibir" TYPE="int" LENGTH="1" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" />
+        <FIELD NAME="exibir" TYPE="int" LENGTH="1" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" /><!--   @lvs novo campo na tabela -->
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

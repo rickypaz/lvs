@@ -1,4 +1,4 @@
-Official Chat Module for Moodle
+Official Chatlv Module for Moodle
 ------------------------------
 
 The chatlv module now supports a backend daemon for
@@ -8,7 +8,7 @@ It's still buggy and being worked on, but if you
 want to test it and help out here are some quick
 instructions:
 
-1) Admin -> Config -> Modules -> Chat -> Settings
+1) Admin -> Config -> Modules -> Chatlv -> Settings
 
 2) Set the method to "sockets" and set up the ports etc
 

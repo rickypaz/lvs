@@ -19,6 +19,7 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
+use uab\ifce\lvs\forms\FormModulosLV; // @lvs importando classe
 
 class mod_chatlv_mod_form extends moodleform_mod {
 
@@ -43,7 +44,7 @@ class mod_chatlv_mod_form extends moodleform_mod {
 
         $this->standard_intro_elements(get_string('chatlvintro', 'chatlv'));
 
-        // Chat sessions.
+        // Chatlv sessions.
         $mform->addElement('header', 'sessionshdr', get_string('sessions', 'chatlv'));
 
         $mform->addElement('date_time_selector', 'chatlvtime', get_string('chatlvtime', 'chatlv'));

@@ -9,7 +9,7 @@
 M.mod_chatlv_ajax = M.mod_chatlv_ajax || {};
 
 /**
- * Init ajax based Chat UI.
+ * Init ajax based Chatlv UI.
  * @namespace M.mod_chatlv_ajax
  * @function
  * @param {YUI} Y

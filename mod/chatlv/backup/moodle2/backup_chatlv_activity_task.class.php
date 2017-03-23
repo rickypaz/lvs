@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/mod/chatlv/backup/moodle2/backup_chatlv_stepslib.php');
 
 /**
- * Provides the steps to perform one complete backup of the Chat instance
+ * Provides the steps to perform one complete backup of the Chatlv instance
  */
 class backup_chatlv_activity_task extends backup_activity_task {
 

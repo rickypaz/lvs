@@ -87,6 +87,6 @@ $winusersurl = "http://$CFG->chatlv_serverhost:$CFG->chatlv_serverport?win=users
   <frame src="<?php echo $winusersurl; ?>" name="users" scrolling="auto" marginwidth="5" marginheight="5">
  </frameset>
  <noframes>
-  Sorry, this version of Moodle Chat needs a browser that handles frames.
+  Sorry, this version of Moodle Chatlv needs a browser that handles frames.
  </noframes>
 </html>

@@ -58,7 +58,7 @@ class Moodle2CursoLv extends CursoLv {
 
 		$this->addGerenciador('forumlv', new ForunsLv($this));
 // 		$this->addGerenciador('tarefalv', new TarefasLv($this));
-// 		$this->addGerenciador('chatlv', new ChatsLv($this));
+		$this->addGerenciador('chatlv', new ChatsLv($this));
 		$this->addGerenciador('wikilv', new WikisLv($this));
 // 		$this->addGerenciador('quizlv', new Quizzes($this));
 	}

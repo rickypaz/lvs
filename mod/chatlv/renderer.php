@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Chat module rendering methods
+ * Chatlv module rendering methods
  *
  * @package    mod_chatlv
  * @copyright  2012 Andrew Davis
@@ -36,7 +36,7 @@ require_once($CFG->dirroot.'/blocks/lvs/biblioteca/lib.php'); // @lvs inclusão 
 /* --- fim ---- */
 
 /**
- * Chat module renderer class
+ * Chatlv module renderer class
  *
  * @copyright 2012 Andrew Davis
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -107,17 +107,17 @@ class mod_chatlv_renderer extends plugin_renderer_base {
         	$gerenciadorNotas = NotasLvFactory::criarGerenciador('moodle2');
         	$gerenciadorNotas->setModulo( new Chatlv($usermessage->messagelv->chatlvid) );
         	unset($itemlv->getItem()->picture);
-        	unset($itemlv->getItem()->message);
-        
+        	unset($itemlv->getItem()->message); 
+
         	$lvs_output = $gerenciadorNotas->avaliacaoAtual($itemlv) . $gerenciadorNotas->avaliadoPor($itemlv) . $gerenciadorNotas->formAvaliacaoAjax($itemlv);
         }
         
-        $replacements[] = $lvs_output;
+//         $replacements[] = $lvs_output;
         // fim lvs
 
-        $replacements[] = $usermessage->message;
+        $replacements[] = $lvs_output . '<br/>' . $usermessage->message;
         $replacements[] = $usermessage->mymessageclass;
-
+//         print_r($replacements);
         $output = null;
 
         if (!empty($chatlvtheme_cfg->avatar) and !empty($chatlvtheme_cfg->align)) {
@@ -129,6 +129,8 @@ class mod_chatlv_renderer extends plugin_renderer_base {
         } else {
             $output = str_replace($patterns, $replacements, $chatlvtheme_cfg->user_message);
         }
+        
+//         print_r($output);
 
         return $output;
     }

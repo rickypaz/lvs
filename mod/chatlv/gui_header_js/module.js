@@ -9,7 +9,7 @@
 M.mod_chatlv_header = M.mod_chatlv_ajax || {};
 
 /**
- * Init header based Chat UI - frame input
+ * Init header based Chatlv UI - frame input
  *
  * @namespace M.mod_chatlv_header
  * @function
@@ -24,7 +24,7 @@ M.mod_chatlv_header.init_insert = function(Y, forcerefreshasap) {
 };
 
 /**
- * Init header based Chat UI - frame input
+ * Init header based Chatlv UI - frame input
  *
  * @namespace M.mod_chatlv_header
  * @function
@@ -79,7 +79,7 @@ M.mod_chatlv_header.init_input = function(Y) {
 };
 
 /**
- * Init header based Chat UI - frame users
+ * Init header based Chatlv UI - frame users
  *
  * @namespace M.mod_chatlv_header
  * @function

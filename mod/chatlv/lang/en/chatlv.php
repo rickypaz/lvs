@@ -48,7 +48,7 @@ $string['donotusechatlvtime'] = 'Don\'t publish any chatlv times';
 $string['enterchatlv'] = 'Click here to enter the chatlv now';
 $string['errornousers'] = 'Could not find any users!';
 $string['explaingeneralconfig'] = 'These settings are <strong>always</strong> used';
-$string['explainmethoddaemon'] = 'These settings matter <strong>only</strong> if you have selected "Chat server daemon" for chatlv_method';
+$string['explainmethoddaemon'] = 'These settings matter <strong>only</strong> if you have selected "Chatlv server daemon" for chatlv_method';
 $string['explainmethodnormal'] = 'These settings matter <strong>only</strong> if you have selected "Normal method" for chatlv_method';
 $string['generalconfig'] = 'General configuration';
 $string['chatlv:addinstance'] = 'Add a new chatlv';
@@ -59,7 +59,7 @@ $string['chatlv:chatlv'] = 'Access a chatlv room';
 $string['chatlvintro'] = 'Description';
 $string['chatlvname'] = 'Name of this chatlv room';
 $string['chatlv:readlog'] = 'View chatlv logs';
-$string['chatlvreport'] = 'Chat sessions';
+$string['chatlvreport'] = 'Chatlv sessions';
 $string['chatlv:talk'] = 'Talk in a chatlv';
 $string['chatlvtime'] = 'Next chatlv time';
 $string['entermessage'] = "Enter your message";
@@ -77,14 +77,14 @@ $string['messageenter'] = '{$a} has just entered this chatlv';
 $string['messageexit'] = '{$a} has left this chatlv';
 $string['messages'] = 'Messages';
 $string['messageyoubeep'] = 'You beeped {$a}';
-$string['method'] = 'Chat method';
-$string['methoddaemon'] = 'Chat server daemon';
+$string['method'] = 'Chatlv method';
+$string['methoddaemon'] = 'Chatlv server daemon';
 $string['methodnormal'] = 'Normal method';
 $string['methodajax'] = 'Ajax method';
-$string['modulename'] = 'Chat';
+$string['modulename'] = 'Chatlv';
 $string['modulename_help'] = 'The chatlv activity module enables participants to have text-based, real-time synchronous discussions.
 
-The chatlv may be a one-time activity or it may be repeated at the same time each day or each week. Chat sessions are saved and can be made available for everyone to view or restricted to users with the capability to view chatlv session logs.
+The chatlv may be a one-time activity or it may be repeated at the same time each day or each week. Chatlv sessions are saved and can be made available for everyone to view or restricted to users with the capability to view chatlv session logs.
 
 Chats are especially useful when the group chatlvting is not able to meet face-to-face, such as
 
@@ -111,8 +111,8 @@ $string['nopermissiontoseethechatlvlog'] = 'You don\'t have permission to see th
 $string['oldping'] = 'Disconnect timeout';
 $string['page-mod-chatlv-x'] = 'Any chatlv module page';
 $string['pastchatlvs'] = 'Past chatlv sessions';
-$string['pluginadministration'] = 'Chat administration';
-$string['pluginname'] = 'Chat';
+$string['pluginadministration'] = 'Chatlv administration';
+$string['pluginname'] = 'Chatlv';
 $string['refreshroom'] = 'Refresh room';
 $string['refreshuserlist'] = 'Refresh user list';
 $string['removemessages'] = 'Remove all messages';
@@ -123,14 +123,14 @@ $string['repeatweekly'] = 'At the same time every week';
 $string['saidto'] = 'said to';
 $string['savemessages'] = 'Save past sessions';
 $string['seesession'] = 'See this session';
-$string['search:activity'] = 'Chat - activity information';
+$string['search:activity'] = 'Chatlv - activity information';
 $string['send'] = 'Send';
 $string['sending'] = 'Sending';
 $string['serverhost'] = 'Server name';
 $string['serverip'] = 'Server ip';
 $string['servermax'] = 'Max users';
 $string['serverport'] = 'Server port';
-$string['sessions'] = 'Chat sessions';
+$string['sessions'] = 'Chatlv sessions';
 $string['sessionstart'] = 'The next chatlv session will start in {$a}';
 $string['strftimemessage'] = '%H:%M';
 $string['studentseereports'] = 'Everyone can view past sessions';

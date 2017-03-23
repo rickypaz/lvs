@@ -846,17 +846,6 @@ function chatlv_format_message_manually($message, $courseid, $sender, $currentus
     $output->text  = strip_tags($outinfo.': '.$outmain);
 
     $output->html  = "<table class=\"chatlv-message\"><tr$rowclass><td class=\"picture\" valign=\"top\">$message->picture</td>";
-    
-    /** @lvs form de avaliação chatlv */
-    $itemlv = new Item('chatlv', 'message', $message);
-    $gerenciadorNotas = NotasLvFactory::criarGerenciador('moodle2');
-    $gerenciadorNotas->setModulo( new Chatlv($message->chatlvid) );
-    unset($itemlv->getItem()->picture);
-    unset($itemlv->getItem()->message);
-     
-    $lvs_output = $gerenciadorNotas->avaliacaoAtual($itemlv) . $gerenciadorNotas->avaliadoPor($itemlv) . $gerenciadorNotas->formAvaliacaoAjax($itemlv);
-    $output->html .= html_writer::tag('div', $lvs_output);
-    // fim lvs
 
     $output->html .= "<td class=\"text\"><span class=\"title\">$outinfo</span>";
     if ($outmain) {
@@ -874,6 +863,18 @@ function chatlv_format_message_manually($message, $courseid, $sender, $currentus
                           </tr>';
     }
     $output->html .= "</td></tr></table>";
+    
+    /** @lvs form de avaliação chatlv */
+    $itemlv = new Item('chatlv', 'message', $message);
+    $gerenciadorNotas = NotasLvFactory::criarGerenciador('moodle2');
+    $gerenciadorNotas->setModulo( new Chatlv($message->chatlvid) );
+    unset($itemlv->getItem()->picture);
+    unset($itemlv->getItem()->message);
+     
+    $lvs_output = $gerenciadorNotas->avaliacaoAtual($itemlv) . $gerenciadorNotas->avaliadoPor($itemlv) . $gerenciadorNotas->formAvaliacaoAjax($itemlv);
+    $output->html .= html_writer::tag('div', $lvs_output);
+    // fim lvs
+
     return $output;
 }
 
@@ -1049,7 +1050,12 @@ function chatlv_format_message_theme ($message, $chatlvuser, $currentuser, $grou
     $usermessage = new user_message($senderprofile, fullname($sender), $message->picture,
                                     $mymessageclass, $outtime, $outmain, $theme);
 
+    // @LVs criação do objeto messagelv pra ser posto dentro de itemlv
+    $usermessage->messagelv = $message;
+    // fim lvs
+
     $output = $PAGE->get_renderer('mod_chatlv');
+
     $result->html = $output->render($usermessage);
 
     // When user beeps other user, then don't show any timestamp to other users in chatlv.

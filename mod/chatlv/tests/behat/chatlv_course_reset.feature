@@ -1,5 +1,5 @@
 @mod @mod_chatlv
-Feature: Chat reset
+Feature: Chatlv reset
   In order to reuse past chatlv activities
   As a teacher
   I need to remove all previous data.
@@ -31,7 +31,7 @@ Feature: Chat reset
       | startdate[year]      | 2020 |
     And I press "Save and display"
     And I follow "Test chatlv name"
-    And I navigate to "Edit settings" node in "Chat administration"
+    And I navigate to "Edit settings" node in "Chatlv administration"
     And I set the following fields to these values:
       | chatlvtime[day]       | 1 |
       | chatlvtime[month]     | January |
@@ -50,6 +50,6 @@ Feature: Chat reset
     And I press "Continue"
     Then I follow "Course 1"
     And I follow "Test chatlv name"
-    And I navigate to "Edit settings" node in "Chat administration"
+    And I navigate to "Edit settings" node in "Chatlv administration"
     And I expand all fieldsets
     And the "id_chatlvtime_year" select box should contain "2030"

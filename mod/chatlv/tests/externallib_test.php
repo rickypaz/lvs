@@ -229,13 +229,13 @@ class mod_chatlv_external_testcase extends externallib_advanced_testcase {
         $course1 = self::getDataGenerator()->create_course();
         $chatlvoptions1 = array(
                               'course' => $course1->id,
-                              'name' => 'First Chat'
+                              'name' => 'First Chatlv'
                              );
         $chatlv1 = self::getDataGenerator()->create_module('chatlv', $chatlvoptions1);
         $course2 = self::getDataGenerator()->create_course();
         $chatlvoptions2 = array(
                               'course' => $course2->id,
-                              'name' => 'Second Chat'
+                              'name' => 'Second Chatlv'
                              );
         $chatlv2 = self::getDataGenerator()->create_module('chatlv', $chatlvoptions2);
         $student1 = $this->getDataGenerator()->create_user();
@@ -249,7 +249,7 @@ class mod_chatlv_external_testcase extends externallib_advanced_testcase {
         // We need to execute the return values cleaning process to simulate the web service server.
         $chatlvs = external_api::clean_returnvalue(mod_chatlv_external::get_chatlvs_by_courses_returns(), $chatlvs);
         $this->assertCount(1, $chatlvs['chatlvs']);
-        $this->assertEquals('First Chat', $chatlvs['chatlvs'][0]['name']);
+        $this->assertEquals('First Chatlv', $chatlvs['chatlvs'][0]['name']);
         // We see 11 fields.
         $this->assertCount(11, $chatlvs['chatlvs'][0]);
 
@@ -271,7 +271,7 @@ class mod_chatlv_external_testcase extends externallib_advanced_testcase {
         $chatlvs = external_api::clean_returnvalue(mod_chatlv_external::get_chatlvs_by_courses_returns(), $chatlvs);
 
         $this->assertCount(1, $chatlvs['chatlvs']);
-        $this->assertEquals('Second Chat', $chatlvs['chatlvs'][0]['name']);
+        $this->assertEquals('Second Chatlv', $chatlvs['chatlvs'][0]['name']);
         // We see 16 fields.
         $this->assertCount(16, $chatlvs['chatlvs'][0]);
         // As an Admin you can see some chatlv properties like 'section'.
