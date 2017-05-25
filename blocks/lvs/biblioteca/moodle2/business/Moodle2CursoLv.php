@@ -115,7 +115,7 @@ class Moodle2CursoLv extends CursoLv {
 		
 		$desempenho->percentualFaltas 		= round(($desempenho->horasFaltadas / $this->configuracao->total_horas_curso) * 100, 2);
 		$desempenho->notaDistancia 		= $this->_calcularNotaDistancia($desempenho);
-		$desempenho->notaPresencial 		= $this->_calcularNotaPresencial($desempenho);
+		$desempenho->notaPresencial 	= $this->_calcularNotaPresencial($desempenho);
 		$desempenho->mediaParcial 		= $this->_calcularMediaParcial($desempenho);
 		$desempenho->beta 				= $this->_calcularBeta($desempenho);
 	

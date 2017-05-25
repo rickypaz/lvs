@@ -54,7 +54,7 @@ class DistanciaView {
 		
 		$total_atividades += $this->_adicionarForuns();
 // 		$total_atividades += $this->_adicionarTarefas();
-// 		$total_atividades += $this->_adicionarChats();
+		$total_atividades += $this->_adicionarChats();
 		$total_atividades += $this->_adicionarWikis();
 // 		$total_atividades += $this->_adicionarQuizzes();
 		

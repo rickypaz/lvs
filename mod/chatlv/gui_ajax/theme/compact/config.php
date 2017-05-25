@@ -33,9 +33,6 @@ $chatlvtheme_cfg->user_message = <<<TEMPLATE
     <div class="text">
     ___message___
     </div>
-	<div>
-	___grade___
-	</div>
 </div>
 TEMPLATE;
 // @lvs o div da grade
