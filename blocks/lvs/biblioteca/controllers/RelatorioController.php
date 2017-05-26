@@ -212,7 +212,7 @@ class RelatorioController {
 			$this->_template->FATOR_BETA 	= $desempenho->beta;
 		
 			if ($desempenho->situacao == 'C') {
-				$this->_template->IMAGEM_LV_ICONE = 'cursando.png';
+				$this->_template->IMAGEM_LV_ICONE = 'cursando.gif';
 			} else {
 				$this->_template->IMAGEM_LV_ICONE = $desempenho->lv_icone;
 			}

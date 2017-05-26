@@ -297,10 +297,9 @@ class Quizzes extends GerenciadorAtividadesDistancia implements GerenciadorAtivi
 		foreach ($quizzes as $quiz) {
 			if (is_array($quiz))
 				$quiz = Convert::array_to_object($quiz);
-			
 
 			if ($quiz->distancia == 0) {
-				$this->_gerenciadorPresenciais->removerAtividade($quiz->id_atividade);
+				$this->_gerenciadorPresenciais->removerAtividadePorId($quiz->id_atividade);
 			} else {
 				$this->_removerQuizDistancia($quiz->id);
 			}
@@ -309,9 +308,7 @@ class Quizzes extends GerenciadorAtividadesDistancia implements GerenciadorAtivi
 		
 		$DB->delete_records_select($this->_tabelaConfiguracao, "id $mask", $params);
 	}
-	
-	
-	
+
 	/**
 	 * 	Remove um quiz presencial importado dada a atividade presencial
 	 * 
@@ -319,8 +316,10 @@ class Quizzes extends GerenciadorAtividadesDistancia implements GerenciadorAtivi
 	 * 	@throws \Exception se não houver um quiz importado que utilize a atividade presencial 
 	 */
 	public function removerQuizImportadoPorPresencial( $presencial ) {
+		debug('removerQuizImportadoPorPresencial');
 		global $DB;
 		$quiz = $DB->get_record($this->_tabelaConfiguracao, array('id_atividade'=>$presencial), 'id', MUST_EXIST);
+		debug($quiz);
 		$this->removerAtividade($quiz);
 	}
 	
@@ -553,7 +552,9 @@ class Quizzes extends GerenciadorAtividadesDistancia implements GerenciadorAtivi
 		$presencial->id = $quizlv->id_atividade;
 		$presencial->id_curso = $quizlv->id_curso;
 		
-		return reset($this->_gerenciadorPresenciais->salvarAtividades($presencial));
+		$atividades = $this->_gerenciadorPresenciais->salvarAtividades($presencial);
+
+		return reset($atividades);
 	}
 	
 	/**
@@ -578,7 +579,7 @@ class Quizzes extends GerenciadorAtividadesDistancia implements GerenciadorAtivi
 				unset($quizlv->id);
 			}
 		}
-		
+
 		if( !isset($quizlv->id) || empty($quizlv->id) )
 			$quizlv->id = $DB->insert_record($this->_tabelaConfiguracao, $quizlv);
 		else

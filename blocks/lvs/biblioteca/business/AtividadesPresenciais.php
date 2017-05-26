@@ -267,6 +267,19 @@ class AtividadesPresenciais implements GerenciadorAtividades {
 	}
 
 	/**
+	 *	Remove a atividade presencial
+	 *
+	 * 	@param int $presencial id da atividade presencial 
+	 * 	@access public
+	 * 	@todo receber objetos e uma lista
+	 */
+	public function removerAtividadePorId( $presencial ) {
+		global $DB;
+
+		$DB->delete_records($this->_tabelaConfiguracao, array('id'=>$presencial));
+	}
+
+	/**
 	 *	Remove a atividade presencial e distribui sua porcentagem a outra atividade presencial
 	 *
 	 * 	@param int $presencial id da atividade presencial 

@@ -56,7 +56,7 @@ class DistanciaView {
 // 		$total_atividades += $this->_adicionarTarefas();
 		$total_atividades += $this->_adicionarChats();
 		$total_atividades += $this->_adicionarWikis();
-// 		$total_atividades += $this->_adicionarQuizzes();
+		$total_atividades += $this->_adicionarQuizzes();
 		
 		if (!$this->_data['somenteLeitura']) {
 			$this->_template->block('COLUNA_EXIBIRLV');

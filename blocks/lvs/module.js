@@ -363,7 +363,7 @@ M.block_lvs.importar_quizzes = function(Y) {
 		tbody_distancia.delegate('click', function(e) {
 			var row = this.ancestor().ancestor();
 			var quiz = Y.Node.create('<tr style="text-align:center;"></tr>');
-			var select = '<select><option value="0">Selecionar...</option><option value="1">Distância</option><option value="2">Presencial</option></select>';
+			var select = '<select><option value="0">Selecionar...</option><option value="1" disabled>Distância</option><option value="2">Presencial</option></select>';
 
 			row.one('td').get('children').pop().remove();
 
@@ -386,7 +386,7 @@ M.block_lvs.importar_quizzes = function(Y) {
 			var row = this.ancestor().ancestor();	     
 			var contador = row.one('td').one('input').get('value');
 			var quiz = Y.Node.create('<tr style="text-align:center;"></tr>');
-			var select = '<select><option value="0">Selecionar...</option><option value="1">Distância</option><option value="2">Presencial</option></select>';
+			var select = '<select><option value="0">Selecionar...</option><option value="1" disabled>Distância</option><option value="2">Presencial</option></select>';
 
 			row.one('td').get('children').item(5).set('name', 'quiz[' + contador + '][nome]');
 			row.one('td').get('children').item(6).set('name', 'quiz[' + contador + '][descricao]');

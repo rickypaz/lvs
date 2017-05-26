@@ -120,7 +120,7 @@ foreach ($users as $user) {
 	$notaslv_impressao_html->FATOR_BETA = $desempenho->beta;
 		
 	if($desempenho->situacao == 'C' && !has_capability('moodle/course:viewhiddenactivities', $PAGE->context, $USER->id)){
-		$notaslv_impressao_html->IMAGEM_LV_ICONE = "<img src='$CFG->wwwroot/blocks/lvs/imgs/carinhas/cursando.png'/>";
+		$notaslv_impressao_html->IMAGEM_LV_ICONE = "<img src='$CFG->wwwroot/blocks/lvs/imgs/carinhas/cursando.gif'/>";
 	} else {
 		$notaslv_impressao_html->IMAGEM_LV_ICONE = $desempenho->lv_icone;
 	}

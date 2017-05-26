@@ -76,6 +76,7 @@ class QuizzesController {
 			$this->_removerQuizzesImportados();
 			$this->_importarQuizzesDistancia();
 			$this->_importarQuizzesPresenciais();
+			$this->_atualizarAtividadesPresenciais();
 			
 			$this->_adapterController->redirect( LVS_WWWROOT . '/pages/importar_quizzes.php?curso=' . $curso_id, 'Alterações Realizadas com Sucesso', 0.7 );
 		} 
@@ -129,8 +130,7 @@ class QuizzesController {
 	{
 		$quizzes = $this->_data['atividades']['quiz'];
 		$importacao = array();
-		$presenciais = array();
-		
+
 		foreach ($quizzes as $quiz) 
 		{
 			if (isset($quiz['acao']) && $quiz['distancia'] == 0) 
@@ -141,19 +141,7 @@ class QuizzesController {
 		
 		if (!empty($importacao)) 
 		{
-			$presenciais = $this->_data['atividades']['presencial'];
 			$this->_quizzesModel->importarQuizzes($importacao);
-			
-			foreach ($importacao as $importado) 
-			{
-				if (isset($importado['presencial']))
-					$presenciais[] = $importado['presencial'];
-			}
-			
-			if (count($presenciais) > 0) 
-			{
-				$this->_gerenciadorPresenciais->salvarAtividades($presenciais);
-			}
 		}
 	}
 	
@@ -171,9 +159,23 @@ class QuizzesController {
 				$remocao[] = $quiz;
 			}
 		}
-		
+
 		if (!empty($remocao)) {
 			$this->_quizzesModel->removerQuizzes($remocao);
+		}
+	}
+
+	/**
+	 *	Atualiza as porcentagens das atividades presenciais existentes
+	 *
+	 *  @access private
+	 */
+	private function _atualizarAtividadesPresenciais() {
+		$presenciais = isset($this->_data['atividades']['presencial']) ? $this->_data['atividades']['presencial'] : array();
+
+		if (count($presenciais) > 0) 
+		{
+			$this->_gerenciadorPresenciais->salvarAtividades($presenciais);
 		}
 	}
 	
