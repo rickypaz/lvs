@@ -1,281 +1,303 @@
 <?php
+
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
+ * Strings for component 'wikilv LV', language 'pt_br', branch 'MOODLE_34_STABLE'
  *
- * This file contains en_utf8 translation of Wikilv module
- *
- * @author Jordi Piguillem
- * @author Kenneth Riba
- *
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @package mod_wikilv
+ * @package   wiki LV
+ * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-$string['addcomment'] = 'Add comment';
-$string['admin'] = 'Administration';
-$string['adminmenu'] = 'Admin menu';
-$string['attachmentattach'] = 'Add as attachment';
-$string['attachmentimage'] = 'Add as image';
-$string['attachmentlink'] = 'Add as link';
-$string['attachments'] = 'Attachments';
-$string['backcomments'] = 'Back to comments';
-$string['backhistory'] = 'Back to history';
-$string['backoldversion'] = 'Back to old version';
-$string['backpage'] = 'Back to page';
-$string['backtomapmenu'] = 'Back to map menu';
-$string['changerate'] = 'Do you wish to change it?';
-$string['cannotcomparenewerversion'] = 'A page version can only be compared with an older version.';
-$string['cannoteditpage'] = 'You can not edit this page.';
-$string['cannotmanagefiles'] = 'You don\'t have permission to manage the wikilv files.';
-$string['cannotviewfiles'] = 'You don\'t have permission to view the wikilv files.';
-$string['cannotviewpage'] = 'You can not view this page.';
-$string['comparesel'] = 'Compare selected';
-$string['comments'] = 'Comments';
-$string['commentscount'] = 'Comments ({$a})';
-$string['comparewith'] = 'Comparing version {$a->old} with version {$a->new}';
-$string['contributions'] = 'Contributions';
-$string['contributions_help'] = 'List of pages that you have edited.';
-$string['createcomment'] = 'Creating comment';
-$string['creating'] = 'Creating a wikilv page';
-$string['createpage'] = 'Create page';
-$string['createddate'] = 'Created: {$a->date} by {$a->username}';
+
+defined('MOODLE_INTERNAL') || die();
+
+$string['addcomment'] = 'Adicionar comentário';
+$string['addedbegins'] = 'Início da adição';
+$string['addedends'] = 'Fim da adição';
+$string['admin'] = 'Administração';
+$string['adminmenu'] = 'Menu administrativo';
+$string['attachmentattach'] = 'Adicionar como anexo';
+$string['attachmentimage'] = 'Adicionar como imagem';
+$string['attachmentlink'] = 'Adicionar como link';
+$string['attachments'] = 'Anexos';
+$string['backcomments'] = 'Voltar aos comentários';
+$string['backhistory'] = 'Voltar à história';
+$string['backoldversion'] = 'Voltar à versão antiga';
+$string['backpage'] = 'Voltar à página';
+$string['backtomapmenu'] = 'Voltar ao mapa de menu';
+$string['cannotcomparenewerversion'] = 'A versão de página só pode ser comparada com uma versão mais antiga.';
+$string['cannoteditpage'] = 'Você não pode editar esta página.';
+$string['cannotmanagefiles'] = 'Você não tem permissão para gerenciar arquivos wiki LV';
+$string['cannotviewfiles'] = 'Você não tem permissão para visualizar os arquivos wiki LV.';
+$string['cannotviewpage'] = 'Você não pode visualizar esta página.';
+$string['changerate'] = 'Você deseja mudar Isto?';
+$string['comments'] = 'Comentários';
+$string['commentscount'] = 'Comentários ({$a})';
+$string['comparesel'] = 'Comparar selecionados';
+$string['comparewith'] = 'Comparando versão {$a->old} com versão {$a->new}';
+$string['contributions'] = 'Contribuições';
+$string['contributions_help'] = 'Lista de páginas que você editou.';
+$string['createcomment'] = 'Criação de comentário';
+$string['createddate'] = 'Criado: {$a->date} por {$a->username}';
+$string['createpage'] = 'Criar página';
+$string['creating'] = 'Criar uma página wiki LV';
 $string['creole'] = 'Creole';
-$string['defaultformat'] = 'Default format';
-$string['defaultformat_help'] = 'This setting determines the default format used when editing wikilv pages.
+$string['defaultformat'] = 'Formato padrão';
+$string['defaultformat_help'] = 'Essa configuração determina o formato padrão usando quando está editando páginas wiki LV.
 
-* HTML - The HTML editor is available
-* Creole - A common wikilv markup language for which a small edit toolbar is available
-* Nwikilv - Mediawikilv-like markup language used in the contributed Nwikilv module';
-$string['deleteallpages'] = 'Delete all wikilv pages';
-$string['deletecomment'] = 'Deleting comment';
-$string['deletecommentcheck'] = 'Delete comment';
-$string['deletecommentcheckfull'] = 'Are you sure you want to delete the comment?';
-$string['deleteupload'] = 'Delete';
-$string['deletedbegins'] = 'Deleted begins';
-$string['deletedends'] = 'Deleted ends';
-$string['deleteversions'] = 'Delete page versions';
-$string['addedbegins'] = 'added begins';
-$string['addedends'] = 'added ends';
+* HTML - Editor HTML disponível
+* Creole - Uma linguagem de marcação onde uma pequena barra de edição está disponível
+* Nwikilv - Linguagem de marcação como a Mediawiki usada no módulo Nwikilv';
+$string['deleteallpages'] = 'Apagar todas as páginas wiki LV';
+$string['deletecomment'] = 'Exclusão de comentário';
+$string['deletecommentcheck'] = 'Excluir comentário';
+$string['deletecommentcheckfull'] = 'Você tem certeza que deseja excluir o comentário ?';
+$string['deletedbegins'] = 'Início deletados';
+$string['deletedends'] = 'Fim Deletados';
+$string['deleteupload'] = 'Excluir';
+$string['deleteversions'] = 'Deletar páginas de versoes';
 $string['diff'] = 'Diff';
-$string['diff_help'] = 'Selected versions of the page may be compared in order to find the differences.';
-$string['edit'] = 'Edit';
-$string['editcomment'] = 'Edit comment';
-$string['editblocks'] = 'Turn edit blocks on';
-$string['editfiles'] = 'Edit wikilv files';
-$string['editing'] = 'Editing wikilv page';
-$string['editingcomment'] = 'Editing comment';
-$string['editingpage'] = 'Editing this page \'{$a}\'';
-$string['editsection'] = 'edit';
-$string['eventdiffviewed'] = 'Wikilv diff viewed';
-$string['eventhistoryviewed'] = 'Wikilv history viewed';
-$string['eventmapviewed'] = 'Wikilv page map viewed';
-$string['eventpagedeleted'] = 'Wikilv page deleted';
-$string['eventpagecreated'] = 'Wikilv page created';
-$string['eventpagelocksdeleted'] = 'Wikilv page locks deleted';
-$string['eventpageviewed'] = 'Wikilv page viewed';
-$string['eventpageupdated'] = 'Wikilv page updated';
-$string['eventpageversiondeleted'] = 'Wikilv page version deleted';
-$string['eventversionrestored'] = 'Wikilv version restored';
-$string['eventversionviewed'] = 'Wikilv page version viewed';
-$string['files'] = 'Files';
-$string['filenotuploadederror'] = 'File \'{$a}\' could not be uploaded correctly.';
-$string['filtername'] = 'Wikilv auto-linking';
-$string['firstpagetitle'] = 'First page name';
-$string['firstpagetitle_help'] = 'Title of the first page of the wikilv.';
-$string['forceformat'] = 'Force format';
-$string['forceformat_help'] = 'If the format is forced (checkbox ticked), there is no option to choose a format when editing a wikilv page.';
-$string['format'] = 'Format';
-$string['format_help'] = '* HTML - The HTML editor is available
-* Creole - A common wikilv markup language for which a small edit toolbar is available
-* Nwikilv - Mediawikilv-like markup language used in the contributed Nwikilv module';
-$string['formathtml'] = 'HTML format';
-$string['formathtml_help'] = 'The HTML editor may be used for formatting content.
+$string['diff_help'] = 'As versões selecionadas pa página podem ser comparadas com o objetivo de encontrar as diferenças.';
+$string['edit'] = 'Editar';
+$string['editblocks'] = 'Ativar edição de blocos';
+$string['editcomment'] = 'Editar comentário';
+$string['editfiles'] = 'Editar arquivos wiki LV';
+$string['editing'] = 'Edição de página wiki LV';
+$string['editingcomment'] = 'Edição de cometário';
+$string['editingpage'] = 'Editando a página \'{$a}\'';
+$string['editsection'] = 'editar';
+$string['eventdiffviewed'] = 'Diff do wiki LV visualizado';
+$string['eventhistoryviewed'] = 'Histórico do wiki LV visualizado';
+$string['eventmapviewed'] = 'Página de mapa do wiki LV visualizado';
+$string['eventpagecreated'] = 'Página do wiki LV criada';
+$string['eventpagedeleted'] = 'Página do wiki LV apagada';
+$string['eventpagelocksdeleted'] = 'Bloqueios de página wikilv3 excluídos';
+$string['eventpageupdated'] = 'Página wiki LV atualizada';
+$string['eventpageversiondeleted'] = 'Versão de página wiki LV apagada';
+$string['eventpageviewed'] = 'Página do wiki LV visualizada';
+$string['eventversionrestored'] = 'Versão do wiki LV restaurada';
+$string['eventversionviewed'] = 'Versão de página do wiki LV visualizada';
+$string['filenotuploadederror'] = 'Arquivo \'{$a}\' não pode ser enviado corretamente.';
+$string['files'] = 'Arquivos';
+$string['filtername'] = 'Link automático para wiki LV';
+$string['firstpagetitle'] = 'Nome da primeira página';
+$string['firstpagetitle_help'] = 'Título da primeira página do wiki LV. Logo que o wiki LV é criado, o título não pode mais ser modificado.';
+$string['forceformat'] = 'Forçar formato';
+$string['forceformat_help'] = 'Se o formato é forçado (opção marcada), não existe como escolher um formato quando estiver editando uma página wiki LV';
+$string['format'] = 'Formato';
+$string['formatcreole'] = 'Formato Creole';
+$string['formatcreole_help'] = 'Creole é uma linguagem de marcação wiki LV com uma barra de ferramentas de edição para inserir marcação apropriada.
 
-To create a new page, type the new page name enclosed in double square brackets, for example [[Page 2]].';
-$string['formatcreole'] = 'Creole format';
-$string['formatcreole_help'] = 'Creole is a common wikilv markup language with an edit toolbar for inserting appropriate markup.
-
-To create a new page, type the new page name enclosed in double square brackets, for example [[Page 2]].';
+Para criar uma nova página, digite o nome da nova página dentro de duplos colchetes, por exemplo [[Página 2]]';
 $string['formatcreole_link'] = 'mod/wikilv/creole';
-$string['formatnwikilv'] = 'NWikilv format';
-$string['formatnwikilv_help'] = 'Nwikilv is the Mediawikilv-like markup language used in the contributed Nwikilv module.
+$string['format_help'] = '* HTML - Editor HTML disponível
+* Creole - Uma linguagem de marcação onde uma pequena barra de edição está disponível
+* Nwikilv - Linguagem de marcação como a Mediawiki usada no módulo Nwikilv';
+$string['formathtml'] = 'Formato HTML';
+$string['formathtml_help'] = 'O editor HTML pode ser usado para formatação de conteúdo.
 
-To create a new page, type the new page name enclosed in double square brackets, for example [[Page 2]].';
+Para criar uma nova página, digite o nome da nova página dentro de colchetes duplos, por exemplo [[Página 2]]';
+$string['formatnwikilv'] = 'Formato NWikilv';
+$string['formatnwikilv_help'] = 'Nwikilv é uma linguagem de marcação no estilo Mediawiki utilizada no módulo Nwikilv (fornecido por terceiros).
+
+Para criar uma nova página, digite o nome da nova página dentro de duplos colchetes, por exemplo [[Página 2]]';
 $string['formatnwikilv_link'] = 'mod/wikilv/nwikilv';
-$string['history'] = 'History';
-$string['history_help'] = 'The history lists links to previous versions of the page.';
+$string['history'] = 'Histórico';
+$string['history_help'] = 'O histórico lista links para versões anteriores da página.';
 $string['html'] = 'HTML';
-$string['incorrectdeleteversions'] = "Page versions provided for deletion are incorrect.";
-$string['incorrectpageid'] = 'Page ID is incorrect.';
-$string['incorrectsubwikilvid'] = 'Subwikilv ID is incorrect.';
-$string['incorrectwikilvid'] = 'Wikilv ID is incorrect.';
-$string['insertcomment'] = 'Insert comment';
-$string['insertimage'] = 'Insert an image...';
-$string['insertimage_help'] = 'This drop-down list will insert an image to the wikilv editor. If you need to add more images to the wikilv, please use "Files" tab.';
-$string['invalidlock'] = 'This page is already locked by another user.';
-$string['invalidparameters'] = 'Invalid parameters have been given.';
-$string['invalidsection'] = 'Invalid section.';
-$string['invalidsesskey'] = 'The given sesskey is not valid. Please resend data again';
-$string['individualpagedoesnotexist'] = 'Individual wikilv page doesn\'t exist';
-$string['javascriptdisabledlocks'] = 'Javascript is disabled on your browser and locks are not working. The changes you make may not be saved correctly.';
-$string['lockingajaxtimeout'] = 'Edit page locking refresh time';
-$string['lockingtimeout'] = 'Locking timeout';
+$string['incorrectdeleteversions'] = 'Versão da página providenciada para deleção está incorreta.';
+$string['incorrectpageid'] = 'O ID da página está incorreto.';
+$string['incorrectsubwikilvid'] = 'O ID da Subwikilv está incorreto.';
+$string['incorrectwikilvid'] = 'O ID da wikilv3 está incorreto.';
+$string['indicator:cognitivedepth'] = 'Indicador cognitivo da wikilv3';
+$string['indicator:cognitivedepth_help'] = 'Este indicador é baseado na profundidade cognitiva alcançada pelo estudante em uma atividade wikilv3.';
+$string['indicator:socialbreadth'] = 'Indicador social da wikilv3';
+$string['indicator:socialbreadth_help'] = 'Este indicador baseia-se na amplitude social alcançada pelo estudante em uma atividade wikilv3.';
+$string['individualpagedoesnotexist'] = 'Página individual wikilv não existe';
+$string['insertcomment'] = 'Inserir comentário';
+$string['insertimage'] = 'Inserir uma imagem';
+$string['insertimage_help'] = 'Esta caixa de seleção irá inserir uma imagem no editor wikilv. Caso deseje adicionar mais imagens na wikilv por favor utilize a aba "Arquivos".';
+$string['invalidlock'] = 'Esta página está bloqueada por outro usuário.';
+$string['invalidparameters'] = 'Parâmetros inválidos foram fornecidos';
+$string['invalidsection'] = 'Seção inválida';
+$string['invalidsesskey'] = 'Sua sessão provavelmente expirou. Por favor, anote os dados de sua edição e faça o login novamente.';
+$string['javascriptdisabledlocks'] = 'O Javascript de seu navegador esta desativado e os bloqueios não estão funcionando. As alterações que você fez podem não serem salvas corretamente.';
 $string['links'] = 'Links';
-$string['listall'] = 'List all';
-$string['listorphan'] = 'List orphan';
-$string['map'] = 'Map';
-$string['mapmenu'] = 'Map menu';
-$string['migrationfinished'] = 'Migration finished successfully';
-$string['migrationfinishednowikilvs'] = 'Migration finished, no wikilvs were migrated';
-$string['missingpages'] = 'Pages without content';
-$string['modified'] = 'Modified';
-$string['modulename'] = 'Wikilv';
-$string['modulename_help'] = 'The wikilv activity module enables participants to add and edit a collection of web pages. A wikilv can be collaborative, with everyone being able to edit it, or individual, where everyone has their own wikilv which only they can edit.
+$string['listall'] = 'Listar todos';
+$string['listorphan'] = 'Listar órfãos';
+$string['lockingajaxtimeout'] = 'Tempo de atualização de bloqueio de edição de página';
+$string['lockingtimeout'] = 'Expiração de tempo de bloqueio';
+$string['map'] = 'Mapa';
+$string['mapmenu'] = 'Menu de mapas';
+$string['migrationfinished'] = 'Migração finalizada com sucesso';
+$string['migrationfinishednowikilvs'] = 'Migração finalizada, nenhuma wikilv foi migrada';
+$string['missingpages'] = 'Páginas sem conteúdo';
+$string['modified'] = 'Modificado';
+$string['modulename'] = 'wikilv3';
+$string['modulename_help'] = 'O módulo de atividade wikilv permite aos participantes adicionar e editar uma coleção de páginas da web. Um wikilv pode ser colaborativo, com todos podendo editá-lo, ou individual, onde cada um tem seu próprio wikilv e somente ele pode editar.
 
-A history of previous versions of each page in the wikilv is kept, listing the edits made by each participant.
+Um histórico de versões anteriores de cada página do wikilv é mantido, listando as edições feitas por cada participante.
 
-Wikilvs have many uses, such as
+wikilv3s têm muitas utilidades, como:
 
-* For group lecture notes or study guides
-* For members of a faculty to plan a scheme of work or meeting agenda together
-* For students to collaboratively author an online book, creating content on a topic set by their tutor
-* For collaborative storytelling or poetry creation, where each participant writes a line or verse
-* As a personal journal for examination notes or revision (using an individual wikilv)';
+* Para agrupar anotações ou guias de estudo
+* Para os membros de uma faculdade planejarem um esquema de trabalho ou agendarem uma reunião juntos
+* Para que os alunos criem colaborativamente um livro on-line, criando conteúdo em um tópico definido pelo seu tutor
+* Para narração colaborativa ou criação de poesia, onde cada participante escreve uma linha ou verso
+* Como uma revista pessoal para notas de exame ou revisão (usando um wikilv individual)';
 $string['modulename_link'] = 'mod/wikilv/view';
-$string['modulenameplural'] = 'Wikilvs';
-$string['navigation'] = 'Navigation';
-$string['navigationfrom'] = 'This page comes from';
-$string['navigationfrom_help'] = 'The wikilv pages linking to this page';
-$string['navigationto'] = 'This page goes to';
-$string['navigationto_help'] = 'Links to other pages';
-$string['newpage'] = 'New';
-$string['newpagehdr'] = 'New page';
-$string['newpagetitle'] = 'New page title';
-$string['noattachments'] = '<strong>No files attached</strong>';
-$string['nocontent'] = 'There is no content for this page';
-$string['nocontribs'] = 'You have no contributions in this wikilv';
-$string['nocomments'] = 'There are no comments';
-$string['nocreatepermission'] = 'Create page permission needed';
-$string['noeditcommentpermission'] = 'Edit comment permission needed';
-$string['noeditpermission'] = 'Edit page permission needed';
-$string['nofrompages'] = 'There are no links to this page';
-$string['nohistory'] = 'There is no history for this page';
-$string['nomanagecommentpermission'] = 'Manage comments permission needed';
-$string['nomanagewikilvpermission'] = 'Manage wikilv permission needed';
-$string['noorphanedpages'] = 'There are no orphaned pages';
-$string['nooverridelockpermission'] = 'Override lock permission needed';
-$string['norated']='This page has not been rated yet, be the first!';
-$string['norating'] = 'No rating';
-$string['nosearchresults'] = 'No results';
-$string['noteditblocks'] = 'Turn edit blocks off';
-$string['notingroup'] = 'Not in group';
-$string['notopages'] = 'This page does not link to other pages';
-$string['notmigrated'] = 'This wikilv has not been migrated yet. Please contact your administrator.';
-$string['noupdatedpages'] = 'There are no updated pages';
-$string['noviewcommentpermission'] = 'View comments permission needed';
-$string['noviewpagepermission'] = 'View page permission needed';
+$string['modulenameplural'] = 'wikilv3s';
+$string['navigation'] = 'Navegação';
+$string['navigationfrom'] = 'Esta página vem de';
+$string['navigationfrom_help'] = 'Páginas wikilv com links para está página';
+$string['navigationto'] = 'Esta pagina vai para';
+$string['navigationto_help'] = 'Links para outras páginas';
+$string['newpage'] = 'Criar nova página';
+$string['newpagehdr'] = 'Nova página';
+$string['newpagetitle'] = 'Novo título da página';
+$string['noattachments'] = '<strong>Nenhum arquivo anexado</strong>';
+$string['nocomments'] = 'Não existem comentários';
+$string['nocontent'] = 'Não existe conteúdo para esta página';
+$string['nocontribs'] = 'Você não tem contribuições nesta wikilv';
+$string['nocreatepermission'] = 'Permissão para criar página é necessária ';
+$string['noeditcommentpermission'] = 'Permissão para editar comentário é necessária ';
+$string['noeditpermission'] = 'Permissão para editar página é necessária ';
+$string['nofrompages'] = 'Não existem links para esta página';
+$string['nohistory'] = 'Não existe histórico para esta página';
+$string['nomanagecommentpermission'] = 'Permissão de gerência de comentários necessária';
+$string['nomanagewikilvpermission'] = 'Permissão de gerência de wikilv necessária';
+$string['noorphanedpages'] = 'Não existem páginas orfãs';
+$string['nooverridelockpermission'] = 'Permissão de bloqueio de sobrescrita necessária';
+$string['norated'] = 'Esta página ainda não foi avaliada, seja o primeiro!';
+$string['norating'] = 'Nenhuma avaliação';
+$string['nosearchresults'] = 'Nenhum resultado';
+$string['noteditblocks'] = 'Desativar edição';
+$string['notingroup'] = 'Não existe no grupo';
+$string['notmigrated'] = 'Esta wikilv não foi migrada ainda. Por favor contate seu administrador';
+$string['notopages'] = 'Esta página não tem ligação com outras páginas';
+$string['noupdatedpages'] = 'Não existem páginas atualizadas';
+$string['noviewcommentpermission'] = 'Permissão para visualizar comentários é necessária ';
+$string['noviewpagepermission'] = 'Permissão para visualizar página é necessária ';
 $string['nwikilv'] = 'NWikilv';
-$string['oldversion'] = 'Old version';
-$string['orphaned'] = 'Orphaned pages';
-$string['orphaned_help'] = 'List of pages that are not linked from other page.';
-$string['overridelocks'] = 'Override locks';
-$string['overridinglocks'] = 'Overriding locks...';
-$string['page-mod-wikilv-x'] = 'Any wikilv module page';
-$string['page-mod-wikilv-view'] = 'Wikilv module main page';
-$string['page-mod-wikilv-comments'] = 'Wikilv module comments page';
-$string['page-mod-wikilv-history'] = 'Wikilv history page';
-$string['page-mod-wikilv-map'] = 'Wikilv map page';
-$string['pageexists'] = 'This page already exists.';
-$string['pageindex'] = 'Page Index';
-$string['pageindex_help'] = 'This wikilv\'s page tree';
-$string['pageislocked'] = 'Someone is editing this page right now. Try to edit it in a few minutes.';
-$string['pagelist'] = 'Page list';
-$string['pagelist_help'] = 'Page list categorized by alphabetical order';
-$string['pagename'] = 'Page name';
-$string['peerreview'] = 'Peer review';
-$string['pluginadministration'] = 'Wikilv administration';
-$string['pluginname'] = 'Wikilv';
-$string['prettyprint'] = 'Printer-friendly version';
-$string['print'] = 'Print';
-$string['previewwarning'] = 'This is a preview. Changes have not been saved yet.';
-$string['rated']='You rated this page as a {$a}';
-$string['rating']='Rating';
-$string['ratingmode'] = 'Rating mode';
-$string['reparsetimeout'] = 'Reparsing default timeout';
-$string['repeatedsection'] = 'Wikilv error: Section name cannot be repeated \'{$a}\'';
-$string['restore'] = 'Restore';
-$string['removeallwikilvtags'] = 'Remove all wikilv tags';
-$string['removepages'] = 'Remove pages';
-$string['restoreconfirm'] = 'Are you sure you want to restore version #{$a}?';
-$string['restoreerror'] = 'Version #{$a} could not be restored';
-$string['restorethis'] = 'Restore this version';
-$string['restoreversion'] = 'Restore old version';
-$string['restoring'] = 'Restoring version #{$a}';
-$string['return'] = 'Go back';
-$string['save'] = 'Save';
-$string['saving'] = 'Saving wikilv page';
-$string['savingerror'] = 'Saving error';
-$string['search:activity'] = 'Wikilv - activity information';
-$string['search:collaborative_page'] = 'Wikilv - collaborative pages';
-$string['searchcontent'] = 'Search in page content';
-$string['searchresult'] = 'Search results:';
-$string['searchterms'] = 'Search terms';
-$string['searchwikilvs'] = 'Search wikilvs';
-$string['special'] = 'Special';
-$string['tableofcontents'] = 'Table of contents';
-$string['tagarea_wikilv_pages'] = 'Wikilv pages';
-$string['tagsdeleted'] = 'Wikilv tags have been deleted';
-$string['tagtitle'] = 'See the "{$a}" tag';
-$string['teacherrating'] = 'Teacher rating';
-$string['timesrating']='This page has been rated  {$a->c} times with an average of: {$a->s}';
-$string['updatedpages'] = "Updated pages";
-$string['updatedpages_help'] = "Recently updated wikilv pages";
-$string['updatedwikilvpages'] = "Updated wikilv pages";
-$string['upload'] = "Upload & Delete";
-$string['uploadname'] = "Filename";
-$string['uploadactions'] = "Actions";
-$string['uploadtitle'] = 'Attach files';
-$string['uploadfiletitle'] = 'Attachments';
-$string['versionerror'] = 'Version ID does not exist';
-$string['versionnum'] = 'Version #{$a}';
-$string['version'] = 'Version';
-$string['view'] = 'View';
-$string['viewallhistory'] = 'View all history';
-$string['viewperpage'] = 'Show {$a} versions per page';
-$string['viewversion'] = 'Viewing page version #{$a}';
-$string['viewcurrent'] = 'Current version';
-$string['wikilv'] = 'Wikilv';
-$string['wikilvattachments'] = 'Wikilv attachments';
-$string['wikilvboldtext'] = 'Bold text';
-$string['wikilvexternalurl'] = 'External URL';
-$string['wikilvfiletable'] = 'Uploaded file list';
-$string['wikilvfiles'] = 'Wikilv files';
-$string['wikilvheader'] = 'Level {$a} Header';
-$string['wikilvhr'] = 'Horizontal rule';
-$string['wikilvimage'] = 'Image';
-$string['wikilvinternalurl'] = 'Internal link';
-$string['wikilvintro'] = 'Description';
-$string['wikilvitalictext'] = 'Italic text';
-$string['wikilvlockingsettings'] = 'Locking and reparsing timeouts';
-$string['wikilvmode'] = 'Wikilv mode';
-$string['wikilvmode_help'] = 'The wikilv mode determines whether everyone can edit the wikilv - a collaborative wikilv - or whether everyone has their own wikilv which only they can edit - an individual wikilv.';
-$string['wikilvmodecollaborative'] = 'Collaborative wikilv';
-$string['wikilvmodeindividual'] = 'Individual wikilv';
-$string['wikilvname'] = 'Wikilv name';
-$string['wikilvnowikilvtext'] = 'No wikilv text';
-$string['wikilvorderedlist'] = 'Ordered list';
-$string['wikilvsettings'] = 'Wikilv settings';
-$string['wikilvunorderedlist'] = 'Unordered list';
-$string['wikilv:addinstance'] = 'Add a new wikilv';
-$string['wikilv:createpage'] = 'Create new wikilv pages';
-$string['wikilv:editcomment'] = 'Add comments to pages';
-$string['wikilv:editpage'] = 'Save wikilv pages';
-$string['wikilv:managecomment'] = 'Manage wikilv comments';
-$string['wikilv:managewikilv'] = 'Manage wikilv settings';
-$string['wikilv:managefiles'] = 'Manage wikilv files';
-$string['wikilv:overridelock'] = 'Override wikilv locks';
-$string['wikilv:viewcomment'] = 'View page comments';
-$string['wikilv:viewpage'] = 'View wikilv pages';
-$string['wikilvpages'] = 'Wikilv pages';
-$string['wrongversionlock'] = 'Another user has edited this page while you were editing and your content is obsolete.';
+$string['oldversion'] = 'Versão antiga';
+$string['orphaned'] = 'Páginas orfãs';
+$string['orphaned_help'] = 'Lista de páginas que não tem ligação de outras páginas';
+$string['overridelocks'] = 'Sobrescrita bloqueia';
+$string['overridinglocks'] = 'Sobrescrita bloqueando..';
+$string['pageexists'] = 'Esta página já existe.';
+$string['pageindex'] = 'Índice das páginas';
+$string['pageindex_help'] = 'àrvore de páginas da wikilv3';
+$string['pageislocked'] = 'Alguém está editando esta página exatamente agora. Tente editá-la em alguns minutos.';
+$string['pagelist'] = 'Lista de páginas';
+$string['pagelist_help'] = 'Lista de página classificada por ordem alfabética';
+$string['page-mod-wikilv-comments'] = 'Página de comentários do módulo wikilv3';
+$string['page-mod-wikilv-history'] = 'Página de histórico da wikilv3';
+$string['page-mod-wikilv-map'] = 'Página mapa da wikilv3';
+$string['page-mod-wikilv-view'] = 'Módulo wikilv3 página principal';
+$string['page-mod-wikilv-x'] = 'Qualquer página do módulo wikilv';
+$string['pagename'] = 'Nome da página';
+$string['peerreview'] = 'Revisão por pares';
+$string['pluginadministration'] = 'Administração da wikilv';
+$string['pluginname'] = 'wikilv3';
+$string['prettyprint'] = 'Versão de impressão';
+$string['previewwarning'] = 'Esta é uma pré-visualização. Alterações não foram salvas ainda.';
+$string['print'] = 'Imprimir';
+$string['rated'] = 'Você avaliou esta página com um {$a}';
+$string['rating'] = 'Avaliação';
+$string['ratingmode'] = 'Modo de avaliação';
+$string['removeallwikilvtags'] = 'Remover todas as tags wikilv';
+$string['removepages'] = 'Remover páginas';
+$string['reparsetimeout'] = 'Reparsing tempo limite padrão';
+$string['repeatedsection'] = 'Erro na wikilv3 : Nome da seção não pode ser repetido \'{$a}\'';
+$string['restore'] = 'Restaurar';
+$string['restoreconfirm'] = 'Tem certeza que deseja restaurar a versão  #{$a}?';
+$string['restoreerror'] = 'Versão #{$a} não pôde ser restaurada';
+$string['restorethis'] = 'Restaurar esta versão';
+$string['restoreversion'] = 'Restaurar versão antiga';
+$string['restoring'] = 'Restaurando versão #{$a}';
+$string['return'] = 'Retornar';
+$string['save'] = 'Salvar';
+$string['saving'] = 'Salvando página wikilv';
+$string['savingerror'] = 'Erro ao salvar';
+$string['search:activity'] = 'wikilv3 - informações da atividade';
+$string['search:collaborative_page'] = 'wikilv3 - páginas colaborativas';
+$string['searchcontent'] = 'Pesquisar conteúdo na página';
+$string['searchresult'] = 'Resultados da busca:';
+$string['searchterms'] = 'Buscar termos';
+$string['searchwikilvs'] = 'Pesquisar wikilvs';
+$string['special'] = 'Especial';
+$string['tableofcontents'] = 'Índice';
+$string['tagarea_wikilv_pages'] = 'Páginas wikilv';
+$string['tagsdeleted'] = 'Tags da wikilv foram excluídas';
+$string['teacherrating'] = 'Avaliação do professor';
+$string['timesrating'] = 'Esta página foi avaliada {$a->c} vezes com uma média de: {$a->s}';
+$string['updatedpages'] = 'Páginas atualizadas';
+$string['updatedpages_help'] = 'Páginas wikilv recentemente atualizadas';
+$string['updatedwikilvpages'] = 'Páginas wikilv atualizadas';
+$string['upload'] = 'Fazer upload e excluir';
+$string['uploadactions'] = 'Ações';
+$string['uploadfiletitle'] = 'Anexos';
+$string['uploadname'] = 'Nome do arquivo';
+$string['uploadtitle'] = 'Arquivos anexados';
+$string['version'] = 'Versão';
+$string['versionerror'] = 'ID da versão não existe';
+$string['versionnum'] = 'Versão #{$a}';
+$string['view'] = 'Visualizar';
+$string['viewallhistory'] = 'Visualizar todo histórico';
+$string['viewcurrent'] = 'Versão atual';
+$string['viewperpage'] = 'Exibir {$a} versões por página';
+$string['viewversion'] = 'Visualizando versão #{$a} da página';
+$string['wikilv'] = 'wikilv3';
+$string['wikilv:addinstance'] = 'Adicionar novo wikilv';
+$string['wikilvattachments'] = 'Anexos da wikilv3';
+$string['wikilvboldtext'] = 'Texto negrito';
+$string['wikilv:createpage'] = 'Criar novas páginas wikilv';
+$string['wikilv:editcomment'] = 'Adicionar comentários para as páginas';
+$string['wikilv:editpage'] = 'Salvar páginas wikilv';
+$string['wikilvexternalurl'] = 'URL externa';
+$string['wikilvfiles'] = 'Arquivos do wikilv';
+$string['wikilvfiletable'] = 'Lista de arquivos enviados';
+$string['wikilvheader'] = 'Cabeção nível {$a}';
+$string['wikilvhr'] = 'Régua horizontal';
+$string['wikilvimage'] = 'Imagem';
+$string['wikilvinternalurl'] = 'Link interno';
+$string['wikilvintro'] = 'Descrição';
+$string['wikilvitalictext'] = 'Texto itálico';
+$string['wikilvlockingsettings'] = 'Bloqueando e reparsing timeouts';
+$string['wikilv:managecomment'] = 'Gerenciar comentários wikilv';
+$string['wikilv:managefiles'] = 'Gerenciar arquivos do wikilv';
+$string['wikilv:managewikilv'] = 'Gerenciar configurações da wikilv';
+$string['wikilvmode'] = 'Modo wikilv';
+$string['wikilvmodecollaborative'] = 'wikilv3 colaborativa';
+$string['wikilvmode_help'] = 'O modo wikilv determina se todo mundo pode editar a wikilv - uma wikilv colaborativa - ou se todo mundo tem sua própria wikilv a qual somente eles podem editar - uma wikilv individual';
+$string['wikilvmodeindividual'] = 'wikilv3 individual';
+$string['wikilvname'] = 'Nome da wikilv3';
+$string['wikilvnowikilvtext'] = 'Nenhum texto na wikilv';
+$string['wikilvorderedlist'] = 'Lista ordenada';
+$string['wikilv:overridelock'] = 'Pular páginas bloqueadas';
+$string['wikilvpages'] = 'Páginas wikilv';
+$string['wikilvsettings'] = 'Configurações da wikilv';
+$string['wikilvunorderedlist'] = 'Lista não ordenada';
+$string['wikilv:viewcomment'] = 'Visualizar comentários das páginas';
+$string['wikilv:viewpage'] = 'Visualizar páginas da wikilv';
+$string['wrongversionlock'] = 'Outro usuário editou esta página enquanto você estava editando e seu conteúdo é obsoleto.';
+$string['wrongversionsave'] = 'Outro usuário criou uma versão enquanto estava editando e você tem substituído suas mudanças, verifique o histórico da página.';
 $string['minimo_contribuicoes'] = 'Minimun contributions';
-$string['ratingtime'] = 'Restrict ratings to items with dates in this range:';
-
+$string['ratingtime'] = 'Restringir avaliação a itens com datas neste intervalo:';
+$string['formatnwikilv'] = 'Editando Wiki LV:';
+$string['formatnwikilv_help'] = 'Nwikilv é uma linguagem de marcação dentro do módulo Nwikilv.';
+$string['formatnwikilv_link'] = 'mod/wiki/nwiki';

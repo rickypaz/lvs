@@ -15,136 +15,144 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'chatlv', language 'en', branch 'MOODLE_20_STABLE'
+ * Strings for component 'chatlv', language 'pt_br', branch 'MOODLE_34_STABLE'
  *
- * @package   mod_chatlv
+ * @package   chatlv
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['activityoverview'] = 'You have upcoming chatlv sessions';
-$string['ajax'] = 'Version using Ajax';
-$string['autoscroll'] = 'Auto scroll';
-$string['beep'] = 'Beep';
-$string['bubble'] = 'Bubble';
-$string['cantlogin'] = 'Could not log in to chatlv room!!';
-$string['composemessage'] = 'Compose a message';
-$string['configmethod'] = 'The ajax chatlv method provide an ajax based chatlv interface, it contacts server regularly for update. The normal chatlv method involves the clients regularly contacting the server for updates. It requires no configuration and works everywhere, but it can create a large load on the server with many chatlvters.  Using a server daemon requires shell access to Unix, but it results in a fast scalable chatlv environment.';
-$string['confignormalupdatemode'] = 'Chatroom updates are normally served efficiently using the <em>Keep-Alive</em> feature of HTTP 1.1, but this is still quite heavy on the server. A more advanced method is to use the <em>Stream</em> strategy to feed updates to the users. Using <em>Stream</em> scales much better (similar to the chatlvd method) but may not be supported by your server.';
-$string['configoldping'] = 'What is the maximum time that may pass before we detect that a user has disconnected (in seconds)? This is just an upper limit, as usually disconnects are detected very quickly. Lower values will be more demanding on your server. If you are using the normal method, <strong>never</strong> set this lower than 2 * chatlv_refresh_room.';
-$string['configrefreshroom'] = 'How often should the chatlv room itself be refreshed? (in seconds).  Setting this low will make the chatlv room seem quicker, but it may place a higher load on your web server when many people are chatlvting. If you are using <em>Stream</em> updates, you can select higher refresh frequencies -- try with 2.';
-$string['configrefreshuserlist'] = 'How often should the list of users be refreshed? (in seconds)';
-$string['configserverhost'] = 'The hostname of the computer where the server daemon is';
-$string['configserverip'] = 'The numerical IP address that matches the above hostname';
-$string['configservermax'] = 'Max number of clients allowed';
-$string['configserverport'] = 'Port to use on the server for the daemon';
-$string['compact'] = 'Compact';
-$string['coursetheme'] = 'Course theme';
-$string['currentchatlvs'] = 'Active chatlv sessions';
-$string['currentusers'] = 'Current users';
-$string['deletesession'] = 'Delete this session';
-$string['deletesessionsure'] = 'Are you sure you want to delete this session?';
-$string['donotusechatlvtime'] = 'Don\'t publish any chatlv times';
-$string['enterchatlv'] = 'Click here to enter the chatlv now';
-$string['errornousers'] = 'Could not find any users!';
-$string['explaingeneralconfig'] = 'These settings are <strong>always</strong> used';
-$string['explainmethoddaemon'] = 'These settings matter <strong>only</strong> if you have selected "Chatlv server daemon" for chatlv_method';
-$string['explainmethodnormal'] = 'These settings matter <strong>only</strong> if you have selected "Normal method" for chatlv_method';
-$string['generalconfig'] = 'General configuration';
-$string['chatlv:addinstance'] = 'Add a new chatlv';
-$string['chatlv:deletelog'] = 'Delete chatlv logs';
-$string['chatlv:exportparticipatedsession'] = 'Export chatlv session which you took part in';
-$string['chatlv:exportsession'] = 'Export any chatlv session';
-$string['chatlv:chatlv'] = 'Access a chatlv room';
-$string['chatlvintro'] = 'Description';
-$string['chatlvname'] = 'Name of this chatlv room';
-$string['chatlv:readlog'] = 'View chatlv logs';
-$string['chatlvreport'] = 'Chatlv sessions';
-$string['chatlv:talk'] = 'Talk in a chatlv';
-$string['chatlvtime'] = 'Next chatlv time';
-$string['entermessage'] = "Enter your message";
-$string['eventmessagesent'] = 'Message sent';
-$string['eventsessionsviewed'] = 'Sessions viewed';
+defined('MOODLE_INTERNAL') || die();
+
+$string['activityoverview'] = 'Você tem sessões de chatlv se aproximando';
+$string['ajax'] = 'Versão usando Ajax';
+$string['autoscroll'] = 'Rolagem automática';
+$string['beep'] = 'Bip';
+$string['bubble'] = 'Bolha';
+$string['cantlogin'] = 'Não foi possível logar na sala de chatlv!!';
+$string['chatlv:addinstance'] = 'Adicionar novo chatlv';
+$string['chatlv:chatlv'] = 'Acessar o chatlv';
+$string['chatlv:deletelog'] = 'Excluir logs do chatlv';
+$string['chatlv:exportparticipatedsession'] = 'Exportar sessão de chatlv em que você tenha participado';
+$string['chatlv:exportsession'] = 'Exportar qualquer sessão de chatlv';
+$string['chatlvintro'] = 'Descrição';
+$string['chatlvname'] = 'Nome desta sala';
+$string['chatlv:readlog'] = 'Ver logs do chatlv';
+$string['chatlvreport'] = 'Sessões de chatlv';
+$string['chatlv:talk'] = 'Bater papo no chatlv';
+$string['chatlvtime'] = 'Data do próximo chatlv';
+$string['chatlv:view'] = 'Ver atividade chatlv';
+$string['compact'] = 'Compacto';
+$string['composemessage'] = 'Compor uma mensagem';
+$string['configmethod'] = 'O método de chatlv ajax fornece uma interface de chatlv baseada em Ajax, que contata o servidor regularmente para atualização. O método de chatlv normal envolve os clientes em contato constante com o servidor para atualizações. Este não requer configuração e funciona em todos os lugares, mas pode criar uma grande carga sobre o servidor com muitos usuários. Utilizar um servidor daemon requer um acesso shell no Unix, mas resulta em um ambiente de chatlv rápido e escalável.';
+$string['confignormalupdatemode'] = 'Normalmente a atualização das salas de chatlv são eficientes quando se utiliza <em>Keep-Alive</em> em HTTP 1.1 mas isto não reduz a sobrecarga do servidor. O melhor método consiste no uso da estratégia <em>Stream</em> para comunicar as atualizações aos usuários. Este método oferece maior escalabilidade, como o método chatlvd, mas não é compatível com alguns tipos de servidor.';
+$string['configoldping'] = 'Depois de quanto tempo de silêncio do usuário temos que considerar que abandonou a sala (em segundos)?';
+$string['configrefreshroom'] = 'Qual é o intervalo de atualização da sala do chatlv (em segundos)? Um intervalo breve faz com que a chatlv pareça mais veloz mas isto pode aumentar muito a carga de trabalho do servidor quando muitas pessoas estiverem participando. Se você estiver usando atualizações <em>Stream</em>, você pode aumentar a freqüência de atualização escolhendo, por exemplo, o valor 2.';
+$string['configrefreshuserlist'] = 'De quanto em quanto tempo a lista dos usuários tem que ser atualizada (em segundos)?';
+$string['configserverhost'] = 'O hostname do computador que hospeda o servidor daemon';
+$string['configserverip'] = 'O endereço IP correspondente ao hostname acima';
+$string['configservermax'] = 'Número máximo de clientes permitido';
+$string['configserverport'] = 'Porta do servidor a ser usada pelo daemon';
+$string['coursetheme'] = 'Tema do curso';
+$string['currentchatlvs'] = 'Sessões de chatlv ativas';
+$string['currentusers'] = 'Usuários atuais';
+$string['deletesession'] = 'Excluir esta sessão';
+$string['deletesessionsure'] = 'Confirmar a exclusão desta sessão?';
+$string['donotusechatlvtime'] = 'Não publicar os horários dos chatlvs';
+$string['enterchatlv'] = 'Clique aqui para entrar no chatlv agora';
+$string['entermessage'] = 'Digite sua mensagem';
+$string['errornousers'] = 'Não foi encontrado nenhum usuário!';
+$string['eventmessagesent'] = 'Mensagem enviada';
+$string['eventsessionsviewed'] = 'Sessões visualizadas';
+$string['explaingeneralconfig'] = 'Estas configurações estão sempre ativas';
+$string['explainmethoddaemon'] = 'Estas configurações são importantes apenas se você selecionou o método "server daemon"';
+$string['explainmethodnormal'] = 'Estas configurações são importantes apenas se você selecionou o método "normal"';
+$string['generalconfig'] = 'Configuração geral';
 $string['idle'] = 'Idle';
-$string['inputarea'] = 'Input area';
-$string['invalidid'] = 'Could not find that chatlv room!';
-$string['list_all_sessions'] = 'List all sessions.';
-$string['list_complete_sessions'] = 'List just complete sessions.';
-$string['listing_all_sessions'] = 'Listing all sessions.';
-$string['messagebeepseveryone'] = '{$a} beeps everyone!';
-$string['messagebeepsyou'] = '{$a} has just beeped you!';
-$string['messageenter'] = '{$a} has just entered this chatlv';
-$string['messageexit'] = '{$a} has left this chatlv';
-$string['messages'] = 'Messages';
-$string['messageyoubeep'] = 'You beeped {$a}';
-$string['method'] = 'Chatlv method';
-$string['methoddaemon'] = 'Chatlv server daemon';
-$string['methodnormal'] = 'Normal method';
-$string['methodajax'] = 'Ajax method';
-$string['modulename'] = 'Chatlv';
-$string['modulename_help'] = 'The chatlv activity module enables participants to have text-based, real-time synchronous discussions.
+$string['indicator:cognitivedepth'] = 'Indicador cognitivo do chatlv';
+$string['indicator:cognitivedepth_help'] = 'Este indicador baseia-se na profundidade cognitiva alcançada pelo estudante em uma atividade chatlv.';
+$string['indicator:socialbreadth'] = 'Indicador social do chatlv';
+$string['indicator:socialbreadth_help'] = 'Este indicador baseia-se na amplitude social alcançada pelo estudante em uma atividade chatlv.';
+$string['inputarea'] = 'Área de entrada de dados';
+$string['invalidid'] = 'Sala de chatlv não foi encontrada!';
+$string['list_all_sessions'] = 'Mostrar todas as sessões.';
+$string['list_complete_sessions'] = 'Mostrar apenas sessões completas.';
+$string['listing_all_sessions'] = 'Mostrando todas as sessões.';
+$string['messagebeepseveryone'] = '{$a}';
+$string['messagebeepsyou'] = '{$a} está bipando você!';
+$string['messageenter'] = '{$a} entrou no chatlv';
+$string['messageexit'] = '{$a} abandonou este chatlv';
+$string['messages'] = 'Mensagens';
+$string['messageyoubeep'] = 'Você chamou {$a}';
+$string['method'] = 'Método do chatlv';
+$string['methodajax'] = 'Método ajax';
+$string['methoddaemon'] = 'Servidor chatlv daemon';
+$string['methodnormal'] = 'Método normal';
+$string['modulename'] = 'chatlv';
+$string['modulename_help'] = 'O módulo de atividade chatlv permite que os participantes possam conversar em tempo real.
 
-The chatlv may be a one-time activity or it may be repeated at the same time each day or each week. Chatlv sessions are saved and can be made available for everyone to view or restricted to users with the capability to view chatlv session logs.
+A conversa pode ser uma atividade de uma só vez ou pode ser repetida na mesma hora todos os dias ou todas as semanas. Sessões de chatlv são salvas e podem ser disponibilizadas para que todos possam visualizar ou restritas a usuários com a capacidade de visualizar os logs de sessão do chatlv.
 
-Chats are especially useful when the group chatlvting is not able to meet face-to-face, such as
+chatlvs são especialmente úteis quando um grupo de bate-papo não é capaz de se encontrar cara-a-cara, como:
 
-* Regular meetings of students participating in online courses to enable them to share experiences with others in the same course but in a different location
-* A student temporarily unable to attend in person chatlvting with their teacher to catch up with work
-* Students out on work experience getting together to discuss their experiences with each other and their teacher
-* Younger children using chatlv at home in the evenings as a controlled (monitored) introduction to the world of social networking
-* A question and answer session with an invited speaker in a different location
-* Sessions to help students prepare for tests where the teacher, or other students, would pose sample questions';
+* Reuniões regulares dos estudantes participantes de cursos online para que possam compartilhar experiências com outros no mesmo curso, mas em um local diferente
+* Um estudante temporariamente impossibilitado de comparecer pessoalmente conversar com seu professor para acompanhar o trabalho
+* Estudantes na experiência de trabalho se reúnem para discutir suas experiências entre si e com seu professor
+* Crianças mais jovens que usam chatlv em casa à noite como uma introdução controlada (monitorada) para o mundo das redes sociais
+* A sessão de perguntas e respostas com um orador convidado em um local diferente
+* Sessões para ajudar os estudantes a se prepararem para testes em que o professor ou outros estudantes, colocariam exemplos de perguntas';
 $string['modulename_link'] = 'mod/chatlv/view';
-$string['modulenameplural'] = 'Chats';
-$string['neverdeletemessages'] = 'Never delete messages';
-$string['nextsession'] = 'Next scheduled session';
-$string['no_complete_sessions_found'] = 'No complete sessions found.';
-$string['noguests'] = 'The chatlv is not open to guests';
-$string['nochatlv'] = 'No chatlv found';
-$string['nomessages'] = 'No messages yet';
+$string['modulenameplural'] = 'chatlvs';
+$string['neverdeletemessages'] = 'Nunca excluir as mensagens';
+$string['nextsession'] = 'Próxima sessão programada';
+$string['nochatlv'] = 'Nenhum chatlv encontrado';
+$string['no_complete_sessions_found'] = 'Nenhuma sessão completa encontrada.';
+$string['noguests'] = 'O chatlv não pode ser acessado por visitantes';
+$string['nomessages'] = 'Nenhuma mensagem ainda';
+$string['nopermissiontoseethechatlvlog'] = 'Você não tem permissão para ver os logs do chatlv.';
 $string['normalkeepalive'] = 'KeepAlive';
 $string['normalstream'] = 'Stream';
-$string['noscheduledsession'] = 'No scheduled session';
-$string['notallowenter'] = 'You are not allowed to enter the chatlv room.';
-$string['notlogged'] = 'You are not logged in!';
-$string['nopermissiontoseethechatlvlog'] = 'You don\'t have permission to see the chatlv logs.';
-$string['oldping'] = 'Disconnect timeout';
-$string['page-mod-chatlv-x'] = 'Any chatlv module page';
-$string['pastchatlvs'] = 'Past chatlv sessions';
-$string['pluginadministration'] = 'Chatlv administration';
-$string['pluginname'] = 'Chatlv';
-$string['refreshroom'] = 'Refresh room';
-$string['refreshuserlist'] = 'Refresh user list';
-$string['removemessages'] = 'Remove all messages';
-$string['repeatdaily'] = 'At the same time every day';
-$string['repeatnone'] = 'No repeats - publish the specified time only';
-$string['repeattimes'] = 'Repeat/publish session times';
-$string['repeatweekly'] = 'At the same time every week';
-$string['saidto'] = 'said to';
-$string['savemessages'] = 'Save past sessions';
-$string['seesession'] = 'See this session';
-$string['search:activity'] = 'Chatlv - activity information';
-$string['send'] = 'Send';
-$string['sending'] = 'Sending';
-$string['serverhost'] = 'Server name';
-$string['serverip'] = 'Server ip';
-$string['servermax'] = 'Max users';
-$string['serverport'] = 'Server port';
-$string['sessions'] = 'Chatlv sessions';
-$string['sessionstart'] = 'The next chatlv session will start in {$a}';
+$string['noscheduledsession'] = 'Nenhuma sessão planejada';
+$string['notallowenter'] = 'Você não tem permissão para entrar nesta sala.';
+$string['notlogged'] = 'Você não está autenticado!';
+$string['oldping'] = 'Tempo para disconecção';
+$string['page-mod-chatlv-x'] = 'Qualquer página de chatlv';
+$string['pastchatlvs'] = 'Sessões encerradas';
+$string['pluginadministration'] = 'Administração do chatlv';
+$string['pluginname'] = 'chatlv';
+$string['refreshroom'] = 'Recarregar o texto';
+$string['refreshuserlist'] = 'Recarregar a lista de usuários';
+$string['removemessages'] = 'Remover todas as mensagens';
+$string['repeatdaily'] = 'Na mesma hora todos os dias';
+$string['repeatnone'] = 'Não repetir - publicar apenas o horário especifico';
+$string['repeattimes'] = 'Repetir sessões';
+$string['repeatweekly'] = 'No mesmo horário cada semana';
+$string['saidto'] = 'disse para';
+$string['savemessages'] = 'Salvar as sessões encerradas';
+$string['search:activity'] = 'chatlv - informações da atividade';
+$string['seesession'] = 'Ver esta sessão';
+$string['send'] = 'Enviar';
+$string['sending'] = 'Enviando';
+$string['serverhost'] = 'Nome do servidor';
+$string['serverip'] = 'IP do servidor';
+$string['servermax'] = 'Máximo de usuários';
+$string['serverport'] = 'Porta do Servidor';
+$string['sessions'] = 'Sessões de chatlv';
+$string['sessionstart'] = 'A próxima sessão de chatlv irá começar em {$a->date}, ({$a->fromnow} a partir de agora)';
 $string['strftimemessage'] = '%H:%M';
-$string['studentseereports'] = 'Everyone can view past sessions';
-$string['studentseereports_help'] = 'If set to No, only users have mod/chatlv:readlog capability are able to see the chatlv logs';
-$string['talk'] = 'Talk';
-$string['updatemethod'] = 'Update method';
-$string['updaterate'] = 'Update rate:';
-$string['userlist'] = 'User list';
-$string['usingchatlv'] = 'Using chatlv';
-$string['usingchatlv_help'] = 'The chatlv module contains some features to make chatlvting a little nicer.
+$string['studentseereports'] = 'Todos podem ver as sessões encerradas';
+$string['studentseereports_help'] = 'Se for definido como não, somente os usuários que possuirem a permissão mod/chatlv:readlog serão capazes de ver as logs de chatlvs
+';
+$string['talk'] = 'Falar';
+$string['updatemethod'] = 'Método de atualização';
+$string['updaterate'] = 'porcentagem de atualização:';
+$string['userlist'] = 'Lista de usuários';
+$string['usingchatlv'] = 'Usando chatlv';
+$string['usingchatlv_help'] = 'O módulo chatlv tem alguma funcionalidades que tornam o bate-papo um pouco mais agradável.
 
-* Smilies - Any smiley faces (emoticons) that you can type elsewhere in Moodle can also be typed here, for example :-)
-* Links - Website addresses will be turned into links automatically
-* Emoting - You can start a line with "/me" or ":" to emote, for example if your name is Kim and you type ":laughs!" or "/me laughs!" then everyone will see "Kim laughs!"
-* Beeps - You can send a sound to other participants by clicking the "beep" link next to their name. A useful shortcut to beep all the people in the chatlv at once is to type "beep all".
-* HTML - If you know some HTML code, you can use it in your text to do things like insert images, play sounds or create different coloured text';
-$string['viewreport'] = 'View past chatlv sessions';
+*Carinhas - Todas as carinhas (emoticons) que você usa nos editores de texto podem ser utilizadas no chatlv. Por exemplo  :-)
+* Links - Endereços web são automaticamente transformados em links
+* Emoções - Você pode iniciar uma frase com  "/me" or ":" para representar emoções.  Por exemplo, se o seu nome é Kim e você digita  ":laughs!" or "/me laughs!" todos vão ler "Kim laughs!"
+* Bips - Você pode tocar um som para outras pessoas clicando o link  "beep" ao lado do nome delas.  Escrevendo "beep all", todas as pessoas vão ouvir o bip.
+* HTML - Você pode usar código html para inserir imagens no texto do chatlv e mudar a cor e o tamanho das letras.';
+$string['viewreport'] = 'Ver sessões encerradas';
