@@ -1,0 +1,3 @@
+filesofthesetypes,tarefalvsubmission_file
+filetypewithexts,tarefalvsubmission_file
+nonexistentfiletypes,tarefalvsubmission_file

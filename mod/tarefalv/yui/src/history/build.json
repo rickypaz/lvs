@@ -1,0 +1,10 @@
+{
+    "name": "moodle-mod_tarefalv-history",
+    "builds": {
+        "moodle-mod_tarefalv-history": {
+            "jsfiles": [
+                "history.js"
+            ]
+        }
+    }
+}

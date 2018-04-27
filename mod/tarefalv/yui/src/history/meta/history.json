@@ -1,0 +1,8 @@
+{
+    "moodle-mod_tarefalv-history": {
+        "requires": [
+            "node",
+            "transition"
+        ]
+    }
+}
